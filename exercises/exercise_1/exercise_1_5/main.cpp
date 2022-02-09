@@ -9,7 +9,7 @@
 // function declarations
 // ---------------------
 void createArrayBuffer(const std::vector<float> &array, unsigned int &VBO);
-void setupShape(unsigned int shaderProgram, unsigned int &VAO, unsigned int &vertexCount);
+void setupShape(const unsigned int shaderProgram, float time, unsigned int &posVBO, unsigned int &colorVBO, unsigned int &VAO, unsigned int &vertexCount);
 void draw(unsigned int shaderProgram, unsigned int VAO, unsigned int vertexCount);
 
 
@@ -129,10 +129,11 @@ int main()
 
     // setup vertex array object (VAO)
     // -------------------------------
-    unsigned int VAO, vertexCount;
+    unsigned int VAO =0, vertexCount, posVBO =0 , colorVBO =0;
     // generate geometry in a vertex array object (VAO), record the number of vertices in the mesh,
     // tells the shader how to read it
-    setupShape(shaderProgram, VAO, vertexCount);
+    float currentTime = 0.0f;
+    setupShape(shaderProgram, currentTime, posVBO, colorVBO, VAO, vertexCount);
 
 
     // render loop
@@ -153,6 +154,9 @@ int main()
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window); // we normally use 2 frame buffers, a back (to draw on) and a front (to show on the screen)
         glfwPollEvents();
+
+        currentTime -= 0.02;
+        setupShape(shaderProgram, currentTime, posVBO, colorVBO, VAO, vertexCount);
     }
 
     // glfw: terminate, clearing all previously allocated GLFW resources.
@@ -176,28 +180,36 @@ void createArrayBuffer(const std::vector<float> &array, unsigned int &VBO){
 
 // create the geometry, a vertex array object representing it, and set how a shader program should read it
 // -------------------------------------------------------------------------------------------------------
-void setupShape(const unsigned int shaderProgram,unsigned int &VAO, unsigned int &vertexCount){
+void setupShape(const unsigned int shaderProgram, float time, unsigned int &posVBO, unsigned int &colorVBO, unsigned int &VAO, unsigned int &vertexCount){
 
-    unsigned int posVBO, colorVBO;
-    createArrayBuffer(std::vector<float>{
-            // position
-            0.0f,  0.0f, 0.0f,
-            0.5f,  0.0f, 0.0f,
-            0.5f,  0.5f, 0.0f
-    }, posVBO);
+    std::vector<float> positions;
+    float halfPI = M_PI / 2; // 90 degrees difference
+
+    for (int i = 0; i < 6; i++){
+        int j = i > 2 ? i-1: i;
+        float angle = halfPI * j + time;
+        positions.push_back(cos(angle) / 2); // x
+        positions.push_back(sin(angle) / 2); // y
+        positions.push_back(0.0f); // z
+    }
+    createArrayBuffer(positions, posVBO);
 
     createArrayBuffer( std::vector<float>{
             // color
-            1.0f,  0.0f, 0.0f,
-            1.0f,  0.0f, 0.0f,
-            1.0f,  0.0f, 0.0f
+            1.0f,  1.0f, 1.0f,
+            1.0f,  0.0f, 1.0f,
+            1.0f,  1.0f, 0.0f,
+            1.0f,  1.0f, 1.0f,
+            1.0f,  0.0f, 1.0f,
+            1.0f,  1.0f, 0.0f
     }, colorVBO);
 
     // tell how many vertices to draw
-    vertexCount = 3;
+    vertexCount = 6;
 
     // create a vertex array object (VAO) on OpenGL and save a handle to it
-    glGenVertexArrays(1, &VAO);
+    if (VAO == 0)
+        glGenVertexArrays(1, &VAO);
 
     // bind vertex array object
     glBindVertexArray(VAO);
@@ -220,6 +232,8 @@ void setupShape(const unsigned int shaderProgram,unsigned int &VAO, unsigned int
     glEnableVertexAttribArray(colorAttributeLocation);
     glVertexAttribPointer(colorAttributeLocation, colorSize, GL_FLOAT, GL_FALSE, 0, 0);
 
+    //unbind vertex array object
+    glBindVertexArray(0);
 }
 
 
@@ -248,7 +262,7 @@ void processInput(GLFWwindow *window)
 // ---------------------------------------------------------------------------------------------
 void framebufferSizeCallback(GLFWwindow* window, int width, int height)
 {
-    // make sure the viewport matches the new window dimensions; note that width and 
+    // make sure the viewport matches the new window dimensions; note that width and
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
 }

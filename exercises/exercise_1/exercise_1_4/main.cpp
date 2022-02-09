@@ -1,5 +1,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <math.h>
 
 #include <iostream>
 #include <vector>
@@ -179,22 +180,101 @@ void createArrayBuffer(const std::vector<float> &array, unsigned int &VBO){
 void setupShape(const unsigned int shaderProgram,unsigned int &VAO, unsigned int &vertexCount){
 
     unsigned int posVBO, colorVBO;
-    createArrayBuffer(std::vector<float>{
-            // position
-            0.0f,  0.0f, 0.0f,
-            0.5f,  0.0f, 0.0f,
-            0.5f,  0.5f, 0.0f
-    }, posVBO);
+    float *posArr = new float[144];
+    for (int i = 0; i < 144; i+=9){
+        float j = (i+0.0)/16*2*M_PI;
+        float j1 = (i+1.0)/16*2*M_PI;
+        posArr[i] = sin(j)/2;
+        posArr[i+1] = cos(j)/2;
+        posArr[i+2] = 0.0f;
 
+        posArr[i+3] = sin(j1)/2;
+        posArr[i+4] = cos(j1)/2;
+        posArr[i+5] = 0.0f;
+
+        posArr[i+6] = 0.0f;
+        posArr[i+7] = 0.0f;
+        posArr[i+8] = 0.0f;
+    }
+    //std::vector<float> posVec (posArr, posArr + sizeof(posArr) / sizeof(posArr[0]));
+    std::vector<float> posVec (posArr, posArr + 144);
+    createArrayBuffer(posVec, posVBO);
+
+    float *colorArr = new float[144];
+    for (int i = 0; i < 144; i+=9){
+        float j = (i+0.0)/16*2*M_PI;
+        float j1 = (i+1.0)/16*2*M_PI;
+        colorArr[i] = abs(sin(j)-cos(j)/2)/2;
+        colorArr[i+1] = abs(cos(j)-sin(j)/2)/2;
+        colorArr[i+2] = abs(sin(j)+cos(j)/2)/2;
+
+        colorArr[i+3] = abs(sin(j1)-cos(j1)/2)/2;
+        colorArr[i+4] = abs(cos(j1)-sin(j1)/2)/2;
+        colorArr[i+5] = abs(sin(j1)+cos(j1)/2)/2;
+
+        colorArr[i+6] = 1.0f/2;
+        colorArr[i+7] = 1.0f/2;
+        colorArr[i+8] = 1.0f/2;
+    }
+
+    std::vector<float> colorVec (colorArr, colorArr + 144);
+    createArrayBuffer(colorVec, colorVBO);
+    /*
     createArrayBuffer( std::vector<float>{
             // color
-            1.0f,  0.0f, 0.0f,
-            1.0f,  0.0f, 0.0f,
-            1.0f,  0.0f, 0.0f
+            0.0f,  0.0f, 0.0f,
+            0.5f,  0.0f, 0.0f,
+            0.0f,  0.5f, 0.0f,
+            0.5f,  0.5f, 0.0f,
+            0.0f,  0.0f, 0.5f,
+            0.5f,  0.0f, 0.5f,
+            0.0f,  0.5f, 0.5f,
+            0.5f,  0.5f, 0.5f,
+            0.0f,  0.0f, 0.0f,
+            0.5f,  0.0f, 0.0f,
+            0.0f,  0.5f, 0.0f,
+            0.5f,  0.5f, 0.0f,
+            0.0f,  0.0f, 0.5f,
+            0.5f,  0.0f, 0.5f,
+            0.0f,  0.5f, 0.5f,
+            0.5f,  0.5f, 0.5f,
+            0.0f,  0.0f, 0.0f,
+            0.5f,  0.0f, 0.0f,
+            0.0f,  0.5f, 0.0f,
+            0.5f,  0.5f, 0.0f,
+            0.0f,  0.0f, 0.5f,
+            0.5f,  0.0f, 0.5f,
+            0.0f,  0.5f, 0.5f,
+            0.5f,  0.5f, 0.5f,
+            0.0f,  0.0f, 0.0f,
+            0.5f,  0.0f, 0.0f,
+            0.0f,  0.5f, 0.0f,
+            0.5f,  0.5f, 0.0f,
+            0.0f,  0.0f, 0.5f,
+            0.5f,  0.0f, 0.5f,
+            0.0f,  0.5f, 0.5f,
+            0.5f,  0.5f, 0.5f,
+            0.0f,  0.0f, 0.0f,
+            0.5f,  0.0f, 0.0f,
+            0.0f,  0.5f, 0.0f,
+            0.5f,  0.5f, 0.0f,
+            0.0f,  0.0f, 0.5f,
+            0.5f,  0.0f, 0.5f,
+            0.0f,  0.5f, 0.5f,
+            0.5f,  0.5f, 0.5f,
+            0.0f,  0.0f, 0.0f,
+            0.5f,  0.0f, 0.0f,
+            0.0f,  0.5f, 0.0f,
+            0.5f,  0.5f, 0.0f,
+            0.0f,  0.0f, 0.5f,
+            0.5f,  0.0f, 0.5f,
+            0.0f,  0.5f, 0.5f,
+            0.5f,  0.5f, 0.5f,
     }, colorVBO);
+     */
 
     // tell how many vertices to draw
-    vertexCount = 3;
+    vertexCount = 144;
 
     // create a vertex array object (VAO) on OpenGL and save a handle to it
     glGenVertexArrays(1, &VAO);
