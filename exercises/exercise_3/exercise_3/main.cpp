@@ -170,9 +170,24 @@ void drawPlane(){
     planePosition.x += -sin(glm::radians(planeRotation))*planeSpeed; //find movement in x direction
     planePosition.y += cos(glm::radians(planeRotation))*planeSpeed; //find movement in y direction
 
+    //Defining perspective:
+    glm::vec3 camPos = glm::vec3(0, 0, -2); //lookAt view matrix - from where we look - the camera position -
+    // if this is (0,0,2) we look at it from the bottom ,so (0,0,-2) make us look at it from the top? maybe the other way around, is the plane on its head?
+
+    glm::vec3 targetPos = glm::vec3(0, 0, 0); //looking at (0,0,0)
+    glm::vec3 up = glm::vec3(0, 1, 0); //the up vector
+    glm::mat4 lookAt = glm::lookAt(camPos, targetPos, up);
+    glm::mat4 projection = glm::perspective(1.0f, 0.95f, 0.1f, 10.0f);
+
+    //Creating model
     glm::mat4 model = glm::mat4(1.0f);
+
+    //Multiplying projection, model and view to create perspective
+    model = projection * lookAt * model; // perspective * view * model
+
     model = glm::translate(model, glm::vec3(planePosition.x, planePosition.y, 0)); //position plane
     model = glm::rotate(model, glm::radians(planeRotation), glm::vec3(0.0f, 0.0f, 1.0f)); //make plane body rotate to direction it points at
+
 
     //scale to 1/10
     glm::mat4 trans = model;
