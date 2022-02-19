@@ -183,6 +183,15 @@ void drawPlane(){
     trans = glm::scale(trans, glm::vec3(-1.0f, 1.0f, 1.0f)); //flips it to the other side (still transposed by the previous)
     glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
     drawSceneObject(planeWing);
+
+    //propeller
+    trans = glm::mat4(1.0f);
+    trans = glm::scale(trans, glm::vec3(0.5f, 0.5f, 1.0f));
+    trans = glm::translate(trans, glm::vec3(0, 1.0f, 0));
+    trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(1.0f, 0, 0));
+    trans = glm::rotate(trans, glm::radians(360.0f*currentTime), glm::vec3(0, 0, 1.0f)); //rotate propeller with time
+    glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+    drawSceneObject(planePropeller);
 }
 
 void drawSceneObject(SceneObject obj){
@@ -206,6 +215,10 @@ void setup(){
                                       airplane.planeWingIndices);
     planeWing.vertexCount = airplane.planeWingIndices.size();
 
+    planePropeller.VAO = createVertexArray(airplane.planePropellerVertices,
+                                           airplane.planePropellerColors,
+                                           airplane.planePropellerIndices);
+    planePropeller.vertexCount = airplane.planePropellerIndices.size();
 }
 
 
