@@ -165,9 +165,24 @@ void drawPlane(){
     drawSceneObject(planeBody);
 
     // right wing
+    drawSceneObject(planeWing);
+
+    //left wing
+    trans = glm::scale(trans, glm::vec3(-1.0f, 1.0f, 1.0f)); //flips it the other way
     glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
     drawSceneObject(planeWing);
 
+    //right tail wing
+    trans = glm::mat4(1.0f);
+    trans = glm::scale(trans, glm::vec3(0.5f, 0.5f, 1.0f)); //makes it smaller
+    trans = glm::translate(trans, glm::vec3(0, -1.0f, 0)); //moves it to the bottom of the plane
+    glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+    drawSceneObject(planeWing);
+
+    //left tail wing
+    trans = glm::scale(trans, glm::vec3(-1.0f, 1.0f, 1.0f)); //flips it to the other side (still transposed by the previous)
+    glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+    drawSceneObject(planeWing);
 }
 
 void drawSceneObject(SceneObject obj){
