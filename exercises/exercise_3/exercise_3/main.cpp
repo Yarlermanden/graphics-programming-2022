@@ -157,9 +157,31 @@ void drawPlane(){
     //  you will need to transform the pose of the pieces of the plane by manipulating glm matrices and uploading a
     //  uniform mat4 transform matrix to the vertex shader
 
-    glm::mat4 trans = glm::mat4(1.0f);
+    //Plane wrap around:
+    if(planePosition.x > 1)
+        planePosition.x = -1;
+    else if(planePosition.x < -1)
+        planePosition.x = 1;
+    if(planePosition.y >= 1)
+        planePosition.y = -1;
+    else if(planePosition.y < -1)
+        planePosition.y = 1;
+
+    planePosition.x += -sin(glm::radians(planeRotation))*planeSpeed; //find movement in x direction
+    planePosition.y += cos(glm::radians(planeRotation))*planeSpeed; //find movement in y direction
+
+    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(planePosition.x, planePosition.y, 0)); //position plane
+    model = glm::rotate(model, glm::radians(planeRotation), glm::vec3(0.0f, 0.0f, 1.0f)); //make plane body rotate to direction it points at
+
+    //scale to 1/10
+    glm::mat4 trans = model;
+    trans = glm::scale(trans, glm::vec3(0.1f, 0.1f, 0.1f));
+    trans = glm::rotate(trans, glm::radians(tiltAngle),glm::vec3(0.0f, 1.0f, 0.0f));//make the plane body tilt according to direction rotating in
+
+    glm::mat4 planeBodyMatrix = trans;
     unsigned int transformLoc = glGetUniformLocation(shaderProgram->ID, "transform");
-    glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+    glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(planeBodyMatrix));
 
     // body
     drawSceneObject(planeBody);
@@ -173,7 +195,7 @@ void drawPlane(){
     drawSceneObject(planeWing);
 
     //right tail wing
-    trans = glm::mat4(1.0f);
+    trans = planeBodyMatrix;
     trans = glm::scale(trans, glm::vec3(0.5f, 0.5f, 1.0f)); //makes it smaller
     trans = glm::translate(trans, glm::vec3(0, -1.0f, 0)); //moves it to the bottom of the plane
     glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
@@ -185,7 +207,7 @@ void drawPlane(){
     drawSceneObject(planeWing);
 
     //propeller
-    trans = glm::mat4(1.0f);
+    trans = planeBodyMatrix;
     trans = glm::scale(trans, glm::vec3(0.5f, 0.5f, 1.0f));
     trans = glm::translate(trans, glm::vec3(0, 1.0f, 0));
     trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(1.0f, 0, 0));
@@ -273,10 +295,18 @@ void processInput(GLFWwindow *window)
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
     // TODO 3.4 control the plane (turn left and right) using the A and D keys
-    // you will need to read A and D key press inputs
-    // if GLFW_KEY_A is GLFW_PRESS, plane turn left
-    // if GLFW_KEY_D is GLFW_PRESS, plane turn right
-
+    if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS){
+        planeRotation += 1.0f;
+        tiltAngle = -45.0f;
+        if(planeRotation >= 360.0f)
+            planeRotation = 0;
+    }
+    if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS){
+        planeRotation -= 1.0f;
+        tiltAngle = 45.0f;
+        if(planeRotation <= 0.0f)
+            planeRotation = 360;
+    }
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
