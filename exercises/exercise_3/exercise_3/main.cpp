@@ -51,6 +51,7 @@ float planeHeading = 0.0f;
 float tiltAngle = 0.0f;
 float planeSpeed = 0.005f;
 glm::vec2 planePosition = glm::vec2(0.0,0.0);
+float planeRotation = 0.0f;
 
 
 int main()
@@ -156,9 +157,15 @@ void drawPlane(){
     //  you will need to transform the pose of the pieces of the plane by manipulating glm matrices and uploading a
     //  uniform mat4 transform matrix to the vertex shader
 
+    glm::mat4 trans = glm::mat4(1.0f);
+    unsigned int transformLoc = glGetUniformLocation(shaderProgram->ID, "transform");
+    glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+
     // body
     drawSceneObject(planeBody);
+
     // right wing
+    glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
     drawSceneObject(planeWing);
 
 }
