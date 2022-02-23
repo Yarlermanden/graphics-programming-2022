@@ -103,8 +103,7 @@ int main()
         shaderProgram->use();
 
         // TODO 4.3 set uniform variable related to current time
-
-
+        shaderProgram->setFloat("currentTime", currentTime);
 
         // render particles
         glBindVertexArray(VAO);
