@@ -1,6 +1,8 @@
 #version 330 core
 layout (location = 0) in vec2 pos;   // the position variable has attribute position 0
 // TODO 4.2 add velocity and timeOfBirth as vertex attributes
+layout (location = 1) in vec2 vel;
+layout (location = 2) in float tob;
 
 // TODO 4.3 create and use a float uniform for currentTime
 

@@ -25,7 +25,7 @@ unsigned int VAO, VBO;                          // vertex array and buffer objec
 const unsigned int vertexBufferSize = 65536;    // # of particles
 
 // TODO 4.2 update the number of attributes in a particle
-const unsigned int particleSize = 2;            // particle attributes
+const unsigned int particleSize = 5;            // particle attributes
 
 const unsigned int sizeOfFloat = 4;             // bytes in a float
 unsigned int particleId = 0;                    // keep track of last particle to be updated
@@ -140,9 +140,15 @@ void bindAttributes(){
     glVertexAttribPointer(vertexLocation, posSize, GL_FLOAT, GL_FALSE, particleSize * sizeOfFloat, 0);
 
     // TODO 4.2 set velocity and timeOfBirth shader attributes
+    int velSize = 2;
+    vertexLocation = glGetAttribLocation(shaderProgram->ID, "vel");
+    glEnableVertexAttribArray(vertexLocation);
+    glVertexAttribPointer(vertexLocation, velSize, GL_FLOAT, GL_FALSE, particleSize * sizeOfFloat, (void*) (posSize * sizeOfFloat));
 
-
-
+    int tobSize = 1;
+    vertexLocation = glGetAttribLocation(shaderProgram->ID, "tob");
+    glEnableVertexAttribArray(vertexLocation);
+    glVertexAttribPointer(vertexLocation, tobSize, GL_FLOAT, GL_FALSE, particleSize * sizeOfFloat, (void*) ((posSize+velSize) * sizeOfFloat));
 }
 
 void createVertexBufferObject(){
@@ -170,7 +176,9 @@ void emitParticle(float x, float y, float velocityX, float velocityY, float time
     data[1] = y;
 
     // TODO 4.2 , add velocity and timeOfBirth to the particle data
-
+    data[2] = velocityX;
+    data[3] = velocityY;
+    data[4] = timeOfBirth;
 
 
     // upload only parts of the buffer
