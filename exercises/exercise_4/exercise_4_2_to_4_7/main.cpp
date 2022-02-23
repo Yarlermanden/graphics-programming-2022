@@ -74,7 +74,8 @@ int main()
     glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
 
     // TODO 4.4 enable alpha blending (for transparency)
-
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_DST_ALPHA); //particles are now blended together
 
 
     createVertexBufferObject();

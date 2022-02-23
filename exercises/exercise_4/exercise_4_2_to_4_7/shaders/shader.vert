@@ -12,9 +12,9 @@ uniform float currentTime;
 void main()
 {
     // TODO 4.3 use the currentTime to control the particle in different stages of its lifetime
-    if(currentTime == 0)
+    if(currentTime <= 1)
     {
-        gl_Position = vec4(5.0, 5.0, 5.0, 5.0);
+        gl_Position = vec4(10000.0, 5.0, -5.0, -5.0);
     }
     else
     {
