@@ -8,13 +8,15 @@ uniform mat4 viewProjection;  // represents the view and projection matrices com
 
 // TODO exercise 5.4 - make the 'out' variables that will be used in the fragment shader
 
+out vec4 P;
+out vec3 N;
 
 
 void main() {
    // vertex in world space (for lighting computation)
-   vec4 P = model * vec4(vertex, 1.0);
+   P = model * vec4(vertex, 1.0);
    // normal in world space (for lighting computation)
-   vec3 N = normalize(model * vec4(normal, 0.0)).xyz;
+   N = normalize(model * vec4(normal, 0.0)).xyz;
 
    // TODO 5.4 pass the positions in world space to the fragment shader
 

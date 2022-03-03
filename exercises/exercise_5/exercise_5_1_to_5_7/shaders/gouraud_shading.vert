@@ -13,8 +13,8 @@ out vec4 shadedColor;
 // TODO exercise 5 setup the uniform variables needed for lighting
 //5.1
 //light uniform variable
-//material properties
 uniform vec3 ambientLightColor; //ambient light color modulated by intensity (I_a) - not ambientLightColor but ambientLightIntensity
+//material properties
 uniform float ambientReflectance; //object reflection of ambient light (k_a)
 uniform vec3 reflectionColor; //color of object (color)
 
@@ -27,9 +27,9 @@ uniform float diffuseReflectance; //how much diffues light the object reflects (
 
 //5.3
 //light uniform variable
+//material properties
 uniform float specularReflectance; //(k_s)
 uniform float specularExponent; //how concentrated the spotlight is - higher value is smoother surface (exp)
-//material properties
 
 
 void main() {
