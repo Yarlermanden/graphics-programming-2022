@@ -254,6 +254,10 @@ void setLightUniforms()
     glUniform3f(light1PositionLocation, config.light1Position.x, config.light1Position.y, config.light1Position.z);
     glUniform3f(light1ColorLocation, config.light1Color.r * config.light1Intensity, config.light1Color.g * config.light1Intensity, config.light1Color.b * config.light1Intensity);
 
+    int light2PositionLocation = glGetUniformLocation(shader->ID, "light2Position");
+    int light2ColorLocation = glGetUniformLocation(shader->ID, "light2Color");
+    glUniform3f(light2PositionLocation, config.light2Position.x, config.light2Position.y, config.light2Position.z);
+    glUniform3f(light2ColorLocation, config.light2Color.r * config.light2Intensity, config.light2Color.g * config.light2Intensity, config.light2Color.b * config.light2Intensity);
 }
 
 void drawObjects(){

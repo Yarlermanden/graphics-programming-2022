@@ -9,6 +9,9 @@ uniform vec3 ambientLightColor; //ambient light color modulated by intensity (I_
 uniform vec3 light1Position; //position of the first light (L)
 uniform vec3 light1Color; //light color modulated by intensity (I_light)
 
+uniform vec3 light2Position;
+uniform vec3 light2Color;
+
 // material uniforms
 uniform float ambientReflectance; //object reflection of ambient light (k_a)
 uniform vec3 reflectionColor; //color of object (color)
@@ -33,9 +36,7 @@ void main()
 
    // specular component for light 1
    //R_specular = I_light * k_s * cosß^exp = I_light * k_s * (N*H)^exp
-   //need to calculate H as halfway point between view angle (V) and light angle (L)
-   //vec3 V = normalize(abs(camPosition - P.xyz));
-   vec3 H = normalize(L + camPosition);
+   vec3 H = normalize(L + camPosition); //halfway point between V and L
    vec3 Rspecular = light1Color * specularReflectance * pow(dot(N, H), specularExponent);
 
    // TODO exercuse 5.5 - attenuation - light 1
@@ -44,11 +45,18 @@ void main()
 
 
    // TODO exercise 5.6 - multiple lights, compute diffuse, specular and attenuation of light 2
+   vec3 L2 = normalize(light2Position-P.xyz);
+   vec3 Rdiffuse2 = light2Color * diffuseReflectance * (dot(N,L2));
 
+   vec3 H2 = normalize(L2 + camPosition);
+   vec3 Rspecular2 = light2Color * specularReflectance * pow(dot(N,H2), specularExponent);
+
+   float distance2 = length(light2Position-P.xyz);
+   float attenuation2 = 1/pow(distance2, 2);
 
    // TODO compute the final shaded color (e.g. add contribution of the attenuated lights 1 and 2)
-
+   vec3 R = RambientLight + attenuation * (Rdiffuse + Rspecular) + attenuation2 * (Rdiffuse2 + Rspecular2);
 
    // TODO set the output color to the shaded color that you have computed
-   FragColor = vec4(RambientLight + attenuation * (Rdiffuse+Rspecular), 1.0f);
+   FragColor = vec4(R, 1.0f);
 }
