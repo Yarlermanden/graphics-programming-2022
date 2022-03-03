@@ -1,9 +1,9 @@
 #version 330 core
+// TODO 4.6: should receive the age of the particle as an input variable
 in float age;
 
 out vec4 fragColor;
 
-// TODO 4.6: should receive the age of the particle as an input variable
 
 void main()
 {
