@@ -246,18 +246,15 @@ void setLightUniforms()
 {
     // TODO exercise 5 - set the missing uniform variables here
     // light uniforms
+    int ambientLightColorLocation = glGetUniformLocation(shader->ID, "ambientLightColor");
+    glUniform3f(ambientLightColorLocation, config.ambientLightColor.r * config.ambientLightIntensity, config.ambientLightColor.g * config.ambientLightIntensity, config.ambientLightColor.b * config.ambientLightIntensity);
 
     int light1PositionLocation = glGetUniformLocation(shader->ID, "light1Position");
     int light1ColorLocation = glGetUniformLocation(shader->ID, "light1Color");
-    glUniform3f(light1PositionLocation, config.light1Position.r, config.light1Position.g, config.light1Position.b);
+    glUniform3f(light1PositionLocation, config.light1Position.x, config.light1Position.y, config.light1Position.z);
     glUniform3f(light1ColorLocation, config.light1Color.r * config.light1Intensity, config.light1Color.g * config.light1Intensity, config.light1Color.b * config.light1Intensity);
 
-    int specularReflectanceLocation = glGetUniformLocation(shader->ID, "specularReflectance");
-    int specularExponentLocation = glGetUniformLocation(shader->ID, "specularExponent");
-    glUniform1f(specularReflectanceLocation, config.specularReflectance);
-    glUniform1f(specularExponentLocation, config.specularExponent);
 }
-
 
 void drawObjects(){
 
@@ -268,15 +265,17 @@ void drawObjects(){
     // material uniforms
 
     int ambientReflectanceLocation = glGetUniformLocation(shader->ID, "ambientReflectance");
-    int reflectionColorLocation = glGetUniformLocation(shader->ID, "reflectionColor");
     glUniform1f(ambientReflectanceLocation, config.ambientReflectance);
+    int reflectionColorLocation = glGetUniformLocation(shader->ID, "reflectionColor");
     glUniform3f(reflectionColorLocation, config.reflectionColor.x, config.reflectionColor.y, config.reflectionColor.z);
 
     int diffuseReflectanceLocation = glGetUniformLocation(shader->ID, "diffuseReflectance");
     glUniform1f(diffuseReflectanceLocation, config.diffuseReflectance);
 
-    int ambientLightColorLocation = glGetUniformLocation(shader->ID, "ambientLightColor");
-    glUniform3f(ambientLightColorLocation, config.ambientLightColor.r * config.ambientLightIntensity, config.ambientLightColor.g * config.ambientLightIntensity, config.ambientLightColor.b * config.ambientLightIntensity);
+    int specularReflectanceLocation = glGetUniformLocation(shader->ID, "specularReflectance");
+    int specularExponentLocation = glGetUniformLocation(shader->ID, "specularExponent");
+    glUniform1f(specularReflectanceLocation, config.specularReflectance);
+    glUniform1f(specularExponentLocation, config.specularExponent);
 
 
 

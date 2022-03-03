@@ -46,12 +46,11 @@ void main() {
 
    // TODO 5.1 ambient
    vec3 RambientLight = ambientLightColor * ambientReflectance * reflectionColor; //R_ambient = I_a * k_a * color
-   //vec3 RambientLight = ambientLightIntensity * ambientReflectance * reflectionColor; //R_ambient = I_a * k_a * color
    R += RambientLight;
 
    // TODO 5.2 diffuse
    vec3 L = normalize(light1Position-P.xyz);//we need to normalize the lightposition
-   vec3 Rdiffuse = light1Color * diffuseReflectance * (dot(N,L)) * reflectionColor; //I_light * K_d * (N•L) * color
+   vec3 Rdiffuse = light1Color * diffuseReflectance * (dot(N,L)); //I_light * K_d * (N•L) * color - color and I_light is already multipled in the setup
    R += Rdiffuse;
 
    // TODO 5.3 specular
