@@ -42,16 +42,13 @@ void main() {
    gl_Position = viewProjection * P;
 
    // TODO exercises 5.1, 5.2 and 5.3 - Gouraud shading (i.e. Phong reflection model computed in the vertex shader)
-   vec3 R = vec3(0.0, 0.0, 0.0);
 
    // TODO 5.1 ambient
    vec3 RambientLight = ambientLightColor * ambientReflectance * reflectionColor; //R_ambient = I_a * k_a * color
-   R += RambientLight;
 
    // TODO 5.2 diffuse
    vec3 L = normalize(light1Position-P.xyz);//we need to normalize the lightposition
    vec3 Rdiffuse = light1Color * diffuseReflectance * (dot(N,L)); //I_light * K_d * (N•L) * color - color and I_light is already multipled in the setup
-   R += Rdiffuse;
 
    // TODO 5.3 specular
    //R_specular = I_light * k_s * cosß^exp = I_light * k_s * (N*H)^exp
@@ -59,13 +56,14 @@ void main() {
    //vec3 V = normalize(abs(camPosition - P.xyz));
    vec3 H = normalize(L + camPosition);
    vec3 Rspecular = light1Color * specularReflectance * pow(dot(N, H), specularExponent);
-   R += Rspecular;
 
    // TODO exercise 5.5 - attenuation - light 1
+   float distance = length(light1Position-P.xyz);
+   float attenuation = 1/pow(distance,2);
 
 
    // TODO set the output color to the shaded color that you have computed
    //shadedColor = vec4(.8, .8, .8, 1.0);
-   shadedColor = vec4(R, 1.0);
+   shadedColor = vec4(RambientLight + attenuation * (Rdiffuse + Rspecular), 1.0);
 
 }

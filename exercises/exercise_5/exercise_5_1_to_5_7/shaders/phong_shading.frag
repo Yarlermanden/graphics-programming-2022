@@ -24,15 +24,12 @@ void main()
 {
 
    // TODO exercise 5.4 - phong shading (i.e. Phong reflection model computed in the fragment shader)
-   vec3 R = vec3(0.0, 0.0, 0.0);
    // ambient component
    vec3 RambientLight = ambientLightColor * ambientReflectance * reflectionColor; //R_ambient = I_a * k_a * color
-   R += RambientLight;
 
    // diffuse component for light 1
    vec3 L = normalize(light1Position-P.xyz);//we need to normalize the lightposition
    vec3 Rdiffuse = light1Color * diffuseReflectance * (dot(N,L)); //I_light * K_d * (N•L) * color - color and I_light is already multipled in the setup
-   R += Rdiffuse;
 
    // specular component for light 1
    //R_specular = I_light * k_s * cosß^exp = I_light * k_s * (N*H)^exp
@@ -40,9 +37,10 @@ void main()
    //vec3 V = normalize(abs(camPosition - P.xyz));
    vec3 H = normalize(L + camPosition);
    vec3 Rspecular = light1Color * specularReflectance * pow(dot(N, H), specularExponent);
-   R += Rspecular;
 
    // TODO exercuse 5.5 - attenuation - light 1
+   float distance = length(light1Position-P.xyz);
+   float attenuation = 1/pow(distance,2);
 
 
    // TODO exercise 5.6 - multiple lights, compute diffuse, specular and attenuation of light 2
@@ -52,6 +50,5 @@ void main()
 
 
    // TODO set the output color to the shaded color that you have computed
-   //FragColor = vec4(.8, .8, .8, 1.0);
-   FragColor = vec4(R, 1.0f);
+   FragColor = vec4(RambientLight + attenuation * (Rdiffuse+Rspecular), 1.0f);
 }
