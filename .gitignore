@@ -37,3 +37,9 @@
 *.exe
 *.out
 *.app
+
+# Unity
+ShaderCache/
+Library/
+Logs/
+Temp/
