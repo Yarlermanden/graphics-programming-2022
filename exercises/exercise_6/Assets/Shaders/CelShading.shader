@@ -23,6 +23,11 @@ Shader "CG2022/CelShading"
         uniform float _SpecularExponent;
         ENDGLSL
 
+        CGPROGRAM
+        #pragma vertex vert
+        #pragma fragment frag
+        ENDCG
+
         Pass
         {
             Name "FORWARD"
@@ -37,6 +42,7 @@ Shader "CG2022/CelShading"
                 vec2 texCoords;
             };
 
+            //Vertex shader
             #ifdef VERTEX
             out vertexToFragment v2f;
 
@@ -50,6 +56,7 @@ Shader "CG2022/CelShading"
             }
             #endif // VERTEX
 
+            //Fragment shader
             #ifdef FRAGMENT
             in vertexToFragment v2f;
 
@@ -63,9 +70,13 @@ Shader "CG2022/CelShading"
                 vec3 albedo = texture(_AlbedoTexture, v2f.texCoords).rgb;
                 albedo *= _Albedo.rgb;
 
-                vec3 lighting = BlinnPhongLighting(lightDir, viewDir, normal, albedo, vec3(1.0f), _Reflectance.x, _Reflectance.y, _Reflectance.z, _SpecularExponent);
+                //vec3 lighting = BlinnPhongLighting(lightDir, viewDir, normal, albedo, vec3(1.0f), _Reflectance.x, _Reflectance.y, _Reflectance.z, _SpecularExponent);
+                vec3 lighting = BlinnPhongLighting(lightDir, viewDir, normal, vec3(1.0f), vec3(1.0f), _Reflectance.x, _Reflectance.y, _Reflectance.z, _SpecularExponent);
 
-                gl_FragColor = vec4(lighting, 1.0f);
+                float intensity = GetColorLuminance(lighting);
+                //gl_FragColor = vec4(lighting, 1.0f);
+                //gl_FragColor = vec4(intensity*albedo, 1.0f);
+                gl_FragColor = vec4(1.0f);
             }
             #endif // FRAGMENT
 
