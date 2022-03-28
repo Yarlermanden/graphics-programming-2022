@@ -6,6 +6,7 @@ Shader "CG2022/CelShading"
         _AlbedoTexture("Albedo Texture", 2D) = "white" {}
         _Reflectance("Reflectance (Ambient, Diffuse, Specular)", Vector) = (1, 1, 1, 0)
         _SpecularExponent("Specular Exponent", Float) = 100.0
+        _Levels("Level", int) = 3
     }
 
     SubShader
@@ -21,6 +22,7 @@ Shader "CG2022/CelShading"
         uniform vec4 _AlbedoTexture_ST;
         uniform vec4 _Reflectance;
         uniform float _SpecularExponent;
+        uniform int _Levels;
         ENDGLSL
 
         Pass
@@ -63,7 +65,13 @@ Shader "CG2022/CelShading"
                 vec3 albedo = texture(_AlbedoTexture, v2f.texCoords).rgb;
                 albedo *= _Albedo.rgb;
 
-                vec3 lighting = BlinnPhongLighting(lightDir, viewDir, normal, albedo, vec3(1.0f), _Reflectance.x, _Reflectance.y, _Reflectance.z, _SpecularExponent);
+                //vec3 lighting = BlinnPhongLighting(lightDir, viewDir, normal, albedo, vec3(1.0f), _Reflectance.x, _Reflectance.y, _Reflectance.z, _SpecularExponent);
+                vec3 lighting = BlinnPhongLighting(lightDir, viewDir, normal, vec3(1.0f), vec3(1.0f), _Reflectance.x, _Reflectance.y, _Reflectance.z, _SpecularExponent);
+
+                float intensity = GetColorLuminance(lighting);
+                intensity = ceil(intensity*_Levels)/_Levels;
+                
+                lighting = lighting * albedo * intensity;
 
                 gl_FragColor = vec4(lighting, 1.0f);
             }
@@ -114,7 +122,12 @@ Shader "CG2022/CelShading"
                 vec3 albedo = texture(_AlbedoTexture, v2f.texCoords).rgb;
                 albedo *= _Albedo.rgb;
 
-                vec3 lighting = BlinnPhongLighting(lightDir, viewDir, normal, albedo, vec3(1.0f), 0.0f, _Reflectance.y, _Reflectance.z, _SpecularExponent);
+                vec3 lighting = BlinnPhongLighting(lightDir, viewDir, normal, vec3(1.0f), vec3(1.0f), 0.0f, _Reflectance.y, _Reflectance.z, _SpecularExponent);
+
+                float intensity = GetColorLuminance(lighting);
+                intensity = ceil(intensity*_Levels)/_Levels;
+
+                lighting = lighting * albedo * intensity;
 
                 gl_FragColor = vec4(lighting, 1.0f);
             }
