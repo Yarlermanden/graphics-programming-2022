@@ -321,3 +321,9 @@ Received Import Request.
   path: Assets/Models/Teapot/teapot.fbx
   artifactKey: Guid(a3c02d7b6a0fede40bda6c3258bdff89) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
 Start importing Assets/Models/Teapot/teapot.fbx using Guid(a3c02d7b6a0fede40bda6c3258bdff89) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'aeb06a0a6f4e29428ba511d0cfe9ce36') in 0.285770 seconds 
+========================================================================
+Received Import Request.
+  Time since last request: 2013.795810 seconds.
+  path: Assets/Hatching/HatchingMat.mat
+  artifactKey: Guid(7924d88745e71db9db38332aaf8d42d5) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Hatching/HatchingMat.mat using Guid(7924d88745e71db9db38332aaf8d42d5) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'd5c8cc3d02e3f42b43a87637760ecf11') in 0.006530 seconds 

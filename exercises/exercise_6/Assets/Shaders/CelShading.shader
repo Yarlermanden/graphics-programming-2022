@@ -80,7 +80,7 @@ Shader "CG2022/CelShading"
             ENDGLSL
         }
         Pass
-        {
+        { //Outline
             Name "OUTLINE"
             Tags { "LightMode" = "ForwardBase" }
 
