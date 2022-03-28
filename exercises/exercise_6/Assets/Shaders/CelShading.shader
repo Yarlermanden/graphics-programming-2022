@@ -81,6 +81,43 @@ Shader "CG2022/CelShading"
         }
         Pass
         {
+            Name "OUTLINE"
+            Tags { "LightMode" = "ForwardBase" }
+
+            Cull Front
+
+            GLSLPROGRAM
+
+            #ifdef VERTEX
+
+            void main()
+            {
+                //transform vertex position to world space
+                vec3 worldPosition = (unity_ObjectToWorld * gl_Vertex).xyz;
+
+                //transform normal to world space
+                vec3 normal = (unity_ObjectToWorld * vec4(gl_Normal, 0.0f)).xyz;
+
+                //add normal, multipled by a small number (0.01f) to the world position
+                worldPosition += normal*0.02f;
+
+                //output to gl_position the position, transformed by the view projection matrix. (unity_MatrixVP)
+                gl_Position = unity_MatrixVP * vec4(worldPosition, 1.0f);
+            }
+            #endif // VERTEX
+
+            #ifdef FRAGMENT
+
+            void main()
+            {
+                gl_FragColor = vec4(0.0f);
+            }
+            #endif // FRAGMENT
+
+            ENDGLSL
+        }
+        Pass
+        {
             Name "FORWARD"
             Tags { "LightMode" = "ForwardAdd" }
 

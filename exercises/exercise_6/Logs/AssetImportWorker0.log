@@ -297,3 +297,27 @@ Received Import Request.
   path: Assets/CelShading/CelShading 1.mat
   artifactKey: Guid(c5fe52d6f06ced81d9a93a32d66d6e28) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
 Start importing Assets/CelShading/CelShading 1.mat using Guid(c5fe52d6f06ced81d9a93a32d66d6e28) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '6660562d51a9fd54743326491d077072') in 0.012674 seconds 
+========================================================================
+Received Import Request.
+  Time since last request: 1687.339915 seconds.
+  path: Assets/Models/Teapot/daytime.hdr
+  artifactKey: Guid(e5e076cbbaa68064a8554f64d0817e75) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Models/Teapot/daytime.hdr using Guid(e5e076cbbaa68064a8554f64d0817e75) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'aba13a4d83065a5cedf03c9f5fad69b7') in 0.015282 seconds 
+========================================================================
+Received Import Request.
+  Time since last request: 0.000176 seconds.
+  path: Assets/Models/Teapot/Teapot.mat
+  artifactKey: Guid(511e7688993810f46ab8e6a99865b1c4) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Models/Teapot/Teapot.mat using Guid(511e7688993810f46ab8e6a99865b1c4) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'ed38a0068f02ab34d112b01b5be2ead2') in 0.011415 seconds 
+========================================================================
+Received Import Request.
+  Time since last request: 0.000145 seconds.
+  path: Assets/Models/Teapot/Teapot.prefab
+  artifactKey: Guid(a429bd6ef3510c84c9ff26f5dfacc2fd) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Models/Teapot/Teapot.prefab using Guid(a429bd6ef3510c84c9ff26f5dfacc2fd) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'a67e930a66d4a2648d60c05391479ef6') in 0.010489 seconds 
+========================================================================
+Received Import Request.
+  Time since last request: 0.000208 seconds.
+  path: Assets/Models/Teapot/teapot.fbx
+  artifactKey: Guid(a3c02d7b6a0fede40bda6c3258bdff89) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Models/Teapot/teapot.fbx using Guid(a3c02d7b6a0fede40bda6c3258bdff89) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'aeb06a0a6f4e29428ba511d0cfe9ce36') in 0.285770 seconds 
