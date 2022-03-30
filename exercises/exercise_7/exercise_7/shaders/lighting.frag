@@ -59,7 +59,10 @@ void main()
    vec4 others = texture(OthersGBuffer, texCoords);
 
    // TODO 7.5 : Unpack the remaining data - Remember to put values in their original range
-
+   float ambientReflectance = others[0];
+   float diffuseReflectance = others[1];
+   float specularReflectance = others[2];
+   float specularExponent = others[3] * 100.0f;
 
 
    // TODO 7.6 : Compute the light vector (L) as usual. lightPosition is already in view space
@@ -78,10 +81,10 @@ void main()
    //FragColor = vec4(albedo, 1.0f);
 
    // TODO 7.4 Output normal to fragment color
-   FragColor = vec4(normal, 1.0f);
+   //FragColor = vec4(normal, 1.0f);
 
    // TODO 7.5 Output others to fragment color
-   //FragColor = others;
+   FragColor = others;
 
    // TODO 7.6 Output lighting to fragment color
    //FragColor = vec4(lighting, 1.0f);

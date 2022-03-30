@@ -47,7 +47,7 @@ void main()
    NormalGBuffer = normal.xy;
 
    // TODO 7.5 : Pack the remaining data - Remember values must be normalized in range [0, 1]
-   vec4 others = vec4(1.0f);
+   vec4 others = vec4(ambientReflectance, diffuseReflectance, specularReflectance, specularExponent/100.0f);
 
    // Output others to GBuffer
    OthersGBuffer = others;
