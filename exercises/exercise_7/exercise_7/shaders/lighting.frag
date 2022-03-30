@@ -52,7 +52,7 @@ void main()
    vec3 normal = texture(NormalGBuffer, texCoords).xyz;
 
    // TODO 7.4 Reconstruct Z component of the normal, knowing that the normal length is 1  (X*X + Y*Y + Z*Z = 1)
-
+   normal.z = sqrt(1 - normal.x * normal.x - normal.y * normal.y);
 
 
    // Read NormalGBuffer
@@ -75,10 +75,10 @@ void main()
    //FragColor = P;
 
    // TODO 7.3 Output albedo to fragment color
-   FragColor = vec4(albedo, 1.0f);
+   //FragColor = vec4(albedo, 1.0f);
 
    // TODO 7.4 Output normal to fragment color
-   //FragColor = vec4(normal, 1.0f);
+   FragColor = vec4(normal, 1.0f);
 
    // TODO 7.5 Output others to fragment color
    //FragColor = others;
