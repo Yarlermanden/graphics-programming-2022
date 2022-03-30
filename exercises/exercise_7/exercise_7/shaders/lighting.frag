@@ -66,11 +66,32 @@ void main()
 
 
    // TODO 7.6 : Compute the light vector (L) as usual. lightPosition is already in view space
+   vec3 L = normalize(lightPosition - P.xyz);
 
    // TODO 7.6 : Compute the view vector (V) as usual, but taking into account that camera position in view space is (0, 0, 0)
+   vec3 V = normalize(-P.xyz);
+   vec3 H = normalize(L + V);
 
    // TODO 7.6 : Compute the lighting using the phong reflection model. You can get inspired by forward_shading.frag
-   vec3 lighting = vec3(1.0f);
+   //vec3 lighting = vec3(1.0f);
+
+   vec3 ambient = ambientLightColor * ambientReflectance * albedo;
+   float diffuseModulation = max(dot(normal, L), 0.0);
+   vec3 diffuse = lightColor * diffuseReflectance * diffuseModulation * albedo;
+   float specModulation = pow(max(dot(H, normal), 0.0), specularExponent);
+   vec3 specular = lightColor * specularReflectance * specModulation;
+   float distToLight = distance(lightPosition, P.xyz);
+   float attenuation = 1.0f / (distToLight * distToLight);
+
+   // TODO 7.1 : Compute the falloff using lightRadius and smoothstep function
+   //float falloff = 1.0f;
+   float falloff = smoothstep(lightRadius, lightRadius*0.5f, distToLight);
+
+   // TODO 7.1 : Multiply the attenuation by the falloff we just computed
+   attenuation *= falloff;
+
+
+   vec3 lighting = vec3(ambient + (diffuse + specular) * attenuation);
 
 
 
@@ -84,8 +105,8 @@ void main()
    //FragColor = vec4(normal, 1.0f);
 
    // TODO 7.5 Output others to fragment color
-   FragColor = others;
+   //FragColor = others;
 
    // TODO 7.6 Output lighting to fragment color
-   //FragColor = vec4(lighting, 1.0f);
+   FragColor = vec4(lighting, 1.0f);
 }

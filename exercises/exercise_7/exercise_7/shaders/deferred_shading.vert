@@ -19,7 +19,6 @@ void main() {
    // TODO 7.3 : Read the texture coordinates from the attribute and pass it to the fragment shader
    textureCoord = textCoord;
 
-
    // TODO 7.4 : Compute the normal in VIEW space and pass it to the fragment shader
    viewNormal = (view * model * vec4(normal, 0.0f)).xyz;
 
