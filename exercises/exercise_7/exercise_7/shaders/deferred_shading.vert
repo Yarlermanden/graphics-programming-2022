@@ -8,6 +8,7 @@ uniform mat4 view; // represents the view matrix
 uniform mat4 viewProjection;  // represents the view and projection matrices combined
 
 // TODO 7.3 : Add an 'out' variable for texture coordinates
+out vec2 textureCoord;
 
 // TODO 7.4 : Add an 'out' variable for view normal
 
@@ -15,6 +16,7 @@ uniform mat4 viewProjection;  // represents the view and projection matrices com
 void main() {
 
    // TODO 7.3 : Read the texture coordinates from the attribute and pass it to the fragment shader
+   textureCoord = textCoord;
 
 
    // TODO 7.4 : Compute the normal in VIEW space and pass it to the fragment shader

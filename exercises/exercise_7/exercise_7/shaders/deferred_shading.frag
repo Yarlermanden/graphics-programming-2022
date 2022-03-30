@@ -15,10 +15,10 @@ uniform float specularExponent;
 
 // material textures
 // TODO 7.3 : Add a sampler2D uniform for the albedo texture. Name must be 'textureAlbedo' 
-
-
+uniform sampler2D textureAlbedo;
 
 // TODO 7.3 : Add an 'in' variable for texture coordinates
+in vec2 textureCoord;
 
 // TODO 7.4 : Add an 'in' variable for view normal
 
@@ -32,9 +32,10 @@ out vec4 OthersGBuffer;
 void main()
 {
    // TODO 7.3 : Sample your albedo texture using the texture coordinates from vertex shader
-   vec3 albedo = vec3(1.0f);
+   vec3 albedo = texture(textureAlbedo, textureCoord).xyz;
 
    // TODO 7.3 : Multiply albedo by the reflection color
+   albedo *= reflectionColor;
 
    // Output albedo to GBuffer
    AlbedoGBuffer = albedo;
