@@ -365,7 +365,7 @@ void setLightUniforms(Light& light)
     glm::vec3 lightEnergy = light.color * light.intensity;
 
     // TODO 8.3 : if we are using the PBR shader, multiply the lightEnergy by PI to match the color of the previous setup
-
+    if(shader == pbr_shading) lightEnergy *= AI_MATH_PI;
 
     // light uniforms
     shader->setVec3("lightPosition", light.position);

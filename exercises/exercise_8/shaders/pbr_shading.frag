@@ -159,7 +159,7 @@ vec3 GetLambertianDiffuseLighting(vec3 N, vec3 L, vec3 albedo)
    vec3 diffuse = diffuseReflectance * albedo;
 
    // TODO 8.3 : Scale the diffuse light, considering that it gets reflected equally in all directions
-
+   diffuse /= PI;
 
    return diffuse;
 }
@@ -255,7 +255,8 @@ void main()
 
    // TODO 8.4 : Use the fresnel you just computed as blend factor, instead of roughness. Pay attention to the order of the parameters in mix
    // TODO 8.3 : Instead of adding them, mix the specular and diffuse lighting using, for now, the roughness.
-   vec3 directLight = diffuse + specular;
+   //vec3 directLight = diffuse + specular;
+   vec3 directLight = mix(diffuse, specular, roughness);
    directLight *= lightRadiance;
 
    // lighting = indirect lighting (ambient + environment) + direct lighting (diffuse + specular)
