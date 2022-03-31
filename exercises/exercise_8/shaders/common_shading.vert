@@ -14,6 +14,7 @@ out vec3 worldTangent;
 out vec2 textureCoordinates;
 
 // TODO 8.1 : Add an 'out' variable for vertex position in light space
+out vec4 lightSpacePosition;
 
 
 void main() {
@@ -25,7 +26,7 @@ void main() {
    worldTangent = (model * vec4(tangent, 0.0)).xyz;
 
    // TODO 8.1 : obtain and pass to fragment shader the position in light space, converting from world space
-
+   lightSpacePosition = lightSpaceMatrix * worldPos;
 
    textureCoordinates = textCoord;
 

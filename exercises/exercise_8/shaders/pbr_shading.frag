@@ -34,6 +34,7 @@ in vec3 worldTangent;
 in vec2 textureCoordinates;
 
 // TODO 8.1 : Add an 'in' variable for vertex position in light space
+in vec4 lightSpacePosition;
 
 
 
@@ -185,15 +186,14 @@ float GetAttenuation(vec4 P)
 float GetShadow()
 {
    // TODO 8.1 : Transform the position in light space to shadow map space: from range (-1, 1) to range (0, 1)
-
+   vec4 shadowMapSpacePosition = (lightSpacePosition + 1.0f)/2.0f;
 
    // TODO 8.1 : Sample the shadow map texture using the XY components of the light in shadow map space
-
+   float depth = texture(shadowMap, shadowMapSpacePosition.xy).r;
 
    // TODO 8.1 : Compare the depth value obtained with the Z component of the light in shadow map space. Return 0 if depth is smaller or equal, 1 otherwise
-
-
-   return 1.0f;
+   if(depth + 0.01f <= clamp(shadowMapSpacePosition.z, -1, 1)) return 0.0f;
+   else return 1.0f;
 }
 
 
