@@ -46,8 +46,8 @@ const float PI = 3.14159265359;
 vec3 FresnelSchlick(vec3 F0, float cosTheta)
 {
    // TODO 8.4 : Implement the formula here
-
-   return vec3(1.0f);
+   //FSchlick(v, h, f0) = f0 + (1-f0) (1-v)^5
+   return F0 + (1-F0)*(pow(1-cosTheta, 5));
 }
 
 float DistributionGGX(vec3 N, vec3 H, float a)
@@ -245,18 +245,21 @@ void main()
 
 
    // TODO 8.4 : Compute the Fresnel term for indirect light, using the clamped cosine of the angle formed by the NORMAL vector and the view vector
-
+   vec3 fresnelAmbient = FresnelSchlick(F0, clamp(dot(N, V),0, 1));
 
    // TODO 8.4 : Mix ambient and environment using the fresnel you just computed as blend factor
-   vec3 indirectLight = ambient; 
+   vec3 indirectLight = mix(ambient, environment, fresnelAmbient);
 
    // TODO 8.4 : Compute the Fresnel term for the light, using the clamped cosine of the angle formed by the HALF vector and the view vector
-
+   vec3 H = normalize(L + V);
+   vec3 fresnel = FresnelSchlick(F0, clamp(dot(H, V), 0, 1));
 
    // TODO 8.4 : Use the fresnel you just computed as blend factor, instead of roughness. Pay attention to the order of the parameters in mix
+   vec3 directLight = mix(diffuse, specular, fresnel);
+
    // TODO 8.3 : Instead of adding them, mix the specular and diffuse lighting using, for now, the roughness.
    //vec3 directLight = diffuse + specular;
-   vec3 directLight = mix(diffuse, specular, roughness);
+   //vec3 directLight = mix(diffuse, specular, roughness);
    directLight *= lightRadiance;
 
    // lighting = indirect lighting (ambient + environment) + direct lighting (diffuse + specular)
