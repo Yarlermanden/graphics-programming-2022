@@ -53,8 +53,10 @@ vec3 FresnelSchlick(vec3 F0, float cosTheta)
 float DistributionGGX(vec3 N, vec3 H, float a)
 {
    // TODO 8.5 : Implement the formula here
-
-   return 1.0f;
+   float a2 = pow(a, 2);
+   float nh = max(dot(N, H), 0);
+   return a2/(PI * pow(pow(nh, 2)*(a2-1)+1, 2));
+   //return pow(a, 2)/(PI * pow(pow(N, 2) * (pow(a, 2)-1) + 1, 2));
 }
 
 float GeometrySchlickGGX(float cosAngle, float a)
@@ -218,7 +220,8 @@ void main()
    vec3 diffuse = GetLambertianDiffuseLighting(N, L, albedo);
 
    // TODO 8.5 : Replace the Blinn-Phong with a call to the GetCookTorranceSpecularLighting function
-   vec3 specular = GetBlinnPhongSpecularLighting(N, L, V);
+   //vec3 specular = GetBlinnPhongSpecularLighting(N, L, V);
+   vec3 specular = GetCookTorranceSpecularLighting(N, L, V);
 
    // This time we get the lightColor outside the diffuse and specular terms (we are multiplying later)
    vec3 lightRadiance = lightColor;
