@@ -36,8 +36,6 @@ in vec2 textureCoordinates;
 // TODO 8.1 : Add an 'in' variable for vertex position in light space
 in vec4 lightSpacePosition;
 
-
-
 // Constant Pi
 const float PI = 3.14159265359;
 
@@ -56,21 +54,26 @@ float DistributionGGX(vec3 N, vec3 H, float a)
    float a2 = pow(a, 2);
    float nh = max(dot(N, H), 0);
    return a2/(PI * pow(pow(nh, 2)*(a2-1)+1, 2));
-   //return pow(a, 2)/(PI * pow(pow(N, 2) * (pow(a, 2)-1) + 1, 2));
 }
 
 float GeometrySchlickGGX(float cosAngle, float a)
 {
    // TODO 8.6 : Implement the formula here
-
-   return 1.0f;
+   float a2 = pow(a, 2);
+   //return a2/(PI * pow(pow(cosAngle, 2)*(a2-1)+1, 2));
+   return (2*cosAngle)/(cosAngle + sqrt(a2 + (1-a2)*pow(cosAngle, 2)));
 }
 
 float GeometrySmith(vec3 N, vec3 V, vec3 L, float a)
 {
    // TODO 8.6 : Implement the formula here, using GeometrySchlickGGX
+   //L - incoming light
+   //V - outgoing light
 
-   return 1.0f;
+   //G(V, L, a) = G1(L,a)*G2(V,a)
+   float g1 = GeometrySchlickGGX(max(dot(L, N), 0), a);
+   float g2 = GeometrySchlickGGX(max(dot(V, N), 0), a);
+   return g1*g2;
 }
 
 vec3 GetCookTorranceSpecularLighting(vec3 N, vec3 L, vec3 V)
