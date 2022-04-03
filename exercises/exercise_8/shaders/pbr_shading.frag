@@ -60,7 +60,6 @@ float GeometrySchlickGGX(float cosAngle, float a)
 {
    // TODO 8.6 : Implement the formula here
    float a2 = pow(a, 2);
-   //return a2/(PI * pow(pow(cosAngle, 2)*(a2-1)+1, 2));
    return (2*cosAngle)/(cosAngle + sqrt(a2 + (1-a2)*pow(cosAngle, 2)));
 }
 
@@ -244,10 +243,11 @@ void main()
    vec3 F0 = vec3(0.04f);
 
    // TODO 8.7 : Compute the new F0 as a mix between dielectric F0 and albedo using the metalness parameter
-
+   F0 = mix(F0, albedo, metalness);
 
    // TODO 8.7 : Compute the new diffuse as a mix between diffuse and 0 using the metalness parameter. Same for ambient (diffuse indirect)
-
+   diffuse = mix(diffuse, vec3(0.0f), metalness);
+   ambient = mix(ambient, vec3(0.0f), metalness);
 
 
    // TODO 8.4 : Compute the Fresnel term for indirect light, using the clamped cosine of the angle formed by the NORMAL vector and the view vector
