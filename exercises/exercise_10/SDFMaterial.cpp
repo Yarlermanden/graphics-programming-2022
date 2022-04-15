@@ -3,7 +3,7 @@
 #include "SDFShader.h"
 
 SDFMaterial::SDFMaterial(const SDFShader* shader)
-    :m_Shader(shader)
+        :m_Shader(shader)
 {
 }
 
@@ -63,4 +63,3 @@ SDFMaterial::PropertyID SDFMaterial::AddProperty(int location)
     m_LocationProperties[location] = propertyId;
     return propertyId;
 }
-
