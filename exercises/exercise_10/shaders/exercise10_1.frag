@@ -48,10 +48,14 @@ float GetDistance(vec3 p, inout Output o)
     float dBox = sdfBox(transformToLocal(p, boxMatrix), boxSize);
 
     // TODO 10.1 : Replace min with smin and try different small values of k
-    float d = min(dSphere, dBox);
+    //float d = min(dSphere, dBox);
+    //float d = smin(dSphere, dBox, 2);
+    float mixColor;
+    float d = smin(dSphere, dBox, 2, mixColor);
 
     // TODO 10.1 : Replace this with a mix, using the blend factor from smin
-    o.color = d == dSphere ? sphereColor : boxColor;
+    //o.color = d == dSphere ? sphereColor : boxColor;
+    o.color = mix(boxColor, sphereColor, mixColor);
 
     return d;
 }
