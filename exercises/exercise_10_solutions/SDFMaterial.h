@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <SDFShader.h>
 
 class SDFShader;
 
@@ -24,7 +25,7 @@ public:
     bool SetPropertyValue(PropertyID propertyId, const T& value);
 
     template <typename T>
-    bool GetPropertyValue(const char* name, T& value) const { return GetPropertyValue<T>(FindProperty(name), value); }
+    bool GetPropertyValue(const char* name, T& value) { return GetPropertyValue<T>(FindProperty(name), value); }
     template <typename T>
     bool GetPropertyValue(PropertyID propertyId, T& value) const;
 

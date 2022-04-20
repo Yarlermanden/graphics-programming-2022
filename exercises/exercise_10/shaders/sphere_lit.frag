@@ -48,7 +48,12 @@ float GetDistance(vec3 p, inout Output o)
     float scaleZ = length(_rm_modelView[2].xyz);
     float radius = min(scaleX, min(scaleY, scaleZ));
 
-    return sdfSphere(transformToLocal(p, center), o.normal, radius);
+    float dSphere = sdfSphere(transformToLocal(p, center), o.normal, radius);
+
+    //float dSphere1 = sdfSphere(transformToLocal(p, vec3(1, 1, 1)), 1.25f);
+    float dSphere1 = sdfSphere(transformToLocal(p, vec3(0, 0, 0)), 9.25f);
+
+    return min(dSphere, dSphere1);
 }
 
 

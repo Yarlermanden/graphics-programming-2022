@@ -72,18 +72,22 @@ int main()
     createGlobalObjects();
 
     // Add new full scren quad object
-    SDFShader defaultShader(SHADER_FOLDER "raymarcher.vert", SHADER_FOLDER "exercise10_1.frag");
+    //SDFShader defaultShader(SHADER_FOLDER "raymarcher.vert", SHADER_FOLDER "exercise10_1.frag");
+    //SDFShader defaultShader(SHADER_FOLDER "raymarcher.vert", SHADER_FOLDER "empty.frag");
+    SDFShader defaultShader(SHADER_FOLDER "raymarcher.vert", SHADER_FOLDER "empty.frag");
     SDFMaterial defaultMaterial(&defaultShader);
-    SDFObject defaultObject(s_QuadGeometry, &defaultMaterial);
+    //SDFObject defaultObject(s_QuadGeometry, &defaultMaterial);
+    SDFObject defaultObject(s_CubeGeometry, &defaultMaterial);
     s_RayMarcher->AddObject(&defaultObject);
 
     // EXTRA: Object using a cube instead of a full screen pass
-    //SDFShader sphereShader(SHADER_FOLDER "raymarcher.vert", SHADER_FOLDER "sphere_lit.frag");
-    //SDFMaterial sphereMaterial(&sphereShader);
-    //SDFObject sphereObject(s_CubeGeometry, &sphereMaterial);
-    //s_RayMarcher->AddObject(&sphereObject);
-    //sphereObject.SetModelMatrix(glm::scale(glm::translate(glm::mat4(1), glm::vec3(sphereCenter)), glm::vec3(sphereRadius)));
-    //sphereMaterial.SetPropertyValue<glm::vec3>("sphereColor", sphereColor);
+    SDFShader sphereShader(SHADER_FOLDER "raymarcher.vert", SHADER_FOLDER "sphere_lit.frag");
+    //SDFShader sphereShader(SHADER_FOLDER "raymarcher.vert", SHADER_FOLDER "empty.frag");
+    SDFMaterial sphereMaterial(&sphereShader);
+    SDFObject sphereObject(s_CubeGeometry, &sphereMaterial);
+    s_RayMarcher->AddObject(&sphereObject);
+    sphereObject.SetModelMatrix(glm::scale(glm::translate(glm::mat4(1), glm::vec3(sphereCenter)), glm::vec3(sphereRadius)));
+    sphereMaterial.SetPropertyValue<glm::vec3>("sphereColor", sphereColor);
 
     glEnable(GL_FRAMEBUFFER_SRGB);
     glEnable(GL_DEPTH_TEST);
