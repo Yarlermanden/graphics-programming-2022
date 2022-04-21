@@ -48,15 +48,25 @@ namespace rt{
 
             // TODO ex 11.1 iterate through all pixels in the buffer (width: [0, fb.W), height:[0, fb.H])
             //  for each pixel,
-            //  - find its position in the space of the camera,
-            //  - apply the view_to_model transformation so that we place the pixel in the space of the model
-            //  (do you notice a different pattern? contrary to the typical raster pipeline, it is sometimes cheaper to
-            //  transform from camera space than the other way around -fewer computations-, what is important is that
-            //  all intersection computations should happen in the same space, no matter what that space is)
-            //  - create a ray with the camera origin, and the vector from the camera origin to the pixel you have just found
-            //  - call the TraceRay method using that ray, and store the resulting color in the frame buffer (fb)
-            fb.paintAt(fb.W/2, fb.H/2, toRGBA32(white));
+            for (int i = 0; i < fb.W; i++)
+                for(int j = 0; j < fb.H; j++){
+                    //  - find its position in the space of the camera,
+                    vec4 position = lower_left_corner + vec4(float(i)/float(fb.W), float(j)/float(fb.H), 0, 0);
 
+                    //  - apply the view_to_model transformation so that we place the pixel in the space of the model
+                    vec4 position_in_model = view_to_model * position;
+                    //  (do you notice a different pattern? contrary to the typical raster pipeline, it is sometimes cheaper to
+                    //  transform from camera space than the other way around -fewer computations-, what is important is that
+                    //  all intersection computations should happen in the same space, no matter what that space is)
+
+                    //  - create a ray with the camera origin, and the vector from the camera origin to the pixel you have just found
+                    auto ray = Ray(cam_pos, position_in_model-cam_pos);
+
+                    //  - call the TraceRay method using that ray, and store the resulting color in the frame buffer (fb)
+                    color c = TraceRay(ray, depth, vts);
+
+                    fb.paintAt(i, j, toRGBA32(c));
+                }
         }
 
 
