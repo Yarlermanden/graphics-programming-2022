@@ -78,15 +78,20 @@ namespace rt{
 
             color col = black; // used to output a color
             Hit hitInfo; // used to store the hit information
-            if (! RayModelIntersection(ray, vts, hitInfo)) return col; // no hit, return black
+            if (!RayModelIntersection(ray, vts, hitInfo)) return col; // no hit, return black
 
 
             // TODO ex 11.2 replace the current i_normal and i_col computation with their interpolated versions
-            vec3 i_normal = vts[hitInfo.hit_ID].norm;
-            color i_col = vts[hitInfo.hit_ID].col;
-
+            auto corner1 = vts[hitInfo.hit_ID];
+            auto corner2 = vts[hitInfo.hit_ID+1];
+            auto corner3 = vts[hitInfo.hit_ID+2];
+            vec3 i_normal = normalize(vts[hitInfo.hit_ID].norm * hitInfo.barycentric.x
+                    + vts[hitInfo.hit_ID+1].norm * hitInfo.barycentric.y
+                    + vts[hitInfo.hit_ID+2].norm * hitInfo.barycentric.z);
+            color i_col = vts[hitInfo.hit_ID].col * hitInfo.barycentric.x
+                    + vts[hitInfo.hit_ID+1].col * hitInfo.barycentric.y
+                    + vts[hitInfo.hit_ID+2].col * hitInfo.barycentric.z;
             vec3 i_pos = ray.origin + ray.direction * hitInfo.dist;
-
 
             // TODO ex 11.3 implement the phong reflection model for the point light below
             vec3 light_pos(0,1.9f,0); // light position in model space
