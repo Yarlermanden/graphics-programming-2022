@@ -55,6 +55,7 @@ namespace rt{
             //omp_set_num_threads(10);
             //#pragma omp parallel default(none)
             #pragma omp parallel for
+            //#pragma omp target teams distribute parallel for
             for (int i = 0; i < fb.W; i++) {
                 //#pragma omp parallel for
                 for (int j = 0; j < fb.H; j++) {
@@ -161,7 +162,7 @@ namespace rt{
                     hit.barycentric = barycentric_temp;
                 }
             }
-            return hit.hit_ID < 0 ? false : true;
+            return hit.hit_ID >= 0;
         }
 
         // returns false if no intersection
