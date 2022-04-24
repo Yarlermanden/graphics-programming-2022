@@ -11,6 +11,9 @@
 
 #include "camera.h"
 
+//setup
+void loadModel(std::vector<glm::vec3>* points, std::vector<glm::vec4>* colors, std::vector<glm::vec3>* normals, std::vector<glm::vec2>* uvs, std::vector<rt::vertex>* vts);
+
 // glfw callbacks
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void button_input_callback(GLFWwindow* window, int button, int action, int mods);
@@ -18,7 +21,7 @@ void cursor_input_callback(GLFWwindow* window, double posX, double posY);
 void processInput(GLFWwindow* window);
 
 // rasterization grid resolution
-const int max_W = 64, max_H = 64;
+const int max_W = 128, max_H = 128;
 
 // window resolution
 const unsigned int SCR_WIDTH = 800;
@@ -76,31 +79,9 @@ int main()
     std::vector<glm::vec4> colors;
     std::vector<glm::vec3> normals;
     std::vector<glm::vec2> uvs;
-    Primitives::makeCube(2.f, points, normals, uvs, colors);
+    std::vector<rt::vertex> vts;
 
-
-    vector<rt::vertex> vts;
-    glm::mat4 scale = glm::scale(glm::vec3(.25f,.25f,.25f));
-    for (unsigned int i = 0; i < points.size(); i++){
-        rt::vertex v{scale * glm::vec4(points[i], 1.0f),
-                    glm::vec4(normals[i], 0),
-                    colors[i],
-                    uvs[i]
-        };
-        vts.push_back(v);
-    }
-
-    glm::mat4 outsideout = glm::scale(glm::vec3(-2.f,-2.f,-2.f));
-    for (unsigned int i = 0; i < points.size(); i++){
-        rt::vertex v{outsideout * glm::vec4(points[i], 1.0f),
-                     glm::vec4(normals[i], 0),
-                     rt::grey,
-                     uvs[i]
-        };
-        vts.push_back(v);
-    }
-
-
+    loadModel(&points, &colors, &normals, &uvs, &vts);
 
     // initialize our custom frame buffer
     // ----------------------------------
@@ -194,6 +175,29 @@ int main()
     return 0;
 }
 
+void loadModel(std::vector<glm::vec3>* points, std::vector<glm::vec4>* colors, std::vector<glm::vec3>* normals, std::vector<glm::vec2>* uvs, std::vector<rt::vertex>* vts){
+    Primitives::makeCube(3.f, (*points), (*normals), (*uvs), (*colors));
+
+    glm::mat4 scale = glm::scale(glm::vec3(.25f,.25f,.25f));
+    for (unsigned int i = 0; i < (*points).size(); i++){
+        rt::vertex v{scale * glm::vec4((*points)[i], 1.0f),
+                     glm::vec4((*normals)[i], 0),
+                     (*colors)[i],
+                     (*uvs)[i]
+        };
+        (*vts).push_back(v);
+    }
+
+    glm::mat4 outsideout = glm::scale(glm::vec3(-2.f,-2.f,-2.f));
+    for (unsigned int i = 0; i < (*points).size(); i++){
+        rt::vertex v{outsideout * glm::vec4((*points)[i], 1.0f),
+                     glm::vec4((*normals)[i], 0),
+                     rt::grey,
+                     (*uvs)[i]
+        };
+        (*vts).push_back(v);
+    }
+}
 
 void cursor_input_callback(GLFWwindow* window, double posX, double posY){
     // camera rotation
