@@ -47,6 +47,7 @@ include_directories(
         ${EXTERNAL_LIBRARIES_SOURCE_PATH}/STBImage
         ${EXTERNAL_LIBRARIES_SOURCE_PATH}/assimp/include
         ${EXTERNAL_LIBRARIES_SOURCE_PATH}/assimp
+        /opt/homebrew/Cellar/libomp/14.0.0/include
         )
 
 ## add the actual projects to build

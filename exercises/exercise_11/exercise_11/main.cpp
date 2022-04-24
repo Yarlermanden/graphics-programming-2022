@@ -64,6 +64,8 @@ int main()
         return -1;
     }
 
+    std::cout << "Startup" << std::endl;
+
     // load the 3D models
     // -----------------
     std::vector<glm::vec3> points;

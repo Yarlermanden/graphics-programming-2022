@@ -1,3 +1,5 @@
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "openmp-use-default-none"
 //
 // Created by henrique on 04/11/2021.
 //
@@ -10,6 +12,8 @@
 #include <glm/gtx/transform.hpp>
 #include "rt_types.h"
 #include "frame_buffer.h"
+
+#include <omp.h>
 
 namespace rt{
     using namespace Colors;
@@ -48,32 +52,30 @@ namespace rt{
 
             // TODO ex 11.1 iterate through all pixels in the buffer (width: [0, fb.W), height:[0, fb.H])
             //  for each pixel,
-            #pragma omp parallel
-            {
-                #pragma omp for
-                //std::cout << omp_get_thread_num() << std::endl;
+            //omp_set_num_threads(10);
+            //#pragma omp parallel default(none)
+            #pragma omp parallel for
+            for (int i = 0; i < fb.W; i++) {
                 //#pragma omp parallel for
-                for (int i = 0; i < fb.W; i++)
-                    //#pragma omp for
-                        for(int j = 0; j < fb.H; j++){
-                        //  - find its position in the space of the camera,
-                        vec4 position = lower_left_corner + vec4(float(i)/float(fb.W), float(j)/float(fb.H), 0, 0);
+                for (int j = 0; j < fb.H; j++) {
+                    //  - find its position in the space of the camera,
+                    vec4 position = lower_left_corner + vec4(float(i) / float(fb.W), float(j) / float(fb.H), 0, 0);
 
-                        //  - apply the view_to_model transformation so that we place the pixel in the space of the model
-                        vec4 position_in_model = view_to_model * position;
-                        //  (do you notice a different pattern? contrary to the typical raster pipeline, it is sometimes cheaper to
-                        //  transform from camera space than the other way around -fewer computations-, what is important is that
-                        //  all intersection computations should happen in the same space, no matter what that space is)
+                    //  - apply the view_to_model transformation so that we place the pixel in the space of the model
+                    vec4 position_in_model = view_to_model * position;
+                    //  (do you notice a different pattern? contrary to the typical raster pipeline, it is sometimes cheaper to
+                    //  transform from camera space than the other way around -fewer computations-, what is important is that
+                    //  all intersection computations should happen in the same space, no matter what that space is)
 
-                        //  - create a ray with the camera origin, and the vector from the camera origin to the pixel you have just found
-                        auto ray = Ray(cam_pos, position_in_model-cam_pos);
+                    //  - create a ray with the camera origin, and the vector from the camera origin to the pixel you have just found
+                    auto ray = Ray(cam_pos, position_in_model - cam_pos);
 
-                        //  - call the TraceRay method using that ray, and store the resulting color in the frame buffer (fb)
-                        color c = TraceRay(ray, depth, vts);
+                    //  - call the TraceRay method using that ray, and store the resulting color in the frame buffer (fb)
+                    color c = TraceRay(ray, depth, vts);
 
-                        fb.paintAt(i, j, toRGBA32(c));
-                    }
-            };
+                    fb.paintAt(i, j, toRGBA32(c));
+                }
+            }
         }
 
 
@@ -205,3 +207,5 @@ namespace rt{
 
 
 #endif //ITU_GRAPHICS_PROGRAMMING_RT_RENDERER_H
+
+#pragma clang diagnostic pop
