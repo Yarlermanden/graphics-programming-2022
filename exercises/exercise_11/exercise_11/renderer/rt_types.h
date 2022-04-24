@@ -50,21 +50,10 @@ namespace rt{
         Colors::color col;
         glm::vec2 uv;
 
-        friend vertex operator/(vertex v, float sc) {
-            return vertex{v.pos / sc, v.norm / sc, v.col / sc, v.uv / sc};
-        }
-
-        friend vertex operator*(vertex v, float sc) {
-            return vertex{v.pos * sc, v.norm * sc, v.col * sc, v.uv * sc};
-        }
-
-        friend vertex operator-(vertex v1, const vertex &v2) {
-            return vertex{v1.pos - v2.pos, v1.norm - v2.norm, v1.col - v2.col, v1.uv - v2.uv};
-        }
-
-        friend vertex operator+(vertex v1, const vertex &v2) {
-            return vertex{v1.pos + v2.pos, v1.norm + v2.norm, v1.col + v2.col, v1.uv + v2.uv};
-        }
+        friend vertex operator/(vertex v, float sc);
+        friend vertex operator*(vertex v, float sc);
+        friend vertex operator-(vertex v1, const vertex &v2);
+        friend vertex operator+(vertex v1, const vertex &v2);
     };
 
 }

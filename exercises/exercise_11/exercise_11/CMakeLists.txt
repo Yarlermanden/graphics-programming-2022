@@ -1,7 +1,7 @@
 ## set target project
 file(GLOB target_src "*.h" "*.cpp" "rasterizer/*.h" "rasterizer/*.cpp" "renderer/*.h" "renderer/*.cpp") # look for source files
 
-add_executable(${subdir} ${target_src} renderer/rt_renderer.h renderer/rt_types.h renderer/frame_buffer.cpp)
+add_executable(${subdir} ${target_src} renderer/rt_renderer.h renderer/rt_types.h renderer/frame_buffer.cpp renderer/vertex.cpp renderer/vector.cpp)
 
 ## set link libraries
 target_link_libraries(${subdir} ${libraries})

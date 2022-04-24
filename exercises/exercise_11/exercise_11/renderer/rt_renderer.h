@@ -32,7 +32,7 @@ namespace rt{
                     unsigned int depth,
                     FrameBuffer <uint32_t> &fb) {
 
-            float aspect_ratio = fb.H / fb.W;
+            float aspect_ratio = ((float) fb.H) / fb.W;
             // we use the fov and the tangent function to compute where is the bottom of the projection plane,
             // we assume that the projection place is 1 unit in front of the camera (z == -1)
             float bottom = - tan(abs(radians(fov_degrees)) * 0.5f);

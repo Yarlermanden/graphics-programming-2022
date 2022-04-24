@@ -4,6 +4,7 @@
 
 #include "frame_buffer.h"
 #include "assert.h"
+#include <glm/glm.hpp>
 
 template<typename T>
 FrameBuffer<T>::FrameBuffer(unsigned int width, unsigned int height) : W(width), H(height) {
@@ -33,7 +34,7 @@ T FrameBuffer<T>::valueAt(unsigned int x, unsigned int y) {
 }
 
 template class FrameBuffer<int>;
-template class FrameBuffer<unsigned int>;
-template class FrameBuffer<char*>;
+template class FrameBuffer<float>;
+template class FrameBuffer<uint32_t>;
 
 
