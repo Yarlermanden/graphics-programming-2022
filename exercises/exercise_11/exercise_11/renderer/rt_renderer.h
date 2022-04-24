@@ -48,25 +48,32 @@ namespace rt{
 
             // TODO ex 11.1 iterate through all pixels in the buffer (width: [0, fb.W), height:[0, fb.H])
             //  for each pixel,
-            for (int i = 0; i < fb.W; i++)
-                for(int j = 0; j < fb.H; j++){
-                    //  - find its position in the space of the camera,
-                    vec4 position = lower_left_corner + vec4(float(i)/float(fb.W), float(j)/float(fb.H), 0, 0);
+            #pragma omp parallel
+            {
+                #pragma omp for
+                //std::cout << omp_get_thread_num() << std::endl;
+                //#pragma omp parallel for
+                for (int i = 0; i < fb.W; i++)
+                    //#pragma omp for
+                        for(int j = 0; j < fb.H; j++){
+                        //  - find its position in the space of the camera,
+                        vec4 position = lower_left_corner + vec4(float(i)/float(fb.W), float(j)/float(fb.H), 0, 0);
 
-                    //  - apply the view_to_model transformation so that we place the pixel in the space of the model
-                    vec4 position_in_model = view_to_model * position;
-                    //  (do you notice a different pattern? contrary to the typical raster pipeline, it is sometimes cheaper to
-                    //  transform from camera space than the other way around -fewer computations-, what is important is that
-                    //  all intersection computations should happen in the same space, no matter what that space is)
+                        //  - apply the view_to_model transformation so that we place the pixel in the space of the model
+                        vec4 position_in_model = view_to_model * position;
+                        //  (do you notice a different pattern? contrary to the typical raster pipeline, it is sometimes cheaper to
+                        //  transform from camera space than the other way around -fewer computations-, what is important is that
+                        //  all intersection computations should happen in the same space, no matter what that space is)
 
-                    //  - create a ray with the camera origin, and the vector from the camera origin to the pixel you have just found
-                    auto ray = Ray(cam_pos, position_in_model-cam_pos);
+                        //  - create a ray with the camera origin, and the vector from the camera origin to the pixel you have just found
+                        auto ray = Ray(cam_pos, position_in_model-cam_pos);
 
-                    //  - call the TraceRay method using that ray, and store the resulting color in the frame buffer (fb)
-                    color c = TraceRay(ray, depth, vts);
+                        //  - call the TraceRay method using that ray, and store the resulting color in the frame buffer (fb)
+                        color c = TraceRay(ray, depth, vts);
 
-                    fb.paintAt(i, j, toRGBA32(c));
-                }
+                        fb.paintAt(i, j, toRGBA32(c));
+                    }
+            };
         }
 
 
@@ -94,8 +101,24 @@ namespace rt{
             vec3 i_pos = ray.origin + ray.direction * hitInfo.dist;
 
             // TODO ex 11.3 implement the phong reflection model for the point light below
+            float I_aK_a = 0.1f; //I_a * K_a
+            auto R_ambient = I_aK_a * i_col; //Ia * Ka * color
+
+            float diffuse = 0.5f; //I_light * Kd
             vec3 light_pos(0,1.9f,0); // light position in model space
-            col = i_col; // set the light reflection color here
+            vec3 L = normalize(light_pos - i_pos); //light direction
+
+            auto R_diffuse =  diffuse * max(dot(i_normal, L), 0.0f) * i_col; //I_light * Kd * (N•L) * Color
+
+            float I_light = 1.f; //intensity of light
+            float Ks = 0.6f; //specular reflectance
+            float exp = 40.f; //specular exponent of material - shininess
+            vec3 V = normalize(-i_pos); //view direction - as camera is at (0,0,0)
+            vec3 H = normalize(L+V); //halfway vector between light direction and view direction
+            float R_specular = I_light * Ks * pow(max(dot(i_normal, H), 0.0f), exp); //I_light * Ks * (N•H)^exp
+            //float R_specular = I_light * Ks * pow(max(dot(L, i_normal), 0.0f), exp); //I_light * Ks * (N•H)^exp
+
+            col = R_ambient + R_diffuse + R_specular; //combined light
 
 
             // the recursion/reflection happens here!
