@@ -78,12 +78,10 @@ int main()
     // every frame we will: draw to it, upload it to a texture, and copy the texture to the window frame buffer.
     FrameBuffer<uint32_t> customBuffer(max_W, max_H);
 
-
     // initialize texture we will use to upload our buffer to GPU
     // ----------------------------------------------------------
     unsigned int bufferTexture;
     initializeTexture(&bufferTexture);
-
 
     // initialize openGL frame buffer object
     // ------------------------------------

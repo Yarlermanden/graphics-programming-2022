@@ -101,6 +101,7 @@ namespace rt{
             vec3 i_pos = ray.origin + ray.direction * hitInfo.dist;
 
             // TODO ex 11.3 implement the phong reflection model for the point light below
+
             float I_aK_a = 0.1f; //I_a * K_a
             auto R_ambient = I_aK_a * i_col; //Ia * Ka * color
 
@@ -118,8 +119,16 @@ namespace rt{
             float R_specular = I_light * Ks * pow(max(dot(i_normal, H), 0.0f), exp); //I_light * Ks * (N•H)^exp
             //float R_specular = I_light * Ks * pow(max(dot(L, i_normal), 0.0f), exp); //I_light * Ks * (N•H)^exp
 
-            col = R_ambient + R_diffuse + R_specular; //combined light
+            col = R_ambient;
 
+            //Check for shadow
+            Ray shadow_ray(i_pos + i_normal * .001f, L); // ray towards light from hitpoint
+            float dist_to_light = length(light_pos - i_pos);
+            Hit shadow_hit;
+            // check if there is a hit closer than distance to light
+            if (!RayModelIntersection(shadow_ray, vts, shadow_hit) || dist_to_light < shadow_hit.dist) {
+                col += R_diffuse + R_specular; //combined light
+            }
 
             // the recursion/reflection happens here!
             if (depth > 1) {
