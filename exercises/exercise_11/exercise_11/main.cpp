@@ -12,7 +12,9 @@
 #include "camera.h"
 
 //setup
+int glfwWindowCreation(GLFWwindow* window);
 void loadModel(std::vector<glm::vec3>* points, std::vector<glm::vec4>* colors, std::vector<glm::vec3>* normals, std::vector<glm::vec2>* uvs, std::vector<rt::vertex>* vts);
+void initializeTexture(unsigned int* bufferTexture);
 
 // glfw callbacks
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -51,18 +53,8 @@ int main()
     // glfw window creation
     // --------------------
     GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Exercise 9", NULL, NULL);
-    if (window == NULL)
-    {
-        std::cout << "Failed to create GLFW window" << std::endl;
-        glfwTerminate();
-        return -1;
-    }
-    glfwMakeContextCurrent(window);
-
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-    glfwSetMouseButtonCallback(window, button_input_callback);
-    glfwSetCursorPosCallback(window, cursor_input_callback);
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    int error = glfwWindowCreation(window);
+    if(error == -1) return -1;
 
     // glad: load all OpenGL function pointers
     // ---------------------------------------
@@ -72,7 +64,6 @@ int main()
         return -1;
     }
 
-
     // load the 3D models
     // -----------------
     std::vector<glm::vec3> points;
@@ -80,7 +71,6 @@ int main()
     std::vector<glm::vec3> normals;
     std::vector<glm::vec2> uvs;
     std::vector<rt::vertex> vts;
-
     loadModel(&points, &colors, &normals, &uvs, &vts);
 
     // initialize our custom frame buffer
@@ -92,15 +82,8 @@ int main()
     // initialize texture we will use to upload our buffer to GPU
     // ----------------------------------------------------------
     unsigned int bufferTexture;
+    initializeTexture(&bufferTexture);
 
-    glGenTextures(1, &bufferTexture);
-    glBindTexture(GL_TEXTURE_2D, bufferTexture);
-    // set the texture wrapping parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-    // set texture filtering parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
     // initialize openGL frame buffer object
     // ------------------------------------
@@ -132,10 +115,9 @@ int main()
         // render to our custom frame buffer
         // ---------------------------------
         customBuffer.clearBuffer(rt::Colors::toRGBA32(rt::Colors::black));
-
         glm::mat4 scale = glm::scale(glm::vec3(.5f,.5f,.5f));
 
-        renderer.render(vts, glm::mat4(1), camera.GetViewMatrix(), 70.0f, rtDepth, customBuffer);
+        renderer.render(vts, glm::mat4(1), camera.GetViewMatrix(), 70.0f, rtDepth, customBuffer); //rt_renderer
 
         // show our rendered image
         // -----------------------
@@ -175,6 +157,22 @@ int main()
     return 0;
 }
 
+int glfwWindowCreation(GLFWwindow* window){
+    if (window == NULL)
+    {
+        std::cout << "Failed to create GLFW window" << std::endl;
+        glfwTerminate();
+        return -1;
+    }
+    glfwMakeContextCurrent(window);
+
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetMouseButtonCallback(window, button_input_callback);
+    glfwSetCursorPosCallback(window, cursor_input_callback);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    return 0;
+}
+
 void loadModel(std::vector<glm::vec3>* points, std::vector<glm::vec4>* colors, std::vector<glm::vec3>* normals, std::vector<glm::vec2>* uvs, std::vector<rt::vertex>* vts){
     Primitives::makeCube(3.f, (*points), (*normals), (*uvs), (*colors));
 
@@ -187,7 +185,6 @@ void loadModel(std::vector<glm::vec3>* points, std::vector<glm::vec4>* colors, s
         };
         (*vts).push_back(v);
     }
-
     glm::mat4 outsideout = glm::scale(glm::vec3(-2.f,-2.f,-2.f));
     for (unsigned int i = 0; i < (*points).size(); i++){
         rt::vertex v{outsideout * glm::vec4((*points)[i], 1.0f),
@@ -197,6 +194,17 @@ void loadModel(std::vector<glm::vec3>* points, std::vector<glm::vec4>* colors, s
         };
         (*vts).push_back(v);
     }
+}
+
+void initializeTexture(unsigned int* bufferTexture){
+    glGenTextures(1, bufferTexture);
+    glBindTexture(GL_TEXTURE_2D, *bufferTexture);
+    // set the texture wrapping parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+    // set texture filtering parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 }
 
 void cursor_input_callback(GLFWwindow* window, double posX, double posY){
@@ -249,7 +257,6 @@ void processInput(GLFWwindow *window) {
         camera.ProcessKeyboard(LEFT, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         camera.ProcessKeyboard(RIGHT, deltaTime);
-
 }
 
 
