@@ -108,15 +108,18 @@ namespace rt{
             float I_aK_a = 0.1f; //I_a * K_a
             auto R_ambient = I_aK_a * i_col; //Ia * Ka * color
 
-            float diffuse = 0.5f; //I_light * Kd
+            //float diffuse = 0.5f; //I_light * Kd
+            float diffuse = corner1.diffuse; //I_light * Kd
             vec3 light_pos(0,1.9f,0); // light position in model space
             vec3 L = normalize(light_pos - i_pos); //light direction
 
             auto R_diffuse =  diffuse * max(dot(i_normal, L), 0.0f) * i_col; //I_light * Kd * (N•L) * Color
 
             float I_light = 1.f; //intensity of light
-            float Ks = 0.6f; //specular reflectance
-            float exp = 40.f; //specular exponent of material - shininess
+            //float Ks = 0.6f; //specular reflectance
+            float Ks = corner1.specularReflectance; //specular reflectance
+            //float exp = 40.f; //specular exponent of material - shininess
+            float exp = corner1.specularExp; //specular exponent of material - shininess
             vec3 V = normalize(-i_pos); //view direction - as camera is at (0,0,0)
             vec3 H = normalize(L+V); //halfway vector between light direction and view direction
             float R_specular = I_light * Ks * pow(max(dot(i_normal, H), 0.0f), exp); //I_light * Ks * (N•H)^exp

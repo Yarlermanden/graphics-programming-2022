@@ -49,6 +49,9 @@ namespace rt{
         glm::vec4 norm;
         Colors::color col;
         glm::vec2 uv;
+        float diffuse;
+        float specularExp;
+        float specularReflectance;
 
         friend vertex operator/(vertex v, float sc);
         friend vertex operator*(vertex v, float sc);

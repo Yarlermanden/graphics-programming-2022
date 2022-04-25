@@ -176,21 +176,31 @@ int glfwWindowCreation(GLFWwindow* window){
 void loadModel(std::vector<glm::vec3>* points, std::vector<glm::vec4>* colors, std::vector<glm::vec3>* normals, std::vector<glm::vec2>* uvs, std::vector<rt::vertex>* vts){
     Primitives::makeCube(3.f, (*points), (*normals), (*uvs), (*colors));
 
+    //The inner box with colors
     glm::mat4 scale = glm::scale(glm::vec3(.25f,.25f,.25f));
+    std::cout << "Inner box size: " << (*points).size() << std::endl;
     for (unsigned int i = 0; i < (*points).size(); i++){
         rt::vertex v{scale * glm::vec4((*points)[i], 1.0f),
                      glm::vec4((*normals)[i], 0),
                      (*colors)[i],
-                     (*uvs)[i]
+                     (*uvs)[i],
+                     0.4f,
+                     10.f,
+                     2.6f
         };
         (*vts).push_back(v);
     }
+    //The outer box in gray
     glm::mat4 outsideout = glm::scale(glm::vec3(-2.f,-2.f,-2.f));
+    std::cout << "Outer box size: " << (*points).size() << std::endl;
     for (unsigned int i = 0; i < (*points).size(); i++){
         rt::vertex v{outsideout * glm::vec4((*points)[i], 1.0f),
                      glm::vec4((*normals)[i], 0),
                      rt::grey,
-                     (*uvs)[i]
+                     (*uvs)[i],
+                     0.6f,
+                     10.f,
+                     0.4f
         };
         (*vts).push_back(v);
     }
