@@ -11,11 +11,6 @@
 
 #include "camera.h"
 
-//setup
-int glfwWindowCreation(GLFWwindow* window);
-void loadModel(std::vector<glm::vec3>* points, std::vector<glm::vec4>* colors, std::vector<glm::vec3>* normals, std::vector<glm::vec2>* uvs, std::vector<rt::vertex>* vts);
-void initializeTexture(unsigned int* bufferTexture);
-
 // glfw callbacks
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void button_input_callback(GLFWwindow* window, int button, int action, int mods);
@@ -23,7 +18,7 @@ void cursor_input_callback(GLFWwindow* window, double posX, double posY);
 void processInput(GLFWwindow* window);
 
 // rasterization grid resolution
-const int max_W = 128, max_H = 128;
+const int max_W = 64, max_H = 64;
 
 // window resolution
 const unsigned int SCR_WIDTH = 800;
@@ -53,8 +48,18 @@ int main()
     // glfw window creation
     // --------------------
     GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Exercise 11", NULL, NULL);
-    int error = glfwWindowCreation(window);
-    if(error == -1) return -1;
+    if (window == NULL)
+    {
+        std::cout << "Failed to create GLFW window" << std::endl;
+        glfwTerminate();
+        return -1;
+    }
+    glfwMakeContextCurrent(window);
+
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetMouseButtonCallback(window, button_input_callback);
+    glfwSetCursorPosCallback(window, cursor_input_callback);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     // glad: load all OpenGL function pointers
     // ---------------------------------------
@@ -64,7 +69,6 @@ int main()
         return -1;
     }
 
-    std::cout << "Startup" << std::endl;
 
     // load the 3D models
     // -----------------
@@ -72,18 +76,50 @@ int main()
     std::vector<glm::vec4> colors;
     std::vector<glm::vec3> normals;
     std::vector<glm::vec2> uvs;
-    std::vector<rt::vertex> vts;
-    loadModel(&points, &colors, &normals, &uvs, &vts);
+    Primitives::makeCube(2.f, points, normals, uvs, colors);
+
+
+    vector<rt::vertex> vts;
+    glm::mat4 scale = glm::scale(glm::vec3(.25f,.25f,.25f));
+    for (unsigned int i = 0; i < points.size(); i++){
+        rt::vertex v{scale * glm::vec4(points[i], 1.0f),
+                    glm::vec4(normals[i], 0),
+                    colors[i],
+                    uvs[i]
+        };
+        vts.push_back(v);
+    }
+
+    glm::mat4 outsideout = glm::scale(glm::vec3(-2.f,-2.f,-2.f));
+    for (unsigned int i = 0; i < points.size(); i++){
+        rt::vertex v{outsideout * glm::vec4(points[i], 1.0f),
+                     glm::vec4(normals[i], 0),
+                     rt::grey,
+                     uvs[i]
+        };
+        vts.push_back(v);
+    }
+
+
 
     // initialize our custom frame buffer
     // ----------------------------------
     // every frame we will: draw to it, upload it to a texture, and copy the texture to the window frame buffer.
     FrameBuffer<uint32_t> customBuffer(max_W, max_H);
 
+
     // initialize texture we will use to upload our buffer to GPU
     // ----------------------------------------------------------
     unsigned int bufferTexture;
-    initializeTexture(&bufferTexture);
+
+    glGenTextures(1, &bufferTexture);
+    glBindTexture(GL_TEXTURE_2D, bufferTexture);
+    // set the texture wrapping parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+    // set texture filtering parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
     // initialize openGL frame buffer object
     // ------------------------------------
@@ -115,9 +151,10 @@ int main()
         // render to our custom frame buffer
         // ---------------------------------
         customBuffer.clearBuffer(rt::Colors::toRGBA32(rt::Colors::black));
+
         glm::mat4 scale = glm::scale(glm::vec3(.5f,.5f,.5f));
 
-        renderer.render(vts, glm::mat4(1), camera.GetViewMatrix(), 70.0f, rtDepth, customBuffer); //rt_renderer
+        renderer.render(vts, glm::mat4(1), camera.GetViewMatrix(), 70.0f, rtDepth, customBuffer);
 
         // show our rendered image
         // -----------------------
@@ -157,72 +194,6 @@ int main()
     return 0;
 }
 
-int glfwWindowCreation(GLFWwindow* window){
-    if (window == NULL)
-    {
-        std::cout << "Failed to create GLFW window" << std::endl;
-        glfwTerminate();
-        return -1;
-    }
-    glfwMakeContextCurrent(window);
-
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-    glfwSetMouseButtonCallback(window, button_input_callback);
-    glfwSetCursorPosCallback(window, cursor_input_callback);
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    return 0;
-}
-
-void loadModel(std::vector<glm::vec3>* points, std::vector<glm::vec4>* colors, std::vector<glm::vec3>* normals, std::vector<glm::vec2>* uvs, std::vector<rt::vertex>* vts){
-    Primitives::makeCube(3.f, (*points), (*normals), (*uvs), (*colors));
-
-    //The inner box with colors
-    glm::mat4 scale = glm::scale(glm::vec3(.25f,.25f,.25f));
-    std::cout << "Inner box size: " << (*points).size() << std::endl;
-    for (unsigned int i = 0; i < (*points).size(); i++){
-        rt::vertex v{scale * glm::vec4((*points)[i], 1.0f),
-                     glm::vec4((*normals)[i], 0),
-                     (*colors)[i],
-                     (*uvs)[i],
-                     rt::Material(0.1f, 0.4f, 10.f, 2.6f)
-        };
-        (*vts).push_back(v);
-    }
-    //The outer box in gray
-    glm::mat4 outsideout = glm::scale(glm::vec3(-2.f,-2.f,-2.f));
-    std::cout << "Outer box size: " << (*points).size() << std::endl;
-    for (unsigned int i = 0; i < (*points).size(); i++){
-        rt::vertex v{outsideout * glm::vec4((*points)[i], 1.0f),
-                     glm::vec4((*normals)[i], 0),
-                     rt::grey,
-                     (*uvs)[i],
-                     rt::Material(0.1f, 0.6f, 10.f, 0.4f)
-        };
-        (*vts).push_back(v);
-    }
-
-    glm::mat4 box1 = glm::scale(glm::vec3(0.5f, 0.5f, 0.5f));
-    for (unsigned int i = 0; i < (*points).size(); i++){
-        rt::vertex v{box1 * glm::vec4((*points)[i] +2.f, 1.0f),
-                     glm::vec4((*normals)[i], 0),
-                     rt::grey,
-                     (*uvs)[i],
-                     rt::Material(0.1f, 0.3f, 40.f, 0.0005f)
-        };
-        (*vts).push_back(v);
-    }
-}
-
-void initializeTexture(unsigned int* bufferTexture){
-    glGenTextures(1, bufferTexture);
-    glBindTexture(GL_TEXTURE_2D, *bufferTexture);
-    // set the texture wrapping parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-    // set texture filtering parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-}
 
 void cursor_input_callback(GLFWwindow* window, double posX, double posY){
     // camera rotation
@@ -274,6 +245,7 @@ void processInput(GLFWwindow *window) {
         camera.ProcessKeyboard(LEFT, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         camera.ProcessKeyboard(RIGHT, deltaTime);
+
 }
 
 
