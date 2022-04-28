@@ -44,14 +44,23 @@ namespace rt{
         float dist = FLT_MAX;
     };
 
+    struct Material {
+        public:
+            float ambient = 0.1f;
+            float diffuse = 0.5f;
+            float specularExp = 20.f;
+            float specularReflectance = 1.f;
+            Material() {};
+            Material(float a, float d, float exp, float ref) { ambient = a; diffuse = d; specularExp = exp; specularReflectance = ref; }
+            Material avg(Material m2) { return Material((ambient+m2.ambient)/2, (diffuse+m2.diffuse)/2, (specularExp+m2.specularExp)/2, (specularReflectance+m2.specularReflectance)/2);}
+    };
+
     struct vertex {
         glm::vec4 pos;
         glm::vec4 norm;
         Colors::color col;
         glm::vec2 uv;
-        float diffuse;
-        float specularExp;
-        float specularReflectance;
+        Material mat;
 
         friend vertex operator/(vertex v, float sc);
         friend vertex operator*(vertex v, float sc);

@@ -5,17 +5,17 @@
 #include "rt_types.h"
 
 rt::vertex operator/(rt::vertex v, float sc) {
-    return rt::vertex{v.pos / sc, v.norm / sc, v.col / sc, v.uv / sc};
+    return rt::vertex{v.pos / sc, v.norm / sc, v.col / sc, v.uv / sc, v.mat};
 }
 
 rt::vertex operator*(rt::vertex v, float sc) {
-    return rt::vertex{v.pos * sc, v.norm * sc, v.col * sc, v.uv * sc};
+    return rt::vertex{v.pos * sc, v.norm * sc, v.col * sc, v.uv * sc, v.mat};
 }
 
 rt::vertex operator-(rt::vertex v1, const rt::vertex &v2) {
-    return rt::vertex{v1.pos - v2.pos, v1.norm - v2.norm, v1.col - v2.col, v1.uv - v2.uv};
+    return rt::vertex{v1.pos - v2.pos, v1.norm - v2.norm, v1.col - v2.col, v1.uv - v2.uv, v1.mat.avg(v2.mat)};
 }
 
 rt::vertex operator+(rt::vertex v1, const rt::vertex &v2) {
-    return rt::vertex{v1.pos + v2.pos, v1.norm + v2.norm, v1.col + v2.col, v1.uv + v2.uv};
+    return rt::vertex{v1.pos + v2.pos, v1.norm + v2.norm, v1.col + v2.col, v1.uv + v2.uv, v1.mat.avg(v2.mat)};
 }

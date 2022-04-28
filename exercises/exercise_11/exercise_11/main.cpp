@@ -184,9 +184,7 @@ void loadModel(std::vector<glm::vec3>* points, std::vector<glm::vec4>* colors, s
                      glm::vec4((*normals)[i], 0),
                      (*colors)[i],
                      (*uvs)[i],
-                     0.4f,
-                     10.f,
-                     2.6f
+                     rt::Material(0.1f, 0.4f, 10.f, 2.6f)
         };
         (*vts).push_back(v);
     }
@@ -198,9 +196,18 @@ void loadModel(std::vector<glm::vec3>* points, std::vector<glm::vec4>* colors, s
                      glm::vec4((*normals)[i], 0),
                      rt::grey,
                      (*uvs)[i],
-                     0.6f,
-                     10.f,
-                     0.4f
+                     rt::Material(0.1f, 0.6f, 10.f, 0.4f)
+        };
+        (*vts).push_back(v);
+    }
+
+    glm::mat4 box1 = glm::scale(glm::vec3(0.5f, 0.5f, 0.5f));
+    for (unsigned int i = 0; i < (*points).size(); i++){
+        rt::vertex v{box1 * glm::vec4((*points)[i] +2.f, 1.0f),
+                     glm::vec4((*normals)[i], 0),
+                     rt::grey,
+                     (*uvs)[i],
+                     rt::Material(0.1f, 0.3f, 40.f, 0.0005f)
         };
         (*vts).push_back(v);
     }
