@@ -20,7 +20,7 @@ RayTracer::RayTracer(const char* fragmentPath)
 {
 }
 
-void RayTracer::Render() const
+void RayTracer::Render(int shadingMode) const
 {
     glm::mat4 viewMatrix = m_Camera.GetViewMatrix();
     glm::mat4 projMatrix = m_Camera.GetProjMatrix();;
@@ -36,6 +36,7 @@ void RayTracer::Render() const
     m_Shader.SetUniform("_rt_InvView", &invViewMatrix);
     m_Shader.SetUniform("_rt_Proj", &projMatrix);
     m_Shader.SetUniform("_rt_InvProj", &invProjMatrix);
+    m_Shader.SetUniform("shadingMode", &shadingMode);
 
     m_FullscreenQuad.Draw();
 }

@@ -29,6 +29,9 @@ bool showGui = false;
 const unsigned int SCR_WIDTH = 1280;
 const unsigned int SCR_HEIGHT = 720;
 
+//settings
+int shadingMode = 1;
+
 // Global raytracer to reload shaders
 RayTracer* s_RayTracer = nullptr;
 
@@ -58,7 +61,7 @@ int main()
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        rayTracer.Render();
+        rayTracer.Render(shadingMode);
 
         if (showGui)
         {
@@ -139,6 +142,12 @@ void drawGui()
     {
         ImGui::Begin("Properties");
 
+        ImGui::Text("Shading model: ");
+        {
+            if (ImGui::RadioButton("No Shading", shadingMode == 0)) { shadingMode = 0; }
+            if (ImGui::RadioButton("Blinn-Phong Shading", shadingMode == 1)) { shadingMode = 1; }
+            if (ImGui::RadioButton("PBR Shading", shadingMode == 2)) { shadingMode = 2; }
+        }
 
         ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
         ImGui::End();

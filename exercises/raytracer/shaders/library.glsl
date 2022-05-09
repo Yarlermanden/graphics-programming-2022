@@ -7,8 +7,8 @@ uniform mat4 _rt_View;
 uniform mat4 _rt_InvView;
 uniform mat4 _rt_Proj;
 uniform mat4 _rt_InvProj;
-
 uniform float _rt_Time;
+uniform int lightingMode;
 
 struct Ray
 {

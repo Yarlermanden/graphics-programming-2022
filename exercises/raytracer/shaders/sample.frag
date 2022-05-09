@@ -24,8 +24,7 @@ vec3 ProcessOutput(Ray ray, Output o)
 {
     //todo implement phong or PBR
     vec3 light_pos = vec3(0, 1.9f, 0); //light position in model space
-    bool phong = true;
-    if(phong){
+    if(lightingMode == 1){
         return PhongLighting(ray, o, light_pos);
     }
     return o.material.color;
