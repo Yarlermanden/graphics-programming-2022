@@ -2,12 +2,9 @@
 const uint _rm_MaxRays = 100u;
 const float PI = 3.14159265359;
 
-const float metalness = 0.0f;
-const vec3 reflectionColor = vec3(0.9f, 0.9f, 0.2f);
-const float diffuseReflectance = 0.75f;
-const float roughness = 0.5f;
-const float ambientLightIntensity = 0.25f;
-//const float ambientLightColor = {1.0f, 1.0f, 1.0f};
+const float metalness = 0.4f;
+const float diffuseReflectance = 6.25f;
+const float roughness = 0.3f;
 const vec3 ambientLightColor = vec3(1.0f, 1.0f, 1.0f);
 
 bool castRay(Ray ray, inout float distance, out Output o)
@@ -148,8 +145,8 @@ vec3 FresnelSchlick(vec3 F0, float cosTheta)
 }
 
 vec3 PBRLighting(Ray ray, Output o, vec3 light_pos){
-    vec3 albedo = vec3(0.1f); //from material shader
-    albedo *= reflectionColor;
+    vec3 albedo = vec3(0.3f); //from material shader
+    albedo *= o.material.color;
 
     vec3 L = normalize(light_pos - o.point); //light direction
     vec3 V = normalize(-o.point); //view direction - camera(0,0,0) - though not true
