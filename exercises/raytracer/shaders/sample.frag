@@ -1,4 +1,4 @@
-
+//This describes the scene
 const uint _rm_MaxRays = 100u;
 
 bool castRay(Ray ray, inout float distance, out Output o)
@@ -24,4 +24,3 @@ vec3 ProcessOutput(Ray ray, Output o)
 {
     return o.material.color;
 }
-

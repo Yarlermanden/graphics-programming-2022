@@ -1,6 +1,7 @@
 #version 330 core
 
 // No main in this file, it is just a library
+// This just describes the structs and general methods
 
 uniform mat4 _rt_View;
 uniform mat4 _rt_InvView;
@@ -59,8 +60,8 @@ bool raySphereIntersection(Ray ray, Sphere sphere, inout float distance, inout O
 
     vec3 m = ray.point - sphere.center;
 
-    float b = dot(m, ray.direction); 
-    float c = dot(m, m) - sphere.radius * sphere.radius; 
+    float b = dot(m, ray.direction);
+    float c = dot(m, m) - sphere.radius * sphere.radius;
 
     if (c <= 0.0f || b <= 0.0f)
     {
@@ -84,4 +85,3 @@ bool raySphereIntersection(Ray ray, Sphere sphere, inout float distance, inout O
 
     return hit;
 }
-

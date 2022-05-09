@@ -24,6 +24,8 @@ void RayTracer::Render() const
 {
     glm::mat4 viewMatrix = m_Camera.GetViewMatrix();
     glm::mat4 projMatrix = m_Camera.GetProjMatrix();;
+    glm::mat4 invViewMatrix = inverse(m_Camera.GetViewMatrix());
+    glm::mat4 invProjMatrix = inverse(m_Camera.GetProjMatrix());
 
     m_Material.Use();
 
@@ -31,16 +33,16 @@ void RayTracer::Render() const
     m_Shader.SetUniform("_rt_Time", &currentFrame);
 
     m_Shader.SetUniform("_rt_View", &viewMatrix);
-    m_Shader.SetUniform("_rt_InvView", &inverse(viewMatrix));
+    m_Shader.SetUniform("_rt_InvView", &invViewMatrix);
     m_Shader.SetUniform("_rt_Proj", &projMatrix);
-    m_Shader.SetUniform("_rt_InvProj", &inverse(projMatrix));
+    m_Shader.SetUniform("_rt_InvProj", &invProjMatrix);
 
     m_FullscreenQuad.Draw();
 }
 
 void RayTracer::ReloadShaders()
 {
-    ReloadSource();
+    //ReloadSource();
 
     m_Shader.Reload();
 

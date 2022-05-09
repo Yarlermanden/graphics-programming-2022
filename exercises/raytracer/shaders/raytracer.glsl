@@ -1,5 +1,5 @@
-
 // version not included here because it is a partial file
+// This describes the functionality of when to ray trace and where - and main
 //#version 330 core
 
 in vec3 _rt_viewPos;
@@ -28,6 +28,7 @@ const float infinity = 1.0f/0.0f;
 
 void main()
 {
+    _rt_rayCount = 0u;
     PushRay(_rt_viewPos, normalize(_rt_viewPos), vec3(1.0f));
 
     vec3 color = vec3(0);
