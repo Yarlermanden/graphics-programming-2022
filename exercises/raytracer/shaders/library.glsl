@@ -39,6 +39,8 @@ bool castRay(Ray ray, inout float distance)
     return castRay(ray, distance, o);
 }
 
+vec3 PhongLighting(Ray ray, Output o, vec3 light_pos);
+vec3 PBRLighting(Ray ray, Output o, vec3 light_pos);
 // Fill in this function to process the output once the ray has found a hit
 vec3 ProcessOutput(Ray ray, Output o);
 
