@@ -43,7 +43,7 @@ void RayTracer::Render(int shadingMode) const
 
 void RayTracer::ReloadShaders()
 {
-    //ReloadSource();
+    ReloadSource();
 
     m_Shader.Reload();
 
