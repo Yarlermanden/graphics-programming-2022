@@ -52,7 +52,6 @@ int main()
     glCullFace(GL_BACK);
 
     RayTracer rayTracer(SHADER_FOLDER "sample.frag");
-    //RayTracer rayTracer(SHADER_FOLDER "raytracer.frag");
     rayTracer.GetCamera().SetAspect((float)SCR_WIDTH / SCR_HEIGHT);
     s_RayTracer = &rayTracer;
 

@@ -49,7 +49,6 @@ vec3 ProcessOutput(Ray ray, Output o)
 {
     vec3 light_pos = vec3(400, 10.9f, 1000); //light position in model space
 
-    //---------- check for shadow -------------------
     bool inShadow = CheckForShadow(light_pos, o);
 
     if(shadingMode == 1){
@@ -65,6 +64,8 @@ vec3 PhongLighting(Ray ray, Output o, vec3 light_pos, bool inShadow){
     float I_aK_a = 0.1f; //I_a * K_a
     vec3 R_ambient = I_aK_a * o.material.color; //Ia * Ka * color
 
+    if(inShadow) return R_ambient;
+
     float diffuse = 0.5f; //I_light * Kdf
     vec3 L = normalize(light_pos - o.point); //light direction
 
@@ -77,11 +78,7 @@ vec3 PhongLighting(Ray ray, Output o, vec3 light_pos, bool inShadow){
     vec3 H = normalize(L+V); //halfway vector between light direction and view direction
     float R_specular = I_light * Ks * pow(max(dot(o.normal, H), 0.0f), exp); //I_light * Ks * (N•H)^exp
 
-    vec3 col = R_ambient;
-
-    if(!inShadow) { //not in shadow
-        col += R_diffuse + R_specular;
-    }
+    vec3 col = R_ambient + R_diffuse + R_specular;
     return col;
 }
 

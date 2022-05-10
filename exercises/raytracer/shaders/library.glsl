@@ -51,6 +51,8 @@ bool CheckForShadow(vec3 light_pos, Output o){
     float distanceToLight = length(light_pos - o.point);
     Output shadowOutput;
     bool inShadow = castRay(rayTowardsLight, distanceToLight, shadowOutput);
+    //bool pushed = PushRay(rayTowardsLight.point, rayTowardsLight.direction, vec3(0.f));
+    //bool inShadow = false;
     return inShadow;
 }
 
