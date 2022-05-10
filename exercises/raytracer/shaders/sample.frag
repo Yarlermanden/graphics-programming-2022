@@ -13,29 +13,31 @@ bool castRay(Ray ray, inout float distance, out Output o)
     sphere.material.roughness = 0.1f;
     sphere.material.diffuseReflectance = 20;
     sphere.material.ambientLightColor = vec3(1.f);
-    sphere.material.albedo = vec3(0.3f);
+    sphere.material.albedo = vec3(0.6f);
 
 
     bool hit = raySphereIntersection(ray, sphere, distance, o);
 
     sphere.radius = 2.0f;
-    sphere.material.metalness = 0.8f;
-    sphere.material.diffuseReflectance = 20.25;
-    sphere.material.roughness = 0.5f;
+    sphere.material.metalness = 0.2f;
+    sphere.material.diffuseReflectance = 3;
+    sphere.material.roughness = 0.4f;
     sphere.material.ambientLightColor = vec3(1.f, 1.f, 1.f);
 
     //moving balls
     for (int i = 1; i <= 10; ++i)
     {
         vec3 offset = 5.0f * vec3(sin(3*i+_rt_Time), sin(2*i+_rt_Time), sin(4*i+_rt_Time));
+        vec3 color = 5.0f * vec3(sin(3*i), sin(2*i), sin(4*i));
         sphere.center = offset + vec3(0,0,-20);
-        sphere.material.color = normalize(offset) * 0.5f + 0.5f;
+        sphere.material.color = normalize(color) * 0.5f + 0.5f;
         hit = raySphereIntersection(ray, sphere, distance, o) || hit;
     }
 
     //steady ball
     sphere.center = vec3(0,0,-30);
     sphere.material.color = vec3(1);
+    sphere.material.diffuseReflectance = 8;
     sphere.material.metalness = 0.8f;
     sphere.material.roughness = 0.1f;
     hit = raySphereIntersection(ray, sphere, distance, o) || hit;
@@ -47,16 +49,8 @@ vec3 ProcessOutput(Ray ray, Output o)
 {
     vec3 light_pos = vec3(400, 10.9f, 1000); //light position in model space
 
-    //check for shadow -------------------
-    //todo find ray from hit towards light
-    Ray rayTowardsLight;
-    rayTowardsLight.direction = normalize(light_pos - o.point); //direction to light
-    rayTowardsLight.point = o.point + (0.001f*rayTowardsLight.direction);
-    rayTowardsLight.colorFilter = vec3(0.f); //todo should this be 0.f instead to make it make shadows
-    //todo make distance less than distance to light
-    float distanceToLight = length(light_pos - o.point);
-    Output shadowOutput;
-    bool inShadow = castRay(rayTowardsLight, distanceToLight, shadowOutput);
+    //---------- check for shadow -------------------
+    bool inShadow = CheckForShadow(light_pos, o);
 
     if(shadingMode == 1){
         return PhongLighting(ray, o, light_pos, inShadow);

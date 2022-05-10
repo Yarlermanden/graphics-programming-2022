@@ -44,6 +44,16 @@ bool castRay(Ray ray, inout float distance)
     return castRay(ray, distance, o);
 }
 
+bool CheckForShadow(vec3 light_pos, Output o){
+    Ray rayTowardsLight;
+    rayTowardsLight.direction = normalize(light_pos - o.point); //direction to light
+    rayTowardsLight.point = o.point + (0.001f*rayTowardsLight.direction);
+    float distanceToLight = length(light_pos - o.point);
+    Output shadowOutput;
+    bool inShadow = castRay(rayTowardsLight, distanceToLight, shadowOutput);
+    return inShadow;
+}
+
 vec3 PhongLighting(Ray ray, Output o, vec3 light_pos, bool inShadow);
 vec3 PBRLighting(Ray ray, Output o, vec3 light_pos, bool inShadow);
 // Fill in this function to process the output once the ray has found a hit
