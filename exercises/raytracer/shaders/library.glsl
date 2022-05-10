@@ -19,7 +19,12 @@ struct Ray
 
 struct Material
 {
-    vec3 color;
+    vec3 color; //reflectionColor
+    float metalness;
+    float roughness;
+    float diffuseReflectance;
+    vec3 ambientLightColor;
+    vec3 albedo;
 };
 
 struct Output
@@ -39,8 +44,8 @@ bool castRay(Ray ray, inout float distance)
     return castRay(ray, distance, o);
 }
 
-vec3 PhongLighting(Ray ray, Output o, vec3 light_pos);
-vec3 PBRLighting(Ray ray, Output o, vec3 light_pos);
+vec3 PhongLighting(Ray ray, Output o, vec3 light_pos, bool inShadow);
+vec3 PBRLighting(Ray ray, Output o, vec3 light_pos, bool inShadow);
 // Fill in this function to process the output once the ray has found a hit
 vec3 ProcessOutput(Ray ray, Output o);
 

@@ -2,19 +2,29 @@
 const uint _rm_MaxRays = 100u;
 const float PI = 3.14159265359;
 
-const float metalness = 0.4f;
-const float diffuseReflectance = 6.25f;
-const float roughness = 0.3f;
-const vec3 ambientLightColor = vec3(1.0f, 1.0f, 1.0f);
-
 bool castRay(Ray ray, inout float distance, out Output o)
 {
     Sphere sphere;
-    sphere.center = vec3(0,0,-30);
-    sphere.radius = 2.0f;
-    sphere.material.color = vec3(1);
+
+    sphere.center = vec3(0, 0, -200);
+    sphere.radius = 100.f;
+    sphere.material.color = vec3(0.2);
+    sphere.material.metalness = 0.95f;
+    sphere.material.roughness = 0.1f;
+    sphere.material.diffuseReflectance = 20;
+    sphere.material.ambientLightColor = vec3(1.f);
+    sphere.material.albedo = vec3(0.3f);
+
 
     bool hit = raySphereIntersection(ray, sphere, distance, o);
+
+    sphere.radius = 2.0f;
+    sphere.material.metalness = 0.8f;
+    sphere.material.diffuseReflectance = 20.25;
+    sphere.material.roughness = 0.5f;
+    sphere.material.ambientLightColor = vec3(1.f, 1.f, 1.f);
+
+    //moving balls
     for (int i = 1; i <= 10; ++i)
     {
         vec3 offset = 5.0f * vec3(sin(3*i+_rt_Time), sin(2*i+_rt_Time), sin(4*i+_rt_Time));
@@ -23,23 +33,41 @@ bool castRay(Ray ray, inout float distance, out Output o)
         hit = raySphereIntersection(ray, sphere, distance, o) || hit;
     }
 
+    //steady ball
+    sphere.center = vec3(0,0,-30);
+    sphere.material.color = vec3(1);
+    sphere.material.metalness = 0.8f;
+    sphere.material.roughness = 0.1f;
+    hit = raySphereIntersection(ray, sphere, distance, o) || hit;
+
     return hit;
 }
 
 vec3 ProcessOutput(Ray ray, Output o)
 {
-    //todo implement phong or PBR
-    vec3 light_pos = vec3(0, 1.9f, 0); //light position in model space
+    vec3 light_pos = vec3(400, 10.9f, 1000); //light position in model space
+
+    //check for shadow -------------------
+    //todo find ray from hit towards light
+    Ray rayTowardsLight;
+    rayTowardsLight.direction = normalize(light_pos - o.point); //direction to light
+    rayTowardsLight.point = o.point + (0.001f*rayTowardsLight.direction);
+    rayTowardsLight.colorFilter = vec3(0.f); //todo should this be 0.f instead to make it make shadows
+    //todo make distance less than distance to light
+    float distanceToLight = length(light_pos - o.point);
+    Output shadowOutput;
+    bool inShadow = castRay(rayTowardsLight, distanceToLight, shadowOutput);
+
     if(shadingMode == 1){
-        return PhongLighting(ray, o, light_pos);
+        return PhongLighting(ray, o, light_pos, inShadow);
     }
     else if(shadingMode == 2){
-        return PBRLighting(ray, o, light_pos);
+        return PBRLighting(ray, o, light_pos, inShadow);
     }
     return o.material.color;
 }
 
-vec3 PhongLighting(Ray ray, Output o, vec3 light_pos){
+vec3 PhongLighting(Ray ray, Output o, vec3 light_pos, bool inShadow){
     float I_aK_a = 0.1f; //I_a * K_a
     vec3 R_ambient = I_aK_a * o.material.color; //Ia * Ka * color
 
@@ -57,15 +85,15 @@ vec3 PhongLighting(Ray ray, Output o, vec3 light_pos){
 
     vec3 col = R_ambient;
 
-    if(true) { //not in shadow
+    if(!inShadow) { //not in shadow
         col += R_diffuse + R_specular;
     }
     return col;
 }
 
-vec3 GetAmbientLighting(vec3 albedo, vec3 normal){
-    //vec3 ambient = textureLod(skybox, normal, 5.0f).rgb;
-    vec3 ambient = ambientLightColor.rgb;
+vec3 GetAmbientLighting(vec3 albedo, Output o){
+    //vec3 ambient = textureLod(skybox, o.normal, 5.0f).rgb;
+    vec3 ambient = o.material.ambientLightColor.rgb;
     ambient *= albedo/PI;
 
     //only apply ambient during the first light pass - if we have multiple
@@ -96,8 +124,8 @@ vec3 GetEnvironmentLighting(vec3 N, vec3 V){
 }
 */
 
-vec3 GetLambertianDiffuseLighting(vec3 N, vec3 L, vec3 albedo){
-    vec3 diffuse = diffuseReflectance * albedo;
+vec3 GetLambertianDiffuseLighting(vec3 N, vec3 L, vec3 albedo, Output o){
+    vec3 diffuse = o.material.diffuseReflectance * albedo;
     diffuse /= PI;
     return diffuse;
 }
@@ -122,16 +150,16 @@ float GeometrySmith(vec3 N, vec3 V, vec3 L, float a)
     return g1*g2;
 }
 
-vec3 GetCookTorranceSpecularLighting(vec3 N, vec3 L, vec3 V)
+vec3 GetCookTorranceSpecularLighting(vec3 L, vec3 V, Output o)
 {
     vec3 H = normalize(L + V);
 
     // Remap alpha parameter to roughness^2
-    float a = roughness * roughness;
-    float D = DistributionGGX(N, H, a);
-    float G = GeometrySmith(N, V, L, a);
-    float cosI = max(dot(N, L), 0.0);
-    float cosO = max(dot(N, V), 0.0);
+    float a = o.material.roughness * o.material.roughness;
+    float D = DistributionGGX(o.normal, H, a);
+    float G = GeometrySmith(o.normal, V, L, a);
+    float cosI = max(dot(o.normal, L), 0.0);
+    float cosO = max(dot(o.normal, V), 0.0);
 
     // Important! Notice that Fresnel term (F) is not here because we apply it later when mixing with diffuse
     float specular = (D * G) / (4.0f * cosO * cosI + 0.0001f);
@@ -144,17 +172,17 @@ vec3 FresnelSchlick(vec3 F0, float cosTheta)
     return F0 + (1-F0)*(pow(1-cosTheta, 5));
 }
 
-vec3 PBRLighting(Ray ray, Output o, vec3 light_pos){
-    vec3 albedo = vec3(0.3f); //from material shader
+vec3 PBRLighting(Ray ray, Output o, vec3 light_pos, bool inShadow){
+    vec3 albedo = o.material.albedo;
     albedo *= o.material.color;
 
     vec3 L = normalize(light_pos - o.point); //light direction
     vec3 V = normalize(-o.point); //view direction - camera(0,0,0) - though not true
 
-    vec3 ambient = GetAmbientLighting(albedo, o.normal);
+    vec3 ambient = GetAmbientLighting(albedo, o);
     //vec3 environment = GetEnvironmentLighting(N, V);
-    vec3 diffuse = GetLambertianDiffuseLighting(o.normal, L, albedo);
-    vec3 specular = GetCookTorranceSpecularLighting(o.normal, L, V);
+    vec3 diffuse = GetLambertianDiffuseLighting(o.normal, L, albedo, o);
+    vec3 specular = GetCookTorranceSpecularLighting(L, V, o);
 
     /*
     vec3 lightRadiance = vec3(1.f); //light color
@@ -169,10 +197,10 @@ vec3 PBRLighting(Ray ray, Output o, vec3 light_pos){
     */
 
     vec3 F0 = vec3(0.04f);
-    F0 = mix(F0, albedo, metalness);
+    F0 = mix(F0, albedo, o.material.metalness);
 
-    diffuse = mix(diffuse, vec3(0.0f), metalness);
-    ambient = mix(ambient, vec3(0.0f), metalness);
+    diffuse = mix(diffuse, vec3(0.0f), o.material.metalness);
+    ambient = mix(ambient, vec3(0.0f), o.material.metalness);
 
     vec3 fresnelAmbient = FresnelSchlick(F0, clamp(dot(o.normal, V), 0, 1));
     //vec3 indirectLight = mix(ambient, environment, fresnelAmbient);
@@ -185,6 +213,7 @@ vec3 PBRLighting(Ray ray, Output o, vec3 light_pos){
 
     //directLight *= lightRadiance;
 
-    vec3 lighting = indirectLight + directLight;
+    vec3 lighting = indirectLight;
+    if(!inShadow) lighting += directLight;
     return lighting;
 }
