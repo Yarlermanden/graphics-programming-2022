@@ -97,6 +97,9 @@ bool raySphereIntersection(Ray ray, Sphere sphere, inout float distance, inout O
                 o.normal = normalize(o.point - sphere.center);
                 o.material = sphere.material;
 
+                o.refractPoint = o.point;
+                o.refractDirection = normalize(ray.direction + o.normal);
+
                 hit = true;
             }
         }

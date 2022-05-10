@@ -42,6 +42,19 @@ void main()
         if (castRay(ray, distance, o))
         {
             color += ray.colorFilter * ProcessOutput(ray, o);
+
+            //todo check reflection
+            PushRay(o.refractPoint, o.refractDirection, vec3(0.1f));
+            /*
+            Ray reflectionRay;
+            reflectionRay.point = o.refractPoint + 0.001f * o.refractDirection;
+            reflectionRay.direction = o.refractDirection;
+            reflectionRay.colorFilter = vec3(0.1f);
+            Output reflectionO;
+            if(castRay(reflectionRay, distance, reflectionO)) {
+                color += reflectionRay.colorFilter * ProcessOutput(reflectionRay, reflectionO);
+            }
+            */
         }
     }
 
