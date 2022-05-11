@@ -2,6 +2,7 @@
 const uint _rm_MaxRays = 10u;
 //const float PI = 3.14159265359;
 
+// --------------------------- Setup Scene ---------------------------------
 bool castRay(Ray ray, inout float distance, out Output o)
 {
     Sphere sphere;
@@ -27,6 +28,9 @@ bool castRay(Ray ray, inout float distance, out Output o)
     //moving balls
     for (int i = 1; i <= 10; ++i)
     {
+        if(i == 1) sphere.material = getMetalMaterial();
+        else if (i == 5) sphere.material = getGlassMaterial();
+        else sphere.material = getNormalMaterial();
         vec3 offset = 5.0f * vec3(sin(3*i+_rt_Time), sin(2*i+_rt_Time), sin(4*i+_rt_Time)) - i;
         vec3 color = 5.0f * vec3(sin(3*i), sin(2*i), sin(4*i));
         sphere.center = offset + vec3(5,5,-20);
@@ -80,6 +84,7 @@ bool castRay(Ray ray, inout float distance, out Output o)
     return hit;
 }
 
+// ------------------------------ Process color/shading ------------------------------------------------
 vec3 ProcessOutput(Ray ray, Output o, out bool inShadow)
 {
     vec3 light_pos = vec3(400, 10.9f, 1000); //light position in model space

@@ -65,6 +65,40 @@ struct Wall
     Material material;
 };
 
+// ------------------------------------ const material -------------------------------------------
+Material getMetalMaterial() {
+    Material material;
+    material.color = vec3(1.f); //reflectionColor
+    material.metalness = 0.8f;
+    material.roughness = 0.1f;
+    material.diffuseReflectance = 20.f;
+    material.ambientLightColor = vec3(0.1f);
+    material.albedo = vec3(0.5f);
+    return material;
+}
+
+Material getNormalMaterial() {
+    Material material;
+    material.color = vec3(1.f); //reflectionColor
+    material.metalness = 0.2f;
+    material.roughness = 0.3f;
+    material.diffuseReflectance = 20.f;
+    material.ambientLightColor = vec3(0.1f);
+    material.albedo = vec3(0.3f);
+    return material;
+}
+
+Material getGlassMaterial() {
+    Material material;
+    material.color = vec3(1.f); //reflectionColor
+    material.metalness = 0.2f;
+    material.roughness = 0.1f;
+    material.diffuseReflectance = 20.f;
+    material.ambientLightColor = vec3(0.1f);
+    material.albedo = vec3(0.3f);
+    return material;
+}
+
 //-------------------------------------- Methods -------------------------------------------------
 
 // Fill in this function to define your scene
