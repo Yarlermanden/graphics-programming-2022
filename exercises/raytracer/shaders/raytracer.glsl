@@ -44,11 +44,9 @@ void main()
             bool inShadow;
             color += ray.colorFilter * ProcessOutput(ray, o, inShadow);
 
-            //todo apply the same kind of lighting on the reflection - taking into account roughness and metalness
-            //todo only push reflections if not in shadow
-            //if(!inShadow) PushRay(o.refractPoint, o.refractDirection, vec3(0.3f));
+            //todo reflection shouuld be multiple rays as surface isn't perfectly flat - BRDF to weight result
             float reflectionStrength = (1-o.material.roughness)*o.material.metalness*2;
-            if(inShadow) reflectionStrength /= 100;
+            //if(inShadow) reflectionStrength /= 100;
             PushRay(o.refractPoint, o.refractDirection, vec3(reflectionStrength));
         }
     }

@@ -97,6 +97,7 @@ bool raySphereIntersection(Ray ray, Sphere sphere, inout float distance, inout O
                 o.normal = normalize(o.point - sphere.center);
                 o.material = sphere.material;
 
+                //todo if transparent object, we need to cast ray through the object - refraction
                 o.refractPoint = o.point;
                 o.refractDirection = normalize(ray.direction + o.normal);
 
@@ -104,6 +105,61 @@ bool raySphereIntersection(Ray ray, Sphere sphere, inout float distance, inout O
             }
         }
     }
+
+    return hit;
+}
+
+struct Rectangle
+{
+    vec3 point; //upper left
+    float width;
+    float height;
+    float depth;
+    Material material;
+};
+
+bool rayRectangleIntersection(Ray ray, Rectangle rectangle, inout float distance, inout Output o)
+{
+    bool hit = false;
+
+    vec3 R0 = ray.point;
+    vec3 D = ray.direction;
+    float t = 1.0f/0.0f;
+
+    vec3 P0 = rectangle.point;
+    vec3 S1 = vec3(rectangle.width, 0.f, 0.f);
+    vec3 S2 = vec3(0.f, rectangle.height, 0.f);
+    vec3 S3 = vec3(0.f, 0.f, rectangle.depth);
+
+    vec3 N = cross(S1, S2);
+
+    if(dot(D, N) < 0) {
+        float d = dot((P0 - R0), N) / dot(D, N);
+
+        if(d < distance){
+            vec3 P = ray.point + d * ray.direction;
+            vec3 P0P = P0-P;
+            //check if point is within rectangle
+            float Q1 = length(P0P.x);
+            float Q2 = length(P0P.y);
+            if((0 <= Q1 && Q1 <= length(S1)) && (0 <= Q2 && Q2 <= length(S2))) {
+                o.point = P;
+                //o.normal = normalize(o.point - rectangle.point);
+                //o.normal = normalize(vec3(0.f, 0.f, -1.f));
+                //o.normal = normalize(o.point - (o.point + S3));
+                o.material = rectangle.material;
+
+                //todo if transparent object, we need to cast ray through the object - refraction
+                o.refractPoint = o.point;
+                o.refractDirection = normalize(ray.direction + o.normal);
+                hit = true;
+            }
+        }
+    }
+
+    //if (rectangle.point-rectangle.height/2 <= ray.direction*rectangle.width/2 && ray.direction*rectangle.width/2 <= rectangle.height/2){
+
+
 
     return hit;
 }
