@@ -27,15 +27,15 @@ bool castRay(Ray ray, inout float distance, out Output o)
     //moving balls
     for (int i = 1; i <= 10; ++i)
     {
-        vec3 offset = 5.0f * vec3(sin(3*i+_rt_Time), sin(2*i+_rt_Time), sin(4*i+_rt_Time));
+        vec3 offset = 5.0f * vec3(sin(3*i+_rt_Time), sin(2*i+_rt_Time), sin(4*i+_rt_Time)) - i;
         vec3 color = 5.0f * vec3(sin(3*i), sin(2*i), sin(4*i));
-        sphere.center = offset + vec3(0,0,-20);
+        sphere.center = offset + vec3(5,5,-20);
         sphere.material.color = normalize(color) * 0.5f + 0.5f;
         hit = raySphereIntersection(ray, sphere, distance, o) || hit;
     }
 
     //steady ball
-    sphere.center = vec3(0,0,-30);
+    sphere.center = vec3(0,10,-25);
     sphere.material.color = vec3(1);
     sphere.material.diffuseReflectance = 8;
     sphere.material.metalness = 0.8f;
@@ -45,11 +45,11 @@ bool castRay(Ray ray, inout float distance, out Output o)
     return hit;
 }
 
-vec3 ProcessOutput(Ray ray, Output o)
+vec3 ProcessOutput(Ray ray, Output o, out bool inShadow)
 {
     vec3 light_pos = vec3(400, 10.9f, 1000); //light position in model space
 
-    bool inShadow = CheckForShadow(light_pos, o);
+    inShadow = CheckForShadow(light_pos, o);
 
     if(shadingMode == 1){
         return PhongLighting(ray, o, light_pos, inShadow);

@@ -59,7 +59,7 @@ bool CheckForShadow(vec3 light_pos, Output o){
 vec3 PhongLighting(Ray ray, Output o, vec3 light_pos, bool inShadow);
 vec3 PBRLighting(Ray ray, Output o, vec3 light_pos, bool inShadow);
 // Fill in this function to process the output once the ray has found a hit
-vec3 ProcessOutput(Ray ray, Output o);
+vec3 ProcessOutput(Ray ray, Output o, out bool inShadow);
 
 // Function to enable recursive rays
 bool PushRay(vec3 point, vec3 direction, vec3 colorFilter);

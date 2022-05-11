@@ -41,20 +41,15 @@ void main()
         float distance = infinity;
         if (castRay(ray, distance, o))
         {
-            color += ray.colorFilter * ProcessOutput(ray, o);
+            bool inShadow;
+            color += ray.colorFilter * ProcessOutput(ray, o, inShadow);
 
-            //todo check reflection
-            PushRay(o.refractPoint, o.refractDirection, vec3(0.1f));
-            /*
-            Ray reflectionRay;
-            reflectionRay.point = o.refractPoint + 0.001f * o.refractDirection;
-            reflectionRay.direction = o.refractDirection;
-            reflectionRay.colorFilter = vec3(0.1f);
-            Output reflectionO;
-            if(castRay(reflectionRay, distance, reflectionO)) {
-                color += reflectionRay.colorFilter * ProcessOutput(reflectionRay, reflectionO);
-            }
-            */
+            //todo apply the same kind of lighting on the reflection - taking into account roughness and metalness
+            //todo only push reflections if not in shadow
+            //if(!inShadow) PushRay(o.refractPoint, o.refractDirection, vec3(0.3f));
+            float reflectionStrength = (1-o.material.roughness)*o.material.metalness*2;
+            if(inShadow) reflectionStrength /= 100;
+            PushRay(o.refractPoint, o.refractDirection, vec3(reflectionStrength));
         }
     }
 
