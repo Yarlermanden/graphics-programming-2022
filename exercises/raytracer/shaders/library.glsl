@@ -12,6 +12,7 @@ uniform int shadingMode;
 
 const float PI = 3.14159265359;
 
+//--------------------------- Structs -----------------------------------
 struct Ray
 {
     vec3 point;
@@ -37,6 +38,34 @@ struct Output
     vec3 refractDirection;
     Material material;
 };
+
+struct Sphere
+{
+    vec3 center;
+    float radius;
+    Material material;
+};
+
+struct Rectangle
+{
+    vec3 point; //upper left
+    float width;
+    float height;
+    float depth;
+    vec3 rotation;
+    Material material;
+};
+
+struct Wall
+{
+    vec3 point;
+    float width;
+    float height;
+    vec3 rotation;
+    Material material;
+};
+
+//-------------------------------------- Methods -------------------------------------------------
 
 // Fill in this function to define your scene
 bool castRay(Ray ray, inout float distance, out Output o);
@@ -66,15 +95,6 @@ vec3 ProcessOutput(Ray ray, Output o, out bool inShadow);
 // Function to enable recursive rays
 bool PushRay(vec3 point, vec3 direction, vec3 colorFilter);
 
-
-
-struct Sphere
-{
-    vec3 center;
-    float radius;
-    Material material;
-};
-
 bool raySphereIntersection(Ray ray, Sphere sphere, inout float distance, inout Output o)
 {
     bool hit = false;
@@ -101,50 +121,44 @@ bool raySphereIntersection(Ray ray, Sphere sphere, inout float distance, inout O
 
                 //todo if transparent object, we need to cast ray through the object - refraction
                 o.refractPoint = o.point;
-                //o.refractDirection = normalize(-ray.direction + o.normal);
-                //o.refractDirection = 2*dot(-ray.direction, o.normal)*o.normal + ray.direction;
                 o.refractDirection = normalize(2*dot(-ray.direction, o.normal)*o.normal + ray.direction);
 
                 hit = true;
             }
         }
     }
-
     return hit;
 }
 
-struct Rectangle
-{
-    vec3 point; //upper left
-    float width;
-    float height;
-    float depth;
-    Material material;
-};
 
-struct Wall
-{
-    vec3 point;
-    float width;
-    float height;
-    vec3 rotation;
-    Material material;
-};
-
-
-
-mat4 rotationMatrix(vec3 axis, float angle)
+mat3 rotateX(float angle)
 {
     angle *= PI/180;
-    axis = normalize(axis);
     float s = sin(angle);
     float c = cos(angle);
-    float oc = 1.0 - c;
+    return mat3(1, 0, 0,
+                0, c, -s,
+                0, s, c);
+}
 
-    return mat4(oc * axis.x * axis.x + c,           oc * axis.x * axis.y - axis.z * s,  oc * axis.z * axis.x + axis.y * s,  0.0,
-    oc * axis.x * axis.y + axis.z * s,  oc * axis.y * axis.y + c,           oc * axis.y * axis.z - axis.x * s,  0.0,
-    oc * axis.z * axis.x - axis.y * s,  oc * axis.y * axis.z + axis.x * s,  oc * axis.z * axis.z + c,           0.0,
-    0.0,                                0.0,                                0.0,                                1.0);
+mat3 rotateY(float angle)
+{
+    angle *= PI/180;
+    float s = sin(angle);
+    float c = cos(angle);
+    return mat3(c, 0, s,
+                0, 1, 0,
+                -s, 0, c);
+}
+
+mat3 rotateZ(float angle)
+{
+    angle *= PI/180;
+    float s = sin(angle);
+    float c = cos(angle);
+    return mat3(c, -s, 0,
+                s, c, 0,
+                0, 0, 1);
 }
 
 bool rayWallIntersection(Ray ray, Wall wall, inout float distance, inout Output o)
@@ -157,18 +171,10 @@ bool rayWallIntersection(Ray ray, Wall wall, inout float distance, inout Output 
     float t = 1.0f/0.0f;
 
     vec3 P0 = wall.point;
-    mat4 rotationMatrixX = rotationMatrix(vec3(1.f, 0, 0), wall.rotation.x);
-    mat4 rotationMatrixY = rotationMatrix(vec3(0.f, 1.f, 0), wall.rotation.y);
-    mat4 rotationMatrixZ = rotationMatrix(vec3(0.f, 0.f, 1.f), wall.rotation.z);
-    vec3 S1 = vec3(wall.width, 0.f, 0.f);
-    vec3 S2 = vec3(0.f, wall.height, 0.f);
-    //S1 = (vec4(S1, 1) * rotationMatrixX).xyz;
-    //S2 = (vec4(S2, 1) * rotationMatrixY).xyz;
-    mat4 rotationMatrix = rotationMatrixX * rotationMatrixY * rotationMatrixZ;
-    vec4 S14 = rotationMatrix * vec4(S1, 1);
-    S1 = S14.xyz;
-    vec4 S24 = rotationMatrix * vec4(S2, 1);
-    S2 = S24.xyz;
+
+    mat3 rotationMatrix = rotateX(wall.rotation.x) * rotateY(wall.rotation.y) * rotateZ(wall.rotation.z);
+    vec3 S1 = rotationMatrix*vec3(wall.width, 0.f, 0.f);
+    vec3 S2 = rotationMatrix*vec3(0.f, wall.height, 0.f);
     vec3 N = cross(S1, S2);
 
     if(dot(D, N) < 0) {
@@ -186,10 +192,7 @@ bool rayWallIntersection(Ray ray, Wall wall, inout float distance, inout Output 
                 o.material = wall.material;
                 //todo if transparent object, we need to cast ray through the object - refraction
                 o.refractPoint = o.point;
-                //o.refractDirection = normalize(-ray.direction + o.normal);
-                //o.refractDirection = normalize(o.normal);
-
-                o.refractDirection = normalize(2*dot(-ray.direction, o.normal)*o.normal + ray.direction);
+                o.refractDirection = normalize(2*dot(-ray.direction, o.normal)*o.normal + ray.direction); //from book
                 hit = true;
             }
         }
@@ -200,13 +203,27 @@ bool rayWallIntersection(Ray ray, Wall wall, inout float distance, inout Output 
 bool rayRectangleIntersection(Ray ray, Rectangle rectangle, inout float distance, inout Output o)
 {
     bool hit = false;
-
     Wall wall;
+
+    /*
+    //front surface
     wall.point = rectangle.point;
     wall.width = rectangle.width;
     wall.height = rectangle.height;
-    wall.rotation = vec3(90, 0.f, 0);
+    wall.rotation = rectangle.rotation;
     wall.material = rectangle.material;
     hit = rayWallIntersection(ray, wall, distance, o) || hit;
+
+    //left surface
+    wall.point = rectangle.point;
+    wall.width = rectangle.depth;
+    wall.height = rectangle.height;
+    wall.rotation = normalize(rectangle.rotation + vec3(0.f, 270.f, 0.f));
+    wall.rotation = vec3(70.f, 0.f, 0.f);
+    wall.material = rectangle.material;
+    hit = rayWallIntersection(ray, wall, distance, o) || hit;
+    */
+
+
     return hit;
 }

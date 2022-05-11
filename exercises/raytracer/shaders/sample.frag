@@ -1,5 +1,5 @@
 //This describes the scene
-const uint _rm_MaxRays = 100u;
+const uint _rm_MaxRays = 10u;
 //const float PI = 3.14159265359;
 
 bool castRay(Ray ray, inout float distance, out Output o)
@@ -46,20 +46,35 @@ bool castRay(Ray ray, inout float distance, out Output o)
     sphere.material.color = vec3(1, 0, 0);
     hit = raySphereIntersection(ray, sphere, distance, o) || hit;
 
-    //square
-    Rectangle rectangle;
-    rectangle.point = vec3(-10, -10, -80);
-    rectangle.width = 80;
-    rectangle.height = 80;
-    rectangle.depth = 10;
+    //Wall - floor
+    Wall wall;
+    wall.point = vec3(-10, -10, -80);
+    wall.width = 80;
+    wall.height = 80;
 
-    rectangle.material.color = vec3(0.1f);
+    wall.material.color = vec3(0.1f);
+    wall.material.diffuseReflectance = 8;
+    wall.material.metalness = 0.4f;
+    wall.material.roughness = 0.3f;
+    wall.material.ambientLightColor = vec3(0.4f);
+    wall.material.albedo = vec3(0.3f);
+    wall.rotation = vec3(90, 0.f, 0.f);
+    hit = rayWallIntersection(ray, wall, distance, o) || hit;
+
+    //Rectangle - small
+    Rectangle rectangle;
+    rectangle.point = vec3(10, 10, -40);
+    rectangle.width = 4;
+    rectangle.height = 4;
+    rectangle.depth = 4;
+    rectangle.rotation = vec3(0.45f, 45.f, 0.f);
+
+    rectangle.material.color = vec3(0.01f);
     rectangle.material.diffuseReflectance = 8;
     rectangle.material.metalness = 0.4f;
     rectangle.material.roughness = 0.3f;
     rectangle.material.ambientLightColor = vec3(0.4f);
     rectangle.material.albedo = vec3(0.3f);
-
     hit = rayRectangleIntersection(ray, rectangle, distance, o) || hit;
 
     return hit;
