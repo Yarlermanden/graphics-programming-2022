@@ -1,6 +1,6 @@
 //This describes the scene
 const uint _rm_MaxRays = 100u;
-const float PI = 3.14159265359;
+//const float PI = 3.14159265359;
 
 bool castRay(Ray ray, inout float distance, out Output o)
 {
