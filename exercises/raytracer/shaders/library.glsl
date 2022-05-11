@@ -143,15 +143,18 @@ bool rayRectangleIntersection(Ray ray, Rectangle rectangle, inout float distance
             float Q1 = length(P0P.x);
             float Q2 = length(P0P.y);
             if((0 <= Q1 && Q1 <= length(S1)) && (0 <= Q2 && Q2 <= length(S2))) {
+            //float proj1 = P0P.x/rectangle.width;
+            //float proj2 = P0P.y/rectangle.height;
+            //if((proj1 < rectangle.width && proj1 > 0) && (proj2 < rectangle.height && proj2 > 0)) {
                 o.point = P;
                 //o.normal = normalize(o.point - rectangle.point);
-                //o.normal = normalize(vec3(0.f, 0.f, -1.f));
-                //o.normal = normalize(o.point - (o.point + S3));
+                //o.normal = normalize(o.point - (o.point - S3));
+                o.normal = normalize(o.point - vec3(o.point-S3))+0.01f;
                 o.material = rectangle.material;
 
                 //todo if transparent object, we need to cast ray through the object - refraction
                 o.refractPoint = o.point;
-                o.refractDirection = normalize(ray.direction + o.normal);
+                o.refractDirection = normalize(-ray.direction + o.normal);
                 hit = true;
             }
         }

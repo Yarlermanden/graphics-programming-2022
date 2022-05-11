@@ -42,18 +42,23 @@ bool castRay(Ray ray, inout float distance, out Output o)
     sphere.material.roughness = 0.1f;
     hit = raySphereIntersection(ray, sphere, distance, o) || hit;
 
+    sphere.center = vec3(20, 10, -28);
+    sphere.material.color = vec3(1, 0, 0);
+    hit = raySphereIntersection(ray, sphere, distance, o) || hit;
+
     //square
     Rectangle rectangle;
-    rectangle.point = vec3(-10, -10, -60);
-    rectangle.width = 10;
-    rectangle.height = 10;
+    rectangle.point = vec3(-10, -10, -80);
+    rectangle.width = 80;
+    rectangle.height = 80;
     rectangle.depth = 10;
-    sphere.material.color = vec3(1);
-    sphere.material.diffuseReflectance = 8;
-    sphere.material.metalness = 0.8f;
-    sphere.material.roughness = 0.1f;
-    sphere.material.ambientLightColor = vec3(1.f);
-    sphere.material.albedo = vec3(0.6f);
+
+    rectangle.material.color = vec3(0.1f);
+    rectangle.material.diffuseReflectance = 8;
+    rectangle.material.metalness = 0.4f;
+    rectangle.material.roughness = 0.3f;
+    rectangle.material.ambientLightColor = vec3(0.4f);
+    rectangle.material.albedo = vec3(0.3f);
 
     hit = rayRectangleIntersection(ray, rectangle, distance, o) || hit;
 
