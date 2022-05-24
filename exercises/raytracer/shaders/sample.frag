@@ -1,5 +1,5 @@
 //This describes the scene
-const uint _rm_MaxRays = 10u;
+const uint _rm_MaxRays = 5u;
 //const float PI = 3.14159265359;
 
 // --------------------------- Setup Scene ---------------------------------
@@ -15,6 +15,7 @@ bool castRay(Ray ray, inout float distance, out Output o)
     sphere.material.diffuseReflectance = 20;
     sphere.material.ambientLightColor = vec3(1.f);
     sphere.material.albedo = vec3(0.6f);
+    sphere.material.transparency = 0.f;
 
 
     bool hit = raySphereIntersection(ray, sphere, distance, o);
@@ -62,9 +63,11 @@ bool castRay(Ray ray, inout float distance, out Output o)
     wall.material.roughness = 0.3f;
     wall.material.ambientLightColor = vec3(0.4f);
     wall.material.albedo = vec3(0.3f);
+    wall.material.transparency = 0.f;
     wall.rotation = vec3(90, 0.f, 0.f);
     hit = rayWallIntersection(ray, wall, distance, o) || hit;
 
+    /*
     //Rectangle - small
     Rectangle rectangle;
     rectangle.point = vec3(10, 10, -40);
@@ -79,7 +82,9 @@ bool castRay(Ray ray, inout float distance, out Output o)
     rectangle.material.roughness = 0.3f;
     rectangle.material.ambientLightColor = vec3(0.4f);
     rectangle.material.albedo = vec3(0.3f);
+    rectangle.material.transparency = 0.f;
     hit = rayRectangleIntersection(ray, rectangle, distance, o) || hit;
+    */
 
     return hit;
 }

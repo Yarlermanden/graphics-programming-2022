@@ -42,12 +42,17 @@ void main()
         if (castRay(ray, distance, o))
         {
             bool inShadow;
-            color += ray.colorFilter * ProcessOutput(ray, o, inShadow);
+            color += (1-o.material.transparency) * ray.colorFilter * ProcessOutput(ray, o, inShadow);
 
             //todo reflection shouuld be multiple rays as surface isn't perfectly flat - BRDF to weight result
-            float reflectionStrength = (1-o.material.roughness)*o.material.metalness*2;
+            float reflectionStrength = (1-o.material.roughness)*o.material.metalness*2 * (1-o.material.transparency);
             //if(inShadow) reflectionStrength /= 100;
-            PushRay(o.refractPoint, o.refractDirection, vec3(reflectionStrength));
+
+            PushRay(o.point, o.reflectionDirection, vec3(reflectionStrength));
+            if(o.material.transparency != 0.f) {
+                PushRay(o.refractPoint-(0.1f*o.refractionDirection), o.refractionDirection, vec3(o.material.transparency)); //refraction
+            }
+            //Todo pushRay with info from refraction
         }
     }
 

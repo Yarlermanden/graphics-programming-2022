@@ -28,6 +28,7 @@ struct Material
     float diffuseReflectance;
     vec3 ambientLightColor;
     vec3 albedo;
+    float transparency;
 };
 
 struct Output
@@ -35,7 +36,8 @@ struct Output
     vec3 point;
     vec3 normal;
     vec3 refractPoint;
-    vec3 refractDirection;
+    vec3 reflectionDirection;
+    vec3 refractionDirection;
     Material material;
 };
 
@@ -74,6 +76,7 @@ Material getMetalMaterial() {
     material.diffuseReflectance = 20.f;
     material.ambientLightColor = vec3(0.1f);
     material.albedo = vec3(0.5f);
+    material.transparency = 0.f;
     return material;
 }
 
@@ -85,6 +88,7 @@ Material getNormalMaterial() {
     material.diffuseReflectance = 20.f;
     material.ambientLightColor = vec3(0.1f);
     material.albedo = vec3(0.3f);
+    material.transparency = 0.f;
     return material;
 }
 
@@ -96,6 +100,7 @@ Material getGlassMaterial() {
     material.diffuseReflectance = 20.f;
     material.ambientLightColor = vec3(0.1f);
     material.albedo = vec3(0.3f);
+    material.transparency = 0.8f;
     return material;
 }
 
@@ -129,6 +134,18 @@ vec3 ProcessOutput(Ray ray, Output o, out bool inShadow);
 // Function to enable recursive rays
 bool PushRay(vec3 point, vec3 direction, vec3 colorFilter);
 
+void Refraction(Ray ray, Output o, Sphere sphere){
+    //todo calculate the refraction direction
+    o.refractionDirection = ray.direction;
+
+    //todo calculate at what point we leave the object again - from the new direction...
+
+
+    //todo then calculate the new refraction direction once again
+    //1.5 for glass
+    //1.3 for water
+}
+
 bool raySphereIntersection(Ray ray, Sphere sphere, inout float distance, inout Output o)
 {
     bool hit = false;
@@ -154,8 +171,11 @@ bool raySphereIntersection(Ray ray, Sphere sphere, inout float distance, inout O
                 o.material = sphere.material;
 
                 //todo if transparent object, we need to cast ray through the object - refraction
-                o.refractPoint = o.point;
-                o.refractDirection = normalize(2*dot(-ray.direction, o.normal)*o.normal + ray.direction);
+                //o.refractPoint = o.point;
+                o.reflectionDirection = normalize(2*dot(-ray.direction, o.normal)*o.normal + ray.direction);
+                //todo compute refraction point here instead - and remove refraction method
+                Refraction(ray, o, sphere);
+                o.refractPoint = ray.point + max(-b + sqrt(discr), 0.f) * o.refractionDirection;
 
                 hit = true;
             }
@@ -226,7 +246,9 @@ bool rayWallIntersection(Ray ray, Wall wall, inout float distance, inout Output 
                 o.material = wall.material;
                 //todo if transparent object, we need to cast ray through the object - refraction
                 o.refractPoint = o.point;
-                o.refractDirection = normalize(2*dot(-ray.direction, o.normal)*o.normal + ray.direction); //from book
+                o.reflectionDirection = normalize(2*dot(-ray.direction, o.normal)*o.normal + ray.direction); //from book
+                //Refraction(ray, o);
+
                 hit = true;
             }
         }
