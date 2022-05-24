@@ -39,6 +39,7 @@ struct Output
     vec3 reflectionDirection;
     vec3 refractionDirection;
     Material material;
+    float lowestTransparency; //used for shadow check
 };
 
 struct Sphere
@@ -100,7 +101,7 @@ Material getGlassMaterial() {
     material.diffuseReflectance = 20.f;
     material.ambientLightColor = vec3(0.1f);
     material.albedo = vec3(0.3f);
-    material.transparency = 0.8f;
+    material.transparency = 0.7f;
     return material;
 }
 
@@ -114,7 +115,7 @@ bool castRay(Ray ray, inout float distance)
     return castRay(ray, distance, o);
 }
 
-bool CheckForShadow(vec3 light_pos, Output o){
+bool CheckForShadow(vec3 light_pos, inout Output o){
     Ray rayTowardsLight;
     rayTowardsLight.direction = normalize(light_pos - o.point); //direction to light
     rayTowardsLight.point = o.point + (0.001f*rayTowardsLight.direction);
@@ -123,6 +124,7 @@ bool CheckForShadow(vec3 light_pos, Output o){
     bool inShadow = castRay(rayTowardsLight, distanceToLight, shadowOutput);
     //bool pushed = PushRay(rayTowardsLight.point, rayTowardsLight.direction, vec3(0.f));
     //bool inShadow = false;
+    o.lowestTransparency = shadowOutput.lowestTransparency;
     return inShadow;
 }
 
@@ -134,7 +136,7 @@ vec3 ProcessOutput(Ray ray, Output o, out bool inShadow);
 // Function to enable recursive rays
 bool PushRay(vec3 point, vec3 direction, vec3 colorFilter);
 
-void Refraction(Ray ray, Output o, Sphere sphere){
+void Refraction(Ray ray, inout Output o, Sphere sphere){
     //todo calculate the refraction direction
     o.refractionDirection = ray.direction;
 
@@ -165,17 +167,17 @@ bool raySphereIntersection(Ray ray, Sphere sphere, inout float distance, inout O
             if (d < distance)
             {
                 distance = d;
+                if(o.lowestTransparency > sphere.material.transparency) o.lowestTransparency = sphere.material.transparency;
 
                 o.point = ray.point + d * ray.direction;
                 o.normal = normalize(o.point - sphere.center);
                 o.material = sphere.material;
-
-                //todo if transparent object, we need to cast ray through the object - refraction
-                //o.refractPoint = o.point;
                 o.reflectionDirection = normalize(2*dot(-ray.direction, o.normal)*o.normal + ray.direction);
-                //todo compute refraction point here instead - and remove refraction method
-                Refraction(ray, o, sphere);
-                o.refractPoint = ray.point + max(-b + sqrt(discr), 0.f) * o.refractionDirection;
+
+                if (o.material.transparency != 0.f) {
+                    Refraction(ray, o, sphere);
+                    o.refractPoint = ray.point + max(-b + sqrt(discr) + 0.1f, 0.f) * o.refractionDirection;
+                }
 
                 hit = true;
             }

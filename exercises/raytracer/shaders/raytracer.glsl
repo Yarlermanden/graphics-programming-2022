@@ -52,7 +52,6 @@ void main()
             if(o.material.transparency != 0.f) {
                 PushRay(o.refractPoint-(0.1f*o.refractionDirection), o.refractionDirection, vec3(o.material.transparency)); //refraction
             }
-            //Todo pushRay with info from refraction
         }
     }
 

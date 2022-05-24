@@ -5,6 +5,7 @@ const uint _rm_MaxRays = 5u;
 // --------------------------- Setup Scene ---------------------------------
 bool castRay(Ray ray, inout float distance, out Output o)
 {
+    o.lowestTransparency = 1.f;
     Sphere sphere;
 
     sphere.center = vec3(0, 0, -200);
@@ -100,6 +101,7 @@ vec3 ProcessOutput(Ray ray, Output o, out bool inShadow)
         return PhongLighting(ray, o, light_pos, inShadow);
     }
     else if(shadingMode == 2){
+        //todo handle transparent objects in shadowcheck
         return PBRLighting(ray, o, light_pos, inShadow);
     }
     return o.material.color;
@@ -108,8 +110,6 @@ vec3 ProcessOutput(Ray ray, Output o, out bool inShadow)
 vec3 PhongLighting(Ray ray, Output o, vec3 light_pos, bool inShadow){
     float I_aK_a = 0.1f; //I_a * K_a
     vec3 R_ambient = I_aK_a * o.material.color; //Ia * Ka * color
-
-    if(inShadow) return R_ambient;
 
     float diffuse = 0.5f; //I_light * Kdf
     vec3 L = normalize(light_pos - o.point); //light direction
@@ -123,7 +123,13 @@ vec3 PhongLighting(Ray ray, Output o, vec3 light_pos, bool inShadow){
     vec3 H = normalize(L+V); //halfway vector between light direction and view direction
     float R_specular = I_light * Ks * pow(max(dot(o.normal, H), 0.0f), exp); //I_light * Ks * (N•H)^exp
 
-    vec3 col = R_ambient + R_diffuse + R_specular;
+    vec3 col = R_ambient;
+    if(inShadow) {
+        col += (o.lowestTransparency) * (R_diffuse + R_specular);
+    }
+    else {
+        col += R_diffuse + R_specular;
+    }
     return col;
 }
 
