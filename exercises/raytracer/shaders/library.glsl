@@ -140,14 +140,21 @@ vec3 ProcessOutput(Ray ray, Output o, out bool inShadow);
 bool PushRay(vec3 point, vec3 direction, vec3 colorFilter);
 
 void Refraction(Ray ray, inout Output o, Sphere sphere){
-    o.refractionDirection = ray.direction;
+    vec3 v = -ray.direction;
+    vec3 n = o.normal;
+    float index = o.material.indexOfRefraction == ray.indexOfRefraction ? 1/o.material.indexOfRefraction : o.material.indexOfRefraction;
 
-    //todo handle case where there is no transmission (slow to fast medium)
+    vec3 v_lat = v - (dot(v, n)*n);
+    vec3 t_lat = -pow(index, -1) * v_lat;
+    if(length(t_lat) >= 1) {
+        //No refraction
+        o.material.transparency = o.material.transparency/2; //total internal reflection
+        return;
+    }
 
-
-    //todo calculate the refraction direction
-    //using rewritten Snell's law
-    vec3 angleOfIncidence = normalize(ray.direction - o.normal); //Angle of incidence - between v and n
+    vec3 t_perp = -sqrt(1-pow(length(t_lat), 2) * n);
+    vec3 t = t_lat + t_perp;
+    o.refractionDirection = t;
 
     //1.5 for glass
     //1.3 for water
@@ -167,10 +174,18 @@ bool raySphereIntersection(Ray ray, Sphere sphere, inout float distance, inout O
         float discr = b * b - c;
         if (discr >= 0.0f)
         {
-            float d = max(-b - sqrt(discr), 0.0f);
-            if(d == 0.f) return false; //if d is less than small, the ray.point is inside the object
-
-            if (d < distance)
+            float d = -b - sqrt(discr);
+            if(d < 0.f) {
+                //todo Need to handle, when it hits the edge of the object
+                distance = d;
+                o.point = ray.point + max((-b + sqrt(discr) + 0.1f), 0.f) * ray.direction;
+                o.normal = normalize(o.point - sphere.center);
+                o.material = sphere.material;
+                o.refractionDirection = normalize(2*dot(-ray.direction, o.normal) * o.normal + ray.direction);
+                Refraction(ray, o, sphere);
+                return true; //if d is less than small, the ray.point is inside the object
+            }
+            else if (d < distance)
             {
                 distance = d;
                 if(o.lowestTransparency > sphere.material.transparency) o.lowestTransparency = sphere.material.transparency;

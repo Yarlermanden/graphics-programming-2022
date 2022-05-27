@@ -51,9 +51,8 @@ void main()
 
             PushRay(o.point, o.reflectionDirection, vec3(reflectionStrength), ray.indexOfRefraction);
             if(o.material.transparency != 0.f) {
-                float newIndex = o.material.indexOfRefraction == ray.indexOfRefraction? 1.f : o.material.indexOfRefraction; //todo maybe this should be o.indexOfIncidence and then be handled when calculating angle
-                //PushRay(o.refractPoint-(0.1f*o.refractionDirection), o.refractionDirection, vec3(o.material.transparency), newIndex); //refraction
-                PushRay(o.point+(0.1f*o.refractionDirection), o.refractionDirection, vec3(o.material.transparency), newIndex); //refraction
+                float newIndex = o.material.indexOfRefraction == ray.indexOfRefraction ? 1.f : o.material.indexOfRefraction; //todo maybe this should be o.indexOfIncidence and then be handled when calculating angle
+                PushRay(o.point, o.refractionDirection, vec3(o.material.transparency), newIndex); //refraction
             }
         }
     }
