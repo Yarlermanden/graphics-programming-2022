@@ -18,6 +18,7 @@ struct Ray
     vec3 point;
     vec3 direction;
     vec3 colorFilter;
+    float indexOfRefraction;
 };
 
 struct Material
@@ -29,6 +30,7 @@ struct Material
     vec3 ambientLightColor;
     vec3 albedo;
     float transparency;
+    float indexOfRefraction;
 };
 
 struct Output
@@ -102,6 +104,7 @@ Material getGlassMaterial() {
     material.ambientLightColor = vec3(0.1f);
     material.albedo = vec3(0.3f);
     material.transparency = 0.7f;
+    material.indexOfRefraction = 1.5;
     return material;
 }
 
@@ -137,13 +140,15 @@ vec3 ProcessOutput(Ray ray, Output o, out bool inShadow);
 bool PushRay(vec3 point, vec3 direction, vec3 colorFilter);
 
 void Refraction(Ray ray, inout Output o, Sphere sphere){
-    //todo calculate the refraction direction
     o.refractionDirection = ray.direction;
 
-    //todo calculate at what point we leave the object again - from the new direction...
+    //todo handle case where there is no transmission (slow to fast medium)
 
 
-    //todo then calculate the new refraction direction once again
+    //todo calculate the refraction direction
+    //using rewritten Snell's law
+    vec3 angleOfIncidence = normalize(ray.direction - o.normal); //Angle of incidence - between v and n
+
     //1.5 for glass
     //1.3 for water
 }
@@ -163,6 +168,7 @@ bool raySphereIntersection(Ray ray, Sphere sphere, inout float distance, inout O
         if (discr >= 0.0f)
         {
             float d = max(-b - sqrt(discr), 0.0f);
+            if(d == 0.f) return false; //if d is less than small, the ray.point is inside the object
 
             if (d < distance)
             {
@@ -176,7 +182,8 @@ bool raySphereIntersection(Ray ray, Sphere sphere, inout float distance, inout O
 
                 if (o.material.transparency != 0.f) {
                     Refraction(ray, o, sphere);
-                    o.refractPoint = ray.point + max(-b + sqrt(discr) + 0.1f, 0.f) * o.refractionDirection;
+                    //o.refractPoint = ray.point + max(-b + sqrt(discr) + 0.1f, 0.f) * o.refractionDirection;
+                    //o.refractPoint = o.point + (max(-b + sqrt(discr) + 0.1f, 0.f) - d) * o.refractionDirection; //need to make the distance a bit smaller depending on the angle
                 }
 
                 hit = true;

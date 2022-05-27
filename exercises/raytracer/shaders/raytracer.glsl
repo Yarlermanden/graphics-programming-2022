@@ -9,7 +9,7 @@ out vec4 FragColor;
 Ray _rt_pendingRays[_rm_MaxRays];
 uint _rt_rayCount;
 
-bool PushRay(vec3 point, vec3 direction, vec3 colorFilter)
+bool PushRay(vec3 point, vec3 direction, vec3 colorFilter, float indexOfRefraction)
 {
     bool pushed = false;
     if (_rt_rayCount < _rm_MaxRays)
@@ -18,6 +18,7 @@ bool PushRay(vec3 point, vec3 direction, vec3 colorFilter)
         ray.point = point + 0.01f * direction;
         ray.direction = direction;
         ray.colorFilter = colorFilter;
+        ray.indexOfRefraction = indexOfRefraction;
         _rt_pendingRays[_rt_rayCount++] = ray;
         pushed = true;
     }
@@ -29,7 +30,7 @@ const float infinity = 1.0f/0.0f;
 void main()
 {
     _rt_rayCount = 0u;
-    PushRay(_rt_viewPos, normalize(_rt_viewPos), vec3(1.0f));
+    PushRay(_rt_viewPos, normalize(_rt_viewPos), vec3(1.0f), 1.f);
 
     vec3 color = vec3(0);
 
@@ -48,9 +49,11 @@ void main()
             float reflectionStrength = (1-o.material.roughness)*o.material.metalness*2 * (1-o.material.transparency);
             //if(inShadow) reflectionStrength /= 100;
 
-            PushRay(o.point, o.reflectionDirection, vec3(reflectionStrength));
+            PushRay(o.point, o.reflectionDirection, vec3(reflectionStrength), ray.indexOfRefraction);
             if(o.material.transparency != 0.f) {
-                PushRay(o.refractPoint-(0.1f*o.refractionDirection), o.refractionDirection, vec3(o.material.transparency)); //refraction
+                float newIndex = o.material.indexOfRefraction == ray.indexOfRefraction? 1.f : o.material.indexOfRefraction; //todo maybe this should be o.indexOfIncidence and then be handled when calculating angle
+                //PushRay(o.refractPoint-(0.1f*o.refractionDirection), o.refractionDirection, vec3(o.material.transparency), newIndex); //refraction
+                PushRay(o.point+(0.1f*o.refractionDirection), o.refractionDirection, vec3(o.material.transparency), newIndex); //refraction
             }
         }
     }
