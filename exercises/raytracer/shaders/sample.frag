@@ -37,7 +37,7 @@ bool castRay(Ray ray, inout float distance, out Output o)
         vec3 color = 5.0f * vec3(sin(3*i), sin(2*i), sin(4*i));
         sphere.center = offset + vec3(5,5,-20);
         sphere.material.color = normalize(color) * 0.5f + 0.5f;
-        hit = raySphereIntersection(ray, sphere, distance, o) || hit;
+        hit = hit || raySphereIntersection(ray, sphere, distance, o);
     }
 
     //steady ball
@@ -46,11 +46,11 @@ bool castRay(Ray ray, inout float distance, out Output o)
     sphere.material.diffuseReflectance = 8;
     sphere.material.metalness = 0.8f;
     sphere.material.roughness = 0.1f;
-    hit = raySphereIntersection(ray, sphere, distance, o) || hit;
+    hit = hit || raySphereIntersection(ray, sphere, distance, o);
 
     sphere.center = vec3(20, 10, -28);
     sphere.material.color = vec3(1, 0, 0);
-    hit = raySphereIntersection(ray, sphere, distance, o) || hit;
+    hit = hit || raySphereIntersection(ray, sphere, distance, o);
 
     //Wall - floor
     Wall wall;
@@ -66,7 +66,7 @@ bool castRay(Ray ray, inout float distance, out Output o)
     wall.material.albedo = vec3(0.3f);
     wall.material.transparency = 0.f;
     wall.rotation = vec3(90, 0.f, 0.f);
-    hit = rayWallIntersection(ray, wall, distance, o) || hit;
+    hit = hit || rayWallIntersection(ray, wall, distance, o);
 
     /*
     //Rectangle - small

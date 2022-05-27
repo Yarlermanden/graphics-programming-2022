@@ -42,6 +42,7 @@ struct Output
     vec3 refractionDirection;
     Material material;
     float lowestTransparency; //used for shadow check
+    bool totalInternalReflection;
 };
 
 struct Sphere
@@ -79,6 +80,7 @@ Material getMetalMaterial() {
     material.diffuseReflectance = 20.f;
     material.ambientLightColor = vec3(0.1f);
     material.albedo = vec3(0.5f);
+    material.indexOfRefraction = 1.0f;
     material.transparency = 0.f;
     return material;
 }
@@ -91,6 +93,7 @@ Material getNormalMaterial() {
     material.diffuseReflectance = 20.f;
     material.ambientLightColor = vec3(0.1f);
     material.albedo = vec3(0.3f);
+    material.indexOfRefraction = 1.0f;
     material.transparency = 0.f;
     return material;
 }
@@ -104,7 +107,7 @@ Material getGlassMaterial() {
     material.ambientLightColor = vec3(0.1f);
     material.albedo = vec3(0.3f);
     material.transparency = 0.7f;
-    material.indexOfRefraction = 1.5;
+    material.indexOfRefraction = 1.4f;
     return material;
 }
 
@@ -144,16 +147,29 @@ void Refraction(Ray ray, inout Output o, Sphere sphere){
     vec3 n = o.normal;
     float index = o.material.indexOfRefraction == ray.indexOfRefraction ? 1/o.material.indexOfRefraction : o.material.indexOfRefraction;
 
+    vec3 t_lat = (dot(v, n)*n - v)/index;
+    float sinSq = pow(length(t_lat), 2);
+    /*
+    if(sinSq > 1) {
+        o.totalInternalReflection = true;
+        return;
+    }
+    */
+    vec3 t = t_lat - sqrt(1 - sinSq*n);
+
+    /*
     vec3 v_lat = v - (dot(v, n)*n);
     vec3 t_lat = -pow(index, -1) * v_lat;
     if(length(t_lat) >= 1) {
         //No refraction
-        o.material.transparency = o.material.transparency/2; //total internal reflection
+        o.totalInternalReflection = true;
         return;
     }
+    o.totalInternalReflection = false;
 
     vec3 t_perp = -sqrt(1-pow(length(t_lat), 2) * n);
     vec3 t = t_lat + t_perp;
+    */
     o.refractionDirection = t;
 
     //1.5 for glass
@@ -179,17 +195,18 @@ bool raySphereIntersection(Ray ray, Sphere sphere, inout float distance, inout O
                 //todo Need to handle, when it hits the edge of the object
                 distance = d;
                 o.point = ray.point + max((-b + sqrt(discr) + 0.1f), 0.f) * ray.direction;
-                o.normal = normalize(o.point - sphere.center);
+                o.normal = -normalize(o.point - sphere.center);
                 o.material = sphere.material;
-                o.refractionDirection = normalize(2*dot(-ray.direction, o.normal) * o.normal + ray.direction);
+                //o.reflectionDirection = normalize(2*dot(-ray.direction, -o.normal) * -o.normal + ray.direction);
+                o.reflectionDirection = normalize(2*dot(-ray.direction, o.normal) * o.normal + ray.direction);
                 Refraction(ray, o, sphere);
-                return true; //if d is less than small, the ray.point is inside the object
+                //return true; //if d is less than small, the ray.point is inside the object
             }
             else if (d < distance)
             {
                 distance = d;
                 if(o.lowestTransparency > sphere.material.transparency) o.lowestTransparency = sphere.material.transparency;
-
+                o.totalInternalReflection = false;
                 o.point = ray.point + d * ray.direction;
                 o.normal = normalize(o.point - sphere.center);
                 o.material = sphere.material;
