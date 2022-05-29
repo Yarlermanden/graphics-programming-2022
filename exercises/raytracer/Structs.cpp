@@ -9,7 +9,7 @@ ObjectMaterial MaterialHelper::getMetalMaterial() {
     material.color = glm::vec3(0.1f); //reflectionColor
     material.indexOfRefraction = 1.0f;
     material.transparency = 0.f;
-    material.reflectionGlobal = glm::vec3(0.7f);
+    material.reflectionGlobal = glm::vec3(0.9f);
 
     material.I_aK_a = 0.05f;
     material.diffuse = 0.3f;
@@ -48,7 +48,7 @@ ObjectMaterial MaterialHelper::getGlassMaterial() {
     material.reflectionGlobal = glm::vec3(0.3f);
 
     material.I_aK_a = 0.05f;
-    material.diffuse = 0.1f;
+    material.diffuse = 0.05f;
 
     material.metalness = 0.3f;
     material.roughness = 0.1f;

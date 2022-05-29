@@ -1,5 +1,5 @@
 //This describes the scene
-const uint _rm_MaxRays = 10u;
+const uint _rm_MaxRays = 100u;
 //const float PI = 3.14159265359;
 
 layout (std140) uniform Scene {
