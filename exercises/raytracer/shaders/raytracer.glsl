@@ -43,13 +43,16 @@ void main()
         if (castRay(ray, distance, o))
         {
             bool inShadow;
-            color += (1-o.material.transparency) * ray.colorFilter * ProcessOutput(ray, o, inShadow);
+            //todo Use correct formulas for amount of light distributed on local light, reflection light and transmission light for this ray. Each should take into account the rays current colorfilter
+            //color += (1-o.material.transparency) * ray.colorFilter * ProcessOutput(ray, o, inShadow);
+            color += ray.colorFilter * ProcessOutput(ray, o, inShadow);
 
             //todo reflection should be multiple rays as surface isn't perfectly flat - BRDF to weight result
-            float reflectionStrength = (1-o.material.roughness)*o.material.metalness*2 * (1-o.material.transparency);
-            //if(inShadow) reflectionStrength /= 100;
+            //float reflectionStrength = (1-o.material.roughness)*o.material.metalness*2 * pow((1-o.material.transparency),2);
+            //float reflectionStrength = (1-o.material.roughness)*o.material.metalness*2 * o.material.reflectionGlobal;
 
-            PushRay(o.point, o.reflectionDirection, vec3(reflectionStrength), ray.indexOfRefraction);
+            //PushRay(o.point, o.reflectionDirection, vec3(reflectionStrength), ray.indexOfRefraction);
+            PushRay(o.point, o.reflectionDirection, o.material.reflectionGlobal, ray.indexOfRefraction);
             if(o.totalInternalReflection) continue;
             if(o.material.transparency != 0.f) {
                 float newIndex = o.material.indexOfRefraction == ray.indexOfRefraction ? 1.f : o.material.indexOfRefraction; //todo maybe this should be o.indexOfIncidence and then be handled when calculating angle

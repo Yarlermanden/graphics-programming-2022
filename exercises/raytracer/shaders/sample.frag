@@ -1,5 +1,5 @@
 //This describes the scene
-const uint _rm_MaxRays = 100u;
+const uint _rm_MaxRays = 10u;
 //const float PI = 3.14159265359;
 
 // --------------------------- Setup Scene ---------------------------------
@@ -10,13 +10,7 @@ bool castRay(Ray ray, inout float distance, out Output o)
 
     sphere.center = vec3(0, 0, -200);
     sphere.radius = 100.f;
-    sphere.material.color = vec3(0.2);
-    sphere.material.metalness = 0.95f;
-    sphere.material.roughness = 0.1f;
-    sphere.material.diffuseReflectance = 20;
-    sphere.material.ambientLightColor = vec3(1.f);
-    sphere.material.albedo = vec3(0.6f);
-    sphere.material.transparency = 0.f;
+    sphere.material = getMetalMaterial();
 
 
     bool hit = raySphereIntersection(ray, sphere, distance, o);
@@ -36,6 +30,7 @@ bool castRay(Ray ray, inout float distance, out Output o)
         vec3 offset = 5.0f * vec3(sin(3*i+_rt_Time), sin(2*i+_rt_Time), sin(4*i+_rt_Time)) - i;
         vec3 color = 5.0f * vec3(sin(3*i), sin(2*i), sin(4*i));
         sphere.center = offset + vec3(5,5,-20);
+        if (i == 5) color = vec3(1);
         sphere.material.color = normalize(color) * 0.5f + 0.5f;
         hit = hit || raySphereIntersection(ray, sphere, distance, o);
     }
@@ -65,6 +60,7 @@ bool castRay(Ray ray, inout float distance, out Output o)
     wall.material.ambientLightColor = vec3(0.4f);
     wall.material.albedo = vec3(0.3f);
     wall.material.transparency = 0.f;
+    wall.material.reflectionGlobal = vec3(0.3f);
     wall.rotation = vec3(90, 0.f, 0.f);
     hit = hit || rayWallIntersection(ray, wall, distance, o);
 

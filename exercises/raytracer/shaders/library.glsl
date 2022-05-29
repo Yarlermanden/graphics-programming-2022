@@ -31,6 +31,7 @@ struct Material
     vec3 albedo;
     float transparency;
     float indexOfRefraction;
+    vec3 reflectionGlobal;
 };
 
 struct Output
@@ -82,6 +83,7 @@ Material getMetalMaterial() {
     material.albedo = vec3(0.5f);
     material.indexOfRefraction = 1.0f;
     material.transparency = 0.f;
+    material.reflectionGlobal = vec3(0.7f);
     return material;
 }
 
@@ -95,19 +97,21 @@ Material getNormalMaterial() {
     material.albedo = vec3(0.3f);
     material.indexOfRefraction = 1.0f;
     material.transparency = 0.f;
+    material.reflectionGlobal = vec3(0.3f);
     return material;
 }
 
 Material getGlassMaterial() {
     Material material;
     material.color = vec3(1.f); //reflectionColor
-    material.metalness = 0.2f;
+    material.metalness = 0.3f;
     material.roughness = 0.1f;
-    material.diffuseReflectance = 20.f;
+    material.diffuseReflectance = 10.f;
     material.ambientLightColor = vec3(0.1f);
-    material.albedo = vec3(0.3f);
-    material.transparency = 0.7f;
+    material.albedo = vec3(0.1f);
+    material.transparency = 0.7f; //transmissionGlobal
     material.indexOfRefraction = 1.4f;
+    material.reflectionGlobal = vec3(0.3f);
     return material;
 }
 
@@ -149,12 +153,10 @@ void Refraction(Ray ray, inout Output o, Sphere sphere){
 
     vec3 t_lat = (dot(v, n)*n - v)/index;
     float sinSq = pow(length(t_lat), 2);
-    /*
     if(sinSq > 1) {
         o.totalInternalReflection = true;
         return;
     }
-    */
     vec3 t = t_lat - sqrt(1 - sinSq*n);
 
     /*
@@ -193,9 +195,10 @@ bool raySphereIntersection(Ray ray, Sphere sphere, inout float distance, inout O
             float d = -b - sqrt(discr);
             if(d < 0.f) {
                 //todo Need to handle, when it hits the edge of the object
+                //return false;
                 distance = d;
                 o.point = ray.point + max((-b + sqrt(discr) + 0.1f), 0.f) * ray.direction;
-                o.normal = -normalize(o.point - sphere.center);
+                o.normal = normalize(sphere.center - o.point);
                 o.material = sphere.material;
                 //o.reflectionDirection = normalize(2*dot(-ray.direction, -o.normal) * -o.normal + ray.direction);
                 o.reflectionDirection = normalize(2*dot(-ray.direction, o.normal) * o.normal + ray.direction);
