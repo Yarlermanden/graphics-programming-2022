@@ -48,7 +48,7 @@ public:
         //moving balls
         for (int i = 4; i < 14; ++i)
         {
-            glm::vec3 offset = 5.0f * glm::vec3( sin(2*i+currentFrame), sin(3*i+currentFrame), sin(4*i+currentFrame)) - (float)i;
+            glm::vec3 offset = 5.0f * glm::vec3( sin(3*i+currentFrame), sin(2*i+currentFrame), sin(4*i+currentFrame)) - (float)i;
             glm::vec3 color = 5.0f * glm::vec3( sin(3*i), sin(2*i), sin(4*i));
             spheres[i].center = offset + glm::vec3(5,5,-20);
             if (i == 7) color = glm::vec3(1);
