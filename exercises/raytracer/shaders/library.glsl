@@ -24,14 +24,20 @@ struct Ray
 struct Material
 {
     vec3 color; //reflectionColor
+    float transparency;
+    float indexOfRefraction;
+    vec3 reflectionGlobal;
+
+    //PhongLighting
+    float I_aK_a; //I_a * K_a
+    float diffuse; //I_light *I Kdf
+
+    //PBR
     float metalness;
     float roughness;
     float diffuseReflectance;
     vec3 ambientLightColor;
     vec3 albedo;
-    float transparency;
-    float indexOfRefraction;
-    vec3 reflectionGlobal;
 };
 
 struct Output
@@ -75,43 +81,55 @@ struct Wall
 // ------------------------------------ const material -------------------------------------------
 Material getMetalMaterial() {
     Material material;
-    material.color = vec3(1.f); //reflectionColor
-    material.metalness = 0.8f;
-    material.roughness = 0.1f;
-    material.diffuseReflectance = 20.f;
-    material.ambientLightColor = vec3(0.1f);
-    material.albedo = vec3(0.5f);
+    material.color = vec3(0.1f); //reflectionColor
     material.indexOfRefraction = 1.0f;
     material.transparency = 0.f;
     material.reflectionGlobal = vec3(0.7f);
+
+    material.I_aK_a = 0.05f;
+    material.diffuse = 0.3f;
+
+    material.ambientLightColor = vec3(0.2f);
+    material.metalness = 0.9f;
+    material.roughness = 0.1f;
+    material.diffuseReflectance = 20.f;
+    material.albedo = vec3(.3f);
     return material;
 }
 
 Material getNormalMaterial() {
     Material material;
     material.color = vec3(1.f); //reflectionColor
+    material.indexOfRefraction = 1.0f;
+    material.transparency = 0.f;
+    material.reflectionGlobal = vec3(0.01f);
+
+    material.I_aK_a = 0.05f;
+    material.diffuse = 0.7f;
+
+    material.ambientLightColor = vec3(0.1f);
     material.metalness = 0.2f;
     material.roughness = 0.3f;
     material.diffuseReflectance = 20.f;
-    material.ambientLightColor = vec3(0.1f);
     material.albedo = vec3(0.3f);
-    material.indexOfRefraction = 1.0f;
-    material.transparency = 0.f;
-    material.reflectionGlobal = vec3(0.3f);
     return material;
 }
 
 Material getGlassMaterial() {
     Material material;
     material.color = vec3(1.f); //reflectionColor
+    material.indexOfRefraction = 1.4f;
+    material.transparency = 0.7f; //transmissionGlobal
+    material.reflectionGlobal = vec3(0.3f);
+
+    material.I_aK_a = 0.05f;
+    material.diffuse = 0.1f;
+
     material.metalness = 0.3f;
     material.roughness = 0.1f;
     material.diffuseReflectance = 10.f;
     material.ambientLightColor = vec3(0.1f);
     material.albedo = vec3(0.1f);
-    material.transparency = 0.7f; //transmissionGlobal
-    material.indexOfRefraction = 1.4f;
-    material.reflectionGlobal = vec3(0.3f);
     return material;
 }
 
@@ -153,29 +171,14 @@ void Refraction(Ray ray, inout Output o, Sphere sphere){
 
     vec3 t_lat = (dot(v, n)*n - v)/index;
     float sinSq = pow(length(t_lat), 2);
+    /*
     if(sinSq > 1) {
         o.totalInternalReflection = true;
         return;
     }
-    vec3 t = t_lat - sqrt(1 - sinSq*n);
-
-    /*
-    vec3 v_lat = v - (dot(v, n)*n);
-    vec3 t_lat = -pow(index, -1) * v_lat;
-    if(length(t_lat) >= 1) {
-        //No refraction
-        o.totalInternalReflection = true;
-        return;
-    }
-    o.totalInternalReflection = false;
-
-    vec3 t_perp = -sqrt(1-pow(length(t_lat), 2) * n);
-    vec3 t = t_lat + t_perp;
     */
+    vec3 t = t_lat - sqrt(1 - sinSq*n);
     o.refractionDirection = t;
-
-    //1.5 for glass
-    //1.3 for water
 }
 
 bool raySphereIntersection(Ray ray, Sphere sphere, inout float distance, inout Output o)
@@ -203,6 +206,7 @@ bool raySphereIntersection(Ray ray, Sphere sphere, inout float distance, inout O
                 //o.reflectionDirection = normalize(2*dot(-ray.direction, -o.normal) * -o.normal + ray.direction);
                 o.reflectionDirection = normalize(2*dot(-ray.direction, o.normal) * o.normal + ray.direction);
                 Refraction(ray, o, sphere);
+                hit = true;
                 //return true; //if d is less than small, the ray.point is inside the object
             }
             else if (d < distance)

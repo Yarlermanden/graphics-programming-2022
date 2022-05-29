@@ -16,15 +16,12 @@ bool castRay(Ray ray, inout float distance, out Output o)
     bool hit = raySphereIntersection(ray, sphere, distance, o);
 
     sphere.radius = 2.0f;
-    sphere.material.metalness = 0.2f;
-    sphere.material.diffuseReflectance = 3;
-    sphere.material.roughness = 0.4f;
     sphere.material.ambientLightColor = vec3(1.f, 1.f, 1.f);
 
     //moving balls
     for (int i = 1; i <= 10; ++i)
     {
-        if(i == 1) sphere.material = getMetalMaterial();
+        if(i <= 3) sphere.material = getMetalMaterial();
         else if (i == 5) sphere.material = getGlassMaterial();
         else sphere.material = getNormalMaterial();
         vec3 offset = 5.0f * vec3(sin(3*i+_rt_Time), sin(2*i+_rt_Time), sin(4*i+_rt_Time)) - i;
@@ -53,13 +50,8 @@ bool castRay(Ray ray, inout float distance, out Output o)
     wall.width = 80;
     wall.height = 80;
 
+    wall.material = getMetalMaterial();
     wall.material.color = vec3(0.1f);
-    wall.material.diffuseReflectance = 8;
-    wall.material.metalness = 0.4f;
-    wall.material.roughness = 0.3f;
-    wall.material.ambientLightColor = vec3(0.4f);
-    wall.material.albedo = vec3(0.3f);
-    wall.material.transparency = 0.f;
     wall.material.reflectionGlobal = vec3(0.3f);
     wall.rotation = vec3(90, 0.f, 0.f);
     hit = hit || rayWallIntersection(ray, wall, distance, o);
@@ -104,10 +96,10 @@ vec3 ProcessOutput(Ray ray, Output o, out bool inShadow)
 }
 
 vec3 PhongLighting(Ray ray, Output o, vec3 light_pos, bool inShadow){
-    float I_aK_a = 0.1f; //I_a * K_a
+    float I_aK_a = o.material.I_aK_a;
     vec3 R_ambient = I_aK_a * o.material.color; //Ia * Ka * color
 
-    float diffuse = 0.5f; //I_light * Kdf
+    float diffuse = o.material.diffuse;
     vec3 L = normalize(light_pos - o.point); //light direction
 
     vec3 R_diffuse = diffuse * max(dot(o.normal, L), 0.0f) * o.material.color; //I_light * Kd * (N•L) * Color

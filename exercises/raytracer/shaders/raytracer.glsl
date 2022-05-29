@@ -43,6 +43,7 @@ void main()
         if (castRay(ray, distance, o))
         {
             bool inShadow;
+            if(o.totalInternalReflection) continue;
             //todo Use correct formulas for amount of light distributed on local light, reflection light and transmission light for this ray. Each should take into account the rays current colorfilter
             //color += (1-o.material.transparency) * ray.colorFilter * ProcessOutput(ray, o, inShadow);
             color += ray.colorFilter * ProcessOutput(ray, o, inShadow);
@@ -53,7 +54,6 @@ void main()
 
             //PushRay(o.point, o.reflectionDirection, vec3(reflectionStrength), ray.indexOfRefraction);
             PushRay(o.point, o.reflectionDirection, o.material.reflectionGlobal, ray.indexOfRefraction);
-            if(o.totalInternalReflection) continue;
             if(o.material.transparency != 0.f) {
                 float newIndex = o.material.indexOfRefraction == ray.indexOfRefraction ? 1.f : o.material.indexOfRefraction; //todo maybe this should be o.indexOfIncidence and then be handled when calculating angle
                 PushRay(o.point, o.refractionDirection, vec3(o.material.transparency), newIndex); //refraction
