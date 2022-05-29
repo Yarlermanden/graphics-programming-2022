@@ -6,6 +6,7 @@
 #include <functional>
 #include <glad/glad.h>
 #include <glm/glm.hpp>
+#include "Scene.h"
 
 class Shader
 {
@@ -32,6 +33,7 @@ public:
     bool ValidateUniform(unsigned int index) const;
 
     static bool ReadShaderFile(const char* path, std::string &shaderCode);
+    void LoadScene(Scene scene) const;
 
 private:
 

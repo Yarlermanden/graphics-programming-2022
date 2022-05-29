@@ -7,12 +7,10 @@
 #include "Shader.h"
 
 #include <GLFW/glfw3.h>
-#include <Scene.h>
 
 std::string RayTracer::s_RayTracerSource;
 std::string RayTracer::s_LibrarySource;
 
-//Scene
 Scene scene;
 
 bool RayTracer::s_SourceChanged(false);
@@ -42,6 +40,8 @@ void RayTracer::Render(int shadingMode) const
     m_Shader.SetUniform("_rt_Proj", &projMatrix);
     m_Shader.SetUniform("_rt_InvProj", &invProjMatrix);
     m_Shader.SetUniform("shadingMode", &shadingMode);
+
+    m_Shader.LoadScene(scene);
 
     m_FullscreenQuad.Draw();
 }

@@ -21,12 +21,12 @@ struct Ray
     float indexOfRefraction;
 };
 
-struct Material
+struct ObjectMaterial
 {
     vec3 color; //reflectionColor
     float transparency;
-    float indexOfRefraction;
     vec3 reflectionGlobal;
+    float indexOfRefraction;
 
     //PhongLighting
     float I_aK_a; //I_a * K_a
@@ -35,9 +35,10 @@ struct Material
     //PBR
     float metalness;
     float roughness;
-    float diffuseReflectance;
     vec3 ambientLightColor;
+    float diffuseReflectance;
     vec3 albedo;
+    float PADDING;
 };
 
 struct Output
@@ -47,7 +48,7 @@ struct Output
     vec3 refractPoint;
     vec3 reflectionDirection;
     vec3 refractionDirection;
-    Material material;
+    ObjectMaterial material;
     float lowestTransparency; //used for shadow check
     bool totalInternalReflection;
 };
@@ -56,7 +57,7 @@ struct Sphere
 {
     vec3 center;
     float radius;
-    Material material;
+    ObjectMaterial material;
 };
 
 struct Rectangle
@@ -66,7 +67,7 @@ struct Rectangle
     float height;
     float depth;
     vec3 rotation;
-    Material material;
+    ObjectMaterial material;
 };
 
 struct Wall
@@ -75,19 +76,19 @@ struct Wall
     float width;
     float height;
     vec3 rotation;
-    Material material;
+    ObjectMaterial material;
 };
 
 // ------------------------------------ const material -------------------------------------------
-Material getMetalMaterial() {
-    Material material;
-    material.color = vec3(0.1f); //reflectionColor
+ObjectMaterial getMetalMaterial() {
+    ObjectMaterial material;
+    material.color = vec3(0.2f); //reflectionColor
     material.indexOfRefraction = 1.0f;
     material.transparency = 0.f;
     material.reflectionGlobal = vec3(0.7f);
 
     material.I_aK_a = 0.05f;
-    material.diffuse = 0.3f;
+    material.diffuse = 0.4f;
 
     material.ambientLightColor = vec3(0.2f);
     material.metalness = 0.9f;
@@ -97,8 +98,8 @@ Material getMetalMaterial() {
     return material;
 }
 
-Material getNormalMaterial() {
-    Material material;
+ObjectMaterial getNormalMaterial() {
+    ObjectMaterial material;
     material.color = vec3(1.f); //reflectionColor
     material.indexOfRefraction = 1.0f;
     material.transparency = 0.f;
@@ -115,8 +116,8 @@ Material getNormalMaterial() {
     return material;
 }
 
-Material getGlassMaterial() {
-    Material material;
+ObjectMaterial getGlassMaterial() {
+    ObjectMaterial material;
     material.color = vec3(1.f); //reflectionColor
     material.indexOfRefraction = 1.4f;
     material.transparency = 0.7f; //transmissionGlobal

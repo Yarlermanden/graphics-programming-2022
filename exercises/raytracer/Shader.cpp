@@ -9,12 +9,31 @@
 
 #include "RayTracer.h"
 
+GLuint uboScene;
+
 Shader::Shader(const char* vertexPath, const char* fragmentPath)
     : m_Program(0)
     , m_VertexPath(vertexPath), m_FragmentPath(fragmentPath)
     , m_VertexHash(0), m_FragmentHash(0)
 {
     Reload();
+
+    GLuint objectIndex = glGetUniformBlockIndex(m_Program, "Scene");
+    glUniformBlockBinding(m_Program, objectIndex, 0);
+
+    // Uniform buffer object for lights
+    glGenBuffers(1, &uboScene);
+    glBindBuffer(GL_UNIFORM_BUFFER, uboScene);
+    glBufferData(GL_UNIFORM_BUFFER, sizeof(Sphere)*14, NULL, GL_DYNAMIC_DRAW);
+    //glBufferData(GL_UNIFORM_BUFFER, sizeof(float), NULL, GL_DYNAMIC_DRAW);
+    glBindBufferBase(GL_UNIFORM_BUFFER, objectIndex, uboScene);
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+    /*
+    glBindBuffer(GL_UNIFORM_BUFFER, m_Program);
+    glBufferData(GL_UNIFORM_BUFFER, sizeof(Sphere) * 1, NULL, GL_DYNAMIC_DRAW);
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+    glBindBufferBase(GL_UNIFORM_BUFFER, 1, m_Program);
+     */
 
     if (m_Program)
     {
@@ -203,6 +222,14 @@ unsigned int Shader::GetUniformSize(unsigned int index) const
     GetTypeInfo(uniform.type, size);
 
     return size;
+}
+
+void Shader::LoadScene(Scene scene) const {
+    glBindBuffer(GL_UNIFORM_BUFFER, uboScene);
+    glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(scene.spheres), &scene.spheres);
+    //float f = 1.f;
+    //glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(float), &f);
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
 

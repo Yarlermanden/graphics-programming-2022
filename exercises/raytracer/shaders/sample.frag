@@ -2,9 +2,19 @@
 const uint _rm_MaxRays = 10u;
 //const float PI = 3.14159265359;
 
+layout (std140) uniform Scene {
+    Sphere spheres[14];
+};
+
 // --------------------------- Setup Scene ---------------------------------
 bool castRay(Ray ray, inout float distance, out Output o)
 {
+    bool hit = false;
+    o.lowestTransparency = 1.f;
+    for (int i = 0; i < 14; i++){
+        hit = hit || raySphereIntersection(ray, spheres[i], distance, o);
+    }
+    /*
     o.lowestTransparency = 1.f;
     Sphere sphere;
 
@@ -43,6 +53,7 @@ bool castRay(Ray ray, inout float distance, out Output o)
     sphere.center = vec3(20, 10, -28);
     sphere.material.color = vec3(1, 0, 0);
     hit = hit || raySphereIntersection(ray, sphere, distance, o);
+    */
 
     //Wall - floor
     Wall wall;
@@ -55,6 +66,11 @@ bool castRay(Ray ray, inout float distance, out Output o)
     wall.material.reflectionGlobal = vec3(0.3f);
     wall.rotation = vec3(90, 0.f, 0.f);
     hit = hit || rayWallIntersection(ray, wall, distance, o);
+
+
+    hit = hit || raySphereIntersection(ray, spheres[0], distance, o);
+
+
 
     /*
     //Rectangle - small
