@@ -7,9 +7,13 @@
 #include "Shader.h"
 
 #include <GLFW/glfw3.h>
+#include <Scene.h>
 
 std::string RayTracer::s_RayTracerSource;
 std::string RayTracer::s_LibrarySource;
+
+//Scene
+Scene scene;
 
 bool RayTracer::s_SourceChanged(false);
 
@@ -22,6 +26,8 @@ RayTracer::RayTracer(const char* fragmentPath)
 
 void RayTracer::Render(int shadingMode) const
 {
+    float currentFrame = (float)glfwGetTime();
+    scene.UpdateScene(currentFrame);
     glm::mat4 viewMatrix = m_Camera.GetViewMatrix();
     glm::mat4 projMatrix = m_Camera.GetProjMatrix();;
     glm::mat4 invViewMatrix = inverse(m_Camera.GetViewMatrix());
@@ -29,7 +35,6 @@ void RayTracer::Render(int shadingMode) const
 
     m_Material.Use();
 
-    float currentFrame = (float)glfwGetTime();
     m_Shader.SetUniform("_rt_Time", &currentFrame);
 
     m_Shader.SetUniform("_rt_View", &viewMatrix);
