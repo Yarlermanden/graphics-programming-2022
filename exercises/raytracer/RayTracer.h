@@ -12,7 +12,7 @@ class RayTracer
 public:
     RayTracer(const char* fragmentPath);
 
-    void Render(int lightingMode) const;
+    void Render(int lightingMode, Camera camera) const;
 
     void ReloadShaders();
 

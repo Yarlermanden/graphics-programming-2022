@@ -17,6 +17,7 @@ GLFWwindow* initOpenGL(unsigned int width, unsigned int height, const char* titl
 void shutdownOpenGL();
 void key_input_callback(GLFWwindow* window, int button, int other, int action, int mods);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void processInput(GLFWwindow *window);
 
 // imgui functions
 void initImGui(GLFWwindow* window);
@@ -34,6 +35,9 @@ int shadingMode = 1;
 
 // Global raytracer to reload shaders
 RayTracer* s_RayTracer = nullptr;
+
+Camera camera;
+float deltaTime = 0;
 
 int main()
 {
@@ -55,12 +59,24 @@ int main()
     rayTracer.GetCamera().SetAspect((float)SCR_WIDTH / SCR_HEIGHT);
     s_RayTracer = &rayTracer;
 
+    float loopInterval = 1.f/60.f;
+    auto begin = std::chrono::high_resolution_clock::now();
+
     while (!glfwWindowShouldClose(window))
     {
+        auto frameStart = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<float> appTime = frameStart - begin;
+
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        rayTracer.Render(shadingMode);
+        std::chrono::duration<float> elapsed = std::chrono::high_resolution_clock::now()-frameStart;
+        while (loopInterval > elapsed.count()) {
+            elapsed = std::chrono::high_resolution_clock::now() - frameStart;
+        }
+        deltaTime = elapsed.count();
+        processInput(window);
+        rayTracer.Render(shadingMode, camera);
 
         if (showGui)
         {
@@ -180,7 +196,19 @@ void key_input_callback(GLFWwindow* window, int key, int scancode, int action, i
                 s_RayTracer->ReloadShaders();
             break;
         }
+
     }
+}
+
+void processInput(GLFWwindow *window){
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        camera.ProcessKeyboard(FORWARD, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        camera.ProcessKeyboard(BACKWARD, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        camera.ProcessKeyboard(LEFT, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        camera.ProcessKeyboard(RIGHT, deltaTime);
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)

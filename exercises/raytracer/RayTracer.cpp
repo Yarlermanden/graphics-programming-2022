@@ -12,7 +12,6 @@ std::string RayTracer::s_RayTracerSource;
 std::string RayTracer::s_LibrarySource;
 
 Scene scene;
-Camera camera;
 
 bool RayTracer::s_SourceChanged(false);
 
@@ -23,12 +22,10 @@ RayTracer::RayTracer(const char* fragmentPath)
 {
 }
 
-void RayTracer::Render(int shadingMode) const
+void RayTracer::Render(int shadingMode, Camera camera) const
 {
     float currentFrame = (float)glfwGetTime();
-    //camera.ProcessKeyboard(LEFT, 0.016);
     scene.UpdateScene(currentFrame);
-    //glm::mat4 viewMatrix = m_Camera.GetViewMatrix();
     glm::mat4 viewMatrix = camera.GetViewMatrix();
     glm::mat4 projMatrix = m_Camera.GetProjMatrix();;
     glm::mat4 invViewMatrix = inverse(viewMatrix);

@@ -27,11 +27,6 @@ bool castRay(Ray ray, inout float distance, out Output o)
     wall.rotation = vec3(90, 0.f, 0.f);
     hit = hit || rayWallIntersection(ray, wall, distance, o);
 
-
-    hit = hit || raySphereIntersection(ray, spheres[0], distance, o);
-
-
-
     /*
     //Rectangle - small
     Rectangle rectangle;
