@@ -12,6 +12,7 @@ std::string RayTracer::s_RayTracerSource;
 std::string RayTracer::s_LibrarySource;
 
 Scene scene;
+Camera camera;
 
 bool RayTracer::s_SourceChanged(false);
 
@@ -25,21 +26,23 @@ RayTracer::RayTracer(const char* fragmentPath)
 void RayTracer::Render(int shadingMode) const
 {
     float currentFrame = (float)glfwGetTime();
+    //camera.ProcessKeyboard(LEFT, 0.016);
     scene.UpdateScene(currentFrame);
-    glm::mat4 viewMatrix = m_Camera.GetViewMatrix();
+    //glm::mat4 viewMatrix = m_Camera.GetViewMatrix();
+    glm::mat4 viewMatrix = camera.GetViewMatrix();
     glm::mat4 projMatrix = m_Camera.GetProjMatrix();;
-    glm::mat4 invViewMatrix = inverse(m_Camera.GetViewMatrix());
-    glm::mat4 invProjMatrix = inverse(m_Camera.GetProjMatrix());
+    glm::mat4 invViewMatrix = inverse(viewMatrix);
+    glm::mat4 invProjMatrix = inverse(projMatrix);
 
     m_Material.Use();
 
     m_Shader.SetUniform("_rt_Time", &currentFrame);
-
     m_Shader.SetUniform("_rt_View", &viewMatrix);
     m_Shader.SetUniform("_rt_InvView", &invViewMatrix);
     m_Shader.SetUniform("_rt_Proj", &projMatrix);
     m_Shader.SetUniform("_rt_InvProj", &invProjMatrix);
     m_Shader.SetUniform("shadingMode", &shadingMode);
+    m_Shader.SetUniform("Pos", &(camera.Position));
 
     m_Shader.LoadScene(scene);
 

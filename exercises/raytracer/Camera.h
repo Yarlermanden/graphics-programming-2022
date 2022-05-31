@@ -41,9 +41,12 @@ public:
     Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch);
 
     glm::mat4 GetViewMatrix() const;
+    glm::mat4 GetViewMatrix();
     glm::mat4 GetProjMatrix() const;
+    glm::mat4 GetProjMatrix();
 
     glm::vec3 GetPosition() const { return m_Position; }
+    glm::vec3 GetPosition() { return Position; }
     void SetPosition(const glm::vec3 &position) { m_Position = position; }
     glm::vec3 GetLookAt() const { return m_LookAt; }
     void SetLookAt(const glm::vec3 &lookAt) { m_LookAt = lookAt; }

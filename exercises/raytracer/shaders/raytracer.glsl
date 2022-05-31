@@ -3,6 +3,7 @@
 //#version 330 core
 
 in vec3 _rt_viewPos;
+in vec3 _rt_viewDir;
 
 out vec4 FragColor;
 
@@ -30,7 +31,9 @@ const float infinity = 1.0f/0.0f;
 void main()
 {
     _rt_rayCount = 0u;
-    PushRay(_rt_viewPos, normalize(_rt_viewPos), vec3(1.0f), 1.f);
+    //PushRay(_rt_viewPos, normalize(_rt_viewPos), vec3(1.0f), 1.f);
+    //PushRay(_rt_viewPos, normalize(vec3(0,0,-10)), vec3(1.0f), 1.f);
+    PushRay(_rt_viewPos, normalize(_rt_viewDir), vec3(1.0f), 1.f);
 
     vec3 color = vec3(0);
 

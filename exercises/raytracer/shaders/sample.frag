@@ -14,46 +14,6 @@ bool castRay(Ray ray, inout float distance, out Output o)
     for (int i = 0; i < 14; i++){
         hit = hit || raySphereIntersection(ray, spheres[i], distance, o);
     }
-    /*
-    o.lowestTransparency = 1.f;
-    Sphere sphere;
-
-    sphere.center = vec3(0, 0, -200);
-    sphere.radius = 100.f;
-    sphere.material = getMetalMaterial();
-
-
-    bool hit = raySphereIntersection(ray, sphere, distance, o);
-
-    sphere.radius = 2.0f;
-    sphere.material.ambientLightColor = vec3(1.f, 1.f, 1.f);
-
-    //moving balls
-    for (int i = 1; i <= 10; ++i)
-    {
-        if(i <= 3) sphere.material = getMetalMaterial();
-        else if (i == 5) sphere.material = getGlassMaterial();
-        else sphere.material = getNormalMaterial();
-        vec3 offset = 5.0f * vec3(sin(3*i+_rt_Time), sin(2*i+_rt_Time), sin(4*i+_rt_Time)) - i;
-        vec3 color = 5.0f * vec3(sin(3*i), sin(2*i), sin(4*i));
-        sphere.center = offset + vec3(5,5,-20);
-        if (i == 5) color = vec3(1);
-        sphere.material.color = normalize(color) * 0.5f + 0.5f;
-        hit = hit || raySphereIntersection(ray, sphere, distance, o);
-    }
-
-    //steady ball
-    sphere.center = vec3(0,10,-25);
-    sphere.material.color = vec3(1);
-    sphere.material.diffuseReflectance = 8;
-    sphere.material.metalness = 0.8f;
-    sphere.material.roughness = 0.1f;
-    hit = hit || raySphereIntersection(ray, sphere, distance, o);
-
-    sphere.center = vec3(20, 10, -28);
-    sphere.material.color = vec3(1, 0, 0);
-    hit = hit || raySphereIntersection(ray, sphere, distance, o);
-    */
 
     //Wall - floor
     Wall wall;
