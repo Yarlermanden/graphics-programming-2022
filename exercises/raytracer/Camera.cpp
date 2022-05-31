@@ -4,10 +4,10 @@
 #include <iostream>
 
 Camera::Camera()
-    : m_Position(0.0f, 0.0f, 10.0f), m_LookAt(0.0f), m_Up(0.0f, 1.0f, 0.0f)
-    , m_Fov(FOV), m_Aspect(1.0f), m_Near(0.1f), m_Far(100.0f)
+    : m_Position(0.0f, 0.0f, 0.0f), m_LookAt(0.0f, 0.0f, -10.f), m_Up(0.0f, 1.0f, 0.0f)
+    , m_Fov(FOV), m_Aspect(0.6f), m_Near(0.1f), m_Far(100.0f)
     //new variables
-    , Position(0.0f, 0.0f, 0.0f), Front(glm::vec3(0.0f, 0.0f, -1.0f)), Right(glm::vec3(1.0f, 0.0f, 0.0f))
+    , Front(glm::vec3(0.0f, 0.0f, -1.0f)), Right(glm::vec3(1.0f, 0.0f, 0.0f))
     , MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY)
 {
     WorldUp = m_Up;
@@ -17,7 +17,6 @@ Camera::Camera()
 }
 
 glm::mat4 Camera::GetViewMatrix() {
-    //return glm::lookAt(Position, m_LookAt, m_Up);
     return glm::lookAt(m_Position, m_Position + m_LookAt, m_Up);
 }
 
@@ -25,14 +24,6 @@ glm::mat4 Camera::GetProjMatrix()
 {
     return glm::perspective(glm::radians(m_Fov), m_Aspect, m_Near, m_Far);
 }
-
-/*
-// Returns the view matrix calculated using Euler Angles and the LookAt Matrix
-glm::mat4 GetViewMatrix()
-{
-    return glm::lookAt(Position, Position + Front, Up);
-}
-*/
 
 glm::vec3 Camera::ToViewSpace(glm::vec3 xyz, float w)
 {
@@ -46,30 +37,25 @@ void Camera::ProcessKeyboard(Camera_Movement direction, float deltaTime)
 {
     float velocity = MovementSpeed * deltaTime;
     if (direction == FORWARD)
-        //Position += Front * velocity;
-        SetPosition(m_Position + Front*velocity);
+        m_Position += m_LookAt*velocity;
     if (direction == BACKWARD)
-        //Position -= Front * velocity;
-        SetPosition(m_Position - Front*velocity);
+        m_Position -= m_LookAt*velocity;
     if (direction == LEFT)
-        //Position -= Right * velocity;
-        SetPosition(m_Position - Right*velocity);
+        m_Position -= Right*velocity;
     if (direction == RIGHT)
-        //Position += Right * velocity;
-        SetPosition(m_Position + Right*velocity);
+        m_Position += Right * velocity;
 }
 
 // Processes input received from a mouse input system. Expects the offset value in both the x and y direction.
 void Camera::ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch)
 {
     https://learnopengl.com/Getting-Started/Camera
-    xoffset *= MouseSensitivity;
-    yoffset *= MouseSensitivity;
+    xoffset *= -MouseSensitivity;
+    yoffset *= -MouseSensitivity;
 
     Yaw   += xoffset;
     Pitch += yoffset;
 
-    // Make sure that when pitch is out of bounds, screen doesn't get flipped
     if (constrainPitch)
     {
         if (Pitch > 89.0f)
@@ -77,8 +63,6 @@ void Camera::ProcessMouseMovement(float xoffset, float yoffset, GLboolean constr
         if (Pitch < -89.0f)
             Pitch = -89.0f;
     }
-
-    // Update Front, Right and Up Vectors using the updated Euler angles
     updateCameraVectors();
 }
 

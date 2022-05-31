@@ -21,9 +21,7 @@ class Camera
 {
 public:
     // Camera Attributes
-    glm::vec3 Position;
     glm::vec3 Front;
-    glm::vec3 Up;
     glm::vec3 Right;
     glm::vec3 WorldUp;
     // Euler Angles
@@ -33,21 +31,25 @@ public:
     float MovementSpeed;
     float MouseSensitivity;
 
+    glm::vec3 m_Position;
+    glm::vec3 m_LookAt;
+    glm::vec3 m_Up;
+
+    float m_Fov;
+    float m_Aspect;
+    float m_Near;
+    float m_Far;
+
 
     Camera();
-    //Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH);
-    Camera(glm::vec3 position, glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH);
-    Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch);
-
     glm::mat4 GetViewMatrix();
     glm::mat4 GetProjMatrix();
-
     glm::vec3 GetPosition() { return m_Position; }
-    void SetPosition(const glm::vec3 &position) { m_Position = position; }
+    void SetPosition(glm::vec3 &position) { m_Position = position; }
     glm::vec3 GetLookAt() { return m_LookAt; }
-    void SetLookAt(const glm::vec3 &lookAt) { m_LookAt = lookAt; }
+    void SetLookAt(glm::vec3 &lookAt) { m_LookAt = lookAt; }
     glm::vec3 GetUpVector() { return m_Up; }
-    void SetUpVector(const glm::vec3 &up) { m_Up = up; }
+    void SetUpVector(glm::vec3 &up) { m_Up = up; }
 
     float GetFov() { return m_Fov; }
     void SetFov(float fov) { m_Fov = fov; }
@@ -64,17 +66,7 @@ public:
     void ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch = true);
     void ProcessMouseScroll(float yoffset);
 
-
 private:
-
-    glm::vec3 m_Position;
-    glm::vec3 m_LookAt;
-    glm::vec3 m_Up;
-
-    float m_Fov;
-    float m_Aspect;
-    float m_Near;
-    float m_Far;
 
     // Calculates the front vector from the Camera's (updated) Euler Angles
     void updateCameraVectors()
@@ -89,9 +81,6 @@ private:
         Right = glm::normalize(glm::cross(Front, WorldUp));  // Normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
         m_Up    = glm::normalize(glm::cross(Right, Front));
         m_LookAt = Front;
-
-        //SetLookAt(Front);
-        //SetUpVector(Up);
     }
 };
 
