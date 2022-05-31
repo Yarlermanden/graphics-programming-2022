@@ -58,7 +58,7 @@ int main()
     glCullFace(GL_BACK);
 
     RayTracer rayTracer(SHADER_FOLDER "sample.frag");
-    camera.SetAspect((float)SCR_WIDTH / SCR_HEIGHT);
+    camera.m_Aspect = ((float)SCR_WIDTH / SCR_HEIGHT);
     s_RayTracer = &rayTracer;
 
     float loopInterval = 1.f/60.f;
@@ -255,6 +255,5 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
 
-    if (s_RayTracer)
-        s_RayTracer->GetCamera().SetAspect((float)width / height);
+    camera.m_Aspect = ((float)width / height);
 }

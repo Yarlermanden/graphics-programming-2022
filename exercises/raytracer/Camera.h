@@ -44,21 +44,6 @@ public:
     Camera();
     glm::mat4 GetViewMatrix();
     glm::mat4 GetProjMatrix();
-    glm::vec3 GetPosition() { return m_Position; }
-    void SetPosition(glm::vec3 &position) { m_Position = position; }
-    glm::vec3 GetLookAt() { return m_LookAt; }
-    void SetLookAt(glm::vec3 &lookAt) { m_LookAt = lookAt; }
-    glm::vec3 GetUpVector() { return m_Up; }
-    void SetUpVector(glm::vec3 &up) { m_Up = up; }
-
-    float GetFov() { return m_Fov; }
-    void SetFov(float fov) { m_Fov = fov; }
-    float GetAspect() { return m_Aspect; }
-    void SetAspect(float aspect) { m_Aspect = aspect; }
-    float GetNear() { return m_Near; }
-    void SetNear(float near) { m_Near = near; }
-    float GetFar() { return m_Far; }
-    void SetFar(float far) { m_Far = far; }
 
     glm::vec3 ToViewSpace(glm::vec3 xyz, float w);
 
