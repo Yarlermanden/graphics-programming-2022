@@ -4,8 +4,8 @@
 #include <iostream>
 
 Camera::Camera()
-    : m_Position(0.0f, 0.0f, 0.0f), m_LookAt(0.0f, 0.0f, -10.f), m_Up(0.0f, 1.0f, 0.0f)
-    , m_Fov(FOV), m_Aspect(0.6f), m_Near(0.1f), m_Far(100.0f)
+    : m_Position(0.0f, 0.0f, 10.0f), m_LookAt(0.0f, 0.0f, -1.f), m_Up(0.0f, 1.0f, 0.0f)
+    , m_Fov(FOV), m_Aspect(1.f), m_Near(0.1f), m_Far(100.0f)
     //new variables
     , Front(glm::vec3(0.0f, 0.0f, -1.0f)), Right(glm::vec3(1.0f, 0.0f, 0.0f))
     , MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY)
