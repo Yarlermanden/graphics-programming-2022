@@ -15,6 +15,7 @@ uniform int shadingMode;
 const float PI = 3.14159265359;
 const uint _rm_MaxRays = 100u;
 const float infinity = 1.0f/0.0f;
+const int sphereCount = 15;
 
 //--------------------------- Structs -----------------------------------
 struct Ray
@@ -84,6 +85,7 @@ struct Wall
 };
 
 // ------------------------------------ const material -------------------------------------------
+//todo remove these material methods
 ObjectMaterial getMetalMaterial() {
     ObjectMaterial material;
     material.color = vec3(0.2f); //reflectionColor

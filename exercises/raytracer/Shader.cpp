@@ -11,7 +11,7 @@
 
 GLuint uboScene;
 
-Shader::Shader(const char* vertexPath, const char* fragmentPath)
+Shader::Shader(const char* vertexPath, const char* fragmentPath, Scene scene)
     : m_Program(0)
     , m_VertexPath(vertexPath), m_FragmentPath(fragmentPath)
     , m_VertexHash(0), m_FragmentHash(0)
@@ -24,7 +24,7 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
     // Uniform buffer object for lights
     glGenBuffers(1, &uboScene);
     glBindBuffer(GL_UNIFORM_BUFFER, uboScene);
-    glBufferData(GL_UNIFORM_BUFFER, sizeof(Sphere)*14, NULL, GL_DYNAMIC_DRAW);
+    glBufferData(GL_UNIFORM_BUFFER, sizeof(Sphere)*scene.sphereCount, NULL, GL_DYNAMIC_DRAW);
     //glBufferData(GL_UNIFORM_BUFFER, sizeof(float), NULL, GL_DYNAMIC_DRAW);
     glBindBufferBase(GL_UNIFORM_BUFFER, objectIndex, uboScene);
     glBindBuffer(GL_UNIFORM_BUFFER, 0);

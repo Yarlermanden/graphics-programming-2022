@@ -16,7 +16,7 @@ Scene scene;
 bool RayTracer::s_SourceChanged(false);
 
 RayTracer::RayTracer(const char* fragmentPath)
-    : m_Shader(SHADER_FOLDER "raytracer.vert", fragmentPath)
+    : m_Shader(SHADER_FOLDER "raytracer.vert", fragmentPath, scene)
     , m_Material(&m_Shader)
     , m_FullscreenQuad(GL_TRIANGLE_STRIP, { -1.0f, 1.0f, 0.0f,   -1.0f, -1.0f, 0.0f,   1.0f, 1.0f, 0.0f,   1.0f, -1.0f, 0.0f })
 {
@@ -45,9 +45,9 @@ void RayTracer::Render(int shadingMode, Camera camera) const
     glm::vec3 newX = normalize(cross(newZ, glm::vec3(0, -1, 0)));
     glm::vec3 newY = normalize(cross(newZ, newX));
     glm::mat3 rotation = glm::mat3(newX, newY, newZ);
-
     m_Shader.SetUniform("rotation", &rotation);
 
+    //Pass scene information
     m_Shader.LoadScene(scene);
 
     m_FullscreenQuad.Draw();

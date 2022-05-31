@@ -6,7 +6,8 @@
 
 class Scene {
 public:
-    Sphere spheres[14];
+    static const int sphereCount = 15;
+    Sphere spheres[sphereCount];
     //Array of walls
 
     Scene() {
@@ -39,6 +40,12 @@ public:
             else spheres[i].material = MaterialHelper::getNormalMaterial();
             spheres[i].center = glm::vec3(0.f);
         }
+
+        //spheres[14].center = glm::vec3(20,20,-40);
+        spheres[14].center = glm::vec3(0,10,-30);
+        spheres[14].radius = 2.0f;
+        spheres[14].material = MaterialHelper::getGlassMaterial();
+        spheres[14].material.color = glm::vec3(1.f);
     }
 
     //Method for updating scene

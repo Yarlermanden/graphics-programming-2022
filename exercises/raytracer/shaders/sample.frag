@@ -1,7 +1,7 @@
 //This describes the scene
 
 layout (std140) uniform Scene {
-    Sphere spheres[14];
+    Sphere spheres[sphereCount];
 };
 
 // --------------------------- Setup Scene ---------------------------------
@@ -9,10 +9,11 @@ bool castRay(Ray ray, inout float distance, out Output o)
 {
     bool hit = false;
     o.lowestTransparency = 1.f;
-    for (int i = 0; i < 14; i++){
+    for (int i = 0; i < sphereCount; i++){
         hit = hit || raySphereIntersection(ray, spheres[i], distance, o);
     }
 
+    //todo move to scene in model, when it works
     //Wall - floor
     Wall wall;
     wall.point = vec3(-10, -10, -80);
