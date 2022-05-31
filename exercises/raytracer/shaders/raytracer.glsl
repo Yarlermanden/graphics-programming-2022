@@ -2,9 +2,6 @@
 // This describes the functionality of when to ray trace and where - and main
 //#version 330 core
 
-in vec3 _rt_viewPos;
-in vec3 _rt_viewDir;
-
 out vec4 FragColor;
 
 Ray _rt_pendingRays[_rm_MaxRays];
@@ -25,8 +22,6 @@ bool PushRay(vec3 point, vec3 direction, vec3 colorFilter, float indexOfRefracti
     }
     return pushed;
 }
-
-const float infinity = 1.0f/0.0f;
 
 void main()
 {

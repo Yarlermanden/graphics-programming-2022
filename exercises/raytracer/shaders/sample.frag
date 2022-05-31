@@ -1,6 +1,4 @@
 //This describes the scene
-const uint _rm_MaxRays = 100u;
-//const float PI = 3.14159265359;
 
 layout (std140) uniform Scene {
     Sphere spheres[14];
@@ -78,7 +76,7 @@ vec3 PhongLighting(Ray ray, Output o, vec3 light_pos, bool inShadow){
     float I_light = 1.f; //Intensity of light
     float Ks = 0.6f; //specular reflectance
     float exp = 40.f; //specular exponent of material - shininess
-    vec3 V = normalize(-o.point); //view direction //todo is this the same, as we now are in camera coordinates? And camera is not (0,0,0)
+    vec3 V = normalize(_rt_viewPos-o.point); //view direction //todo is this the same, as we now are in camera coordinates? And camera is not (0,0,0)
     vec3 H = normalize(L+V); //halfway vector between light direction and view direction
     float R_specular = I_light * Ks * pow(max(dot(o.normal, H), 0.0f), exp); //I_light * Ks * (N•H)^exp
 
@@ -178,7 +176,7 @@ vec3 PBRLighting(Ray ray, Output o, vec3 light_pos, bool inShadow){
     albedo *= o.material.color;
 
     vec3 L = normalize(light_pos - o.point); //light direction
-    vec3 V = normalize(-o.point); //view direction - camera(0,0,0) - though not true
+    vec3 V = normalize(_rt_viewPos-o.point); //view direction - camera(0,0,0) - though not true
 
     vec3 ambient = GetAmbientLighting(albedo, o);
     //vec3 environment = GetEnvironmentLighting(N, V);

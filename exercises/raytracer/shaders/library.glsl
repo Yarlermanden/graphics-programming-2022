@@ -2,6 +2,8 @@
 
 // No main in this file, it is just a library
 // This just describes the structs and general methods
+in vec3 _rt_viewPos;
+in vec3 _rt_viewDir;
 
 uniform mat4 _rt_View;
 uniform mat4 _rt_InvView;
@@ -11,6 +13,8 @@ uniform float _rt_Time;
 uniform int shadingMode;
 
 const float PI = 3.14159265359;
+const uint _rm_MaxRays = 100u;
+const float infinity = 1.0f/0.0f;
 
 //--------------------------- Structs -----------------------------------
 struct Ray
