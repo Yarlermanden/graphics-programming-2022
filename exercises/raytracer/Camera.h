@@ -15,7 +15,7 @@ const float YAW         = -90.0f;
 const float PITCH       =  0.0f;
 const float SPEED       =  2.5f;
 const float SENSITIVITY =  0.1f;
-const float ZOOM        =  45.0f;
+const float FOV =  45.0f;
 
 class Camera
 {
@@ -32,7 +32,6 @@ public:
     // Camera options
     float MovementSpeed;
     float MouseSensitivity;
-    float Zoom;
 
 
     Camera();
@@ -40,29 +39,26 @@ public:
     Camera(glm::vec3 position, glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH);
     Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch);
 
-    glm::mat4 GetViewMatrix() const;
     glm::mat4 GetViewMatrix();
-    glm::mat4 GetProjMatrix() const;
     glm::mat4 GetProjMatrix();
 
-    glm::vec3 GetPosition() const { return m_Position; }
-    glm::vec3 GetPosition() { return Position; }
+    glm::vec3 GetPosition() { return m_Position; }
     void SetPosition(const glm::vec3 &position) { m_Position = position; }
-    glm::vec3 GetLookAt() const { return m_LookAt; }
+    glm::vec3 GetLookAt() { return m_LookAt; }
     void SetLookAt(const glm::vec3 &lookAt) { m_LookAt = lookAt; }
-    glm::vec3 GetUpVector() const { return m_Up; }
+    glm::vec3 GetUpVector() { return m_Up; }
     void SetUpVector(const glm::vec3 &up) { m_Up = up; }
 
-    float GetFov() const { return m_Fov; }
+    float GetFov() { return m_Fov; }
     void SetFov(float fov) { m_Fov = fov; }
-    float GetAspect() const { return m_Aspect; }
+    float GetAspect() { return m_Aspect; }
     void SetAspect(float aspect) { m_Aspect = aspect; }
-    float GetNear() const { return m_Near; }
+    float GetNear() { return m_Near; }
     void SetNear(float near) { m_Near = near; }
-    float GetFar() const { return m_Far; }
+    float GetFar() { return m_Far; }
     void SetFar(float far) { m_Far = far; }
 
-    glm::vec3 ToViewSpace(glm::vec3 xyz, float w) const;
+    glm::vec3 ToViewSpace(glm::vec3 xyz, float w);
 
     void ProcessKeyboard(Camera_Movement direction, float deltaTime);
     void ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch = true);
@@ -83,7 +79,7 @@ private:
     // Calculates the front vector from the Camera's (updated) Euler Angles
     void updateCameraVectors()
     {
-        // Calculate the new Front vector
+        // https://learnopengl.com/Getting-Started/Camera
         glm::vec3 front;
         front.x = cos(glm::radians(Yaw)) * cos(glm::radians(Pitch));
         front.y = sin(glm::radians(Pitch));
@@ -91,7 +87,11 @@ private:
         Front = glm::normalize(front);
         // Also re-calculate the Right and Up vector
         Right = glm::normalize(glm::cross(Front, WorldUp));  // Normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
-        Up    = glm::normalize(glm::cross(Right, Front));
+        m_Up    = glm::normalize(glm::cross(Right, Front));
+        m_LookAt = Front;
+
+        //SetLookAt(Front);
+        //SetUpVector(Up);
     }
 };
 

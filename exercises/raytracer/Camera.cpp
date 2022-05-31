@@ -5,51 +5,26 @@
 
 Camera::Camera()
     : m_Position(0.0f, 0.0f, 10.0f), m_LookAt(0.0f), m_Up(0.0f, 1.0f, 0.0f)
-    , m_Fov(glm::radians(60.0f)), m_Aspect(1.0f), m_Near(0.1f), m_Far(100.0f)
+    , m_Fov(FOV), m_Aspect(1.0f), m_Near(0.1f), m_Far(100.0f)
     //new variables
     , Position(0.0f, 0.0f, 0.0f), Front(glm::vec3(0.0f, 0.0f, -1.0f)), Right(glm::vec3(1.0f, 0.0f, 0.0f))
-    , MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
+    , MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY)
 {
-}
-
-// Constructor with vectors
-Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch)
-    : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
-{
-    Position = position;
-    WorldUp = up;
-    Yaw = yaw;
-    Pitch = pitch;
+    WorldUp = m_Up;
+    Yaw = YAW;
+    Pitch = PITCH;
     updateCameraVectors();
-}
-// Constructor with scalar values
-Camera::Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch)
-    : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
-{
-    Position = glm::vec3(posX, posY, posZ);
-    WorldUp = glm::vec3(upX, upY, upZ);
-    Yaw = yaw;
-    Pitch = pitch;
-    updateCameraVectors();
-}
-
-
-
-glm::mat4 Camera::GetViewMatrix() const
-{
-    //return glm::lookAt(m_Position, m_LookAt, m_Up);
-    return glm::lookAt(m_Position, m_LookAt, m_Up);
 }
 
 glm::mat4 Camera::GetViewMatrix() {
-    return glm::lookAt(Position, m_LookAt, m_Up);
+    //return glm::lookAt(Position, m_LookAt, m_Up);
+    return glm::lookAt(m_Position, m_Position + m_LookAt, m_Up);
 }
 
-glm::mat4 Camera::GetProjMatrix() const
+glm::mat4 Camera::GetProjMatrix()
 {
-    return glm::perspective(m_Fov, m_Aspect, m_Near, m_Far);
+    return glm::perspective(glm::radians(m_Fov), m_Aspect, m_Near, m_Far);
 }
-
 
 /*
 // Returns the view matrix calculated using Euler Angles and the LookAt Matrix
@@ -59,8 +34,7 @@ glm::mat4 GetViewMatrix()
 }
 */
 
-
-glm::vec3 Camera::ToViewSpace(glm::vec3 xyz, float w) const
+glm::vec3 Camera::ToViewSpace(glm::vec3 xyz, float w)
 {
     glm::vec4 v(xyz.x, xyz.y, xyz.z, w);
     v = GetViewMatrix()* v;
@@ -72,18 +46,23 @@ void Camera::ProcessKeyboard(Camera_Movement direction, float deltaTime)
 {
     float velocity = MovementSpeed * deltaTime;
     if (direction == FORWARD)
-        Position += Front * velocity;
+        //Position += Front * velocity;
+        SetPosition(m_Position + Front*velocity);
     if (direction == BACKWARD)
-        Position -= Front * velocity;
+        //Position -= Front * velocity;
+        SetPosition(m_Position - Front*velocity);
     if (direction == LEFT)
-        Position -= Right * velocity;
+        //Position -= Right * velocity;
+        SetPosition(m_Position - Right*velocity);
     if (direction == RIGHT)
-        Position += Right * velocity;
+        //Position += Right * velocity;
+        SetPosition(m_Position + Right*velocity);
 }
 
 // Processes input received from a mouse input system. Expects the offset value in both the x and y direction.
 void Camera::ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch)
 {
+    https://learnopengl.com/Getting-Started/Camera
     xoffset *= MouseSensitivity;
     yoffset *= MouseSensitivity;
 
@@ -106,10 +85,10 @@ void Camera::ProcessMouseMovement(float xoffset, float yoffset, GLboolean constr
 // Processes input received from a mouse scroll-wheel event. Only requires input on the vertical wheel-axis
 void Camera::ProcessMouseScroll(float yoffset)
 {
-    if (Zoom >= 1.0f && Zoom <= 45.0f)
-        Zoom -= yoffset;
-    if (Zoom <= 1.0f)
-        Zoom = 1.0f;
-    if (Zoom >= 45.0f)
-        Zoom = 45.0f;
+    if (m_Fov >= 1.0f && m_Fov <= 45.0f)
+        m_Fov -= yoffset;
+    if (m_Fov <= 1.0f)
+        m_Fov = 1.0f;
+    if (m_Fov >= 45.0f)
+        m_Fov = 45.0f;
 }

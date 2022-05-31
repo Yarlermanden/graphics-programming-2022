@@ -27,7 +27,7 @@ void RayTracer::Render(int shadingMode, Camera camera) const
     float currentFrame = (float)glfwGetTime();
     scene.UpdateScene(currentFrame);
     glm::mat4 viewMatrix = camera.GetViewMatrix();
-    glm::mat4 projMatrix = m_Camera.GetProjMatrix();;
+    glm::mat4 projMatrix = camera.GetProjMatrix();;
     glm::mat4 invViewMatrix = inverse(viewMatrix);
     glm::mat4 invProjMatrix = inverse(projMatrix);
 

@@ -18,6 +18,8 @@ void shutdownOpenGL();
 void key_input_callback(GLFWwindow* window, int button, int other, int action, int mods);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
+void button_input_callback(GLFWwindow* window, int button, int action, int mods);
+void cursor_input_callback(GLFWwindow* window, double posX, double posY);
 
 // imgui functions
 void initImGui(GLFWwindow* window);
@@ -118,7 +120,10 @@ GLFWwindow* initOpenGL(unsigned int width, unsigned int height, const char* titl
     }
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetMouseButtonCallback(window, button_input_callback);
+    glfwSetCursorPosCallback(window, cursor_input_callback);
     glfwSetKeyCallback(window, key_input_callback);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     // glad: load all OpenGL function pointers
     // ---------------------------------------
@@ -209,6 +214,37 @@ void processInput(GLFWwindow *window){
         camera.ProcessKeyboard(LEFT, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         camera.ProcessKeyboard(RIGHT, deltaTime);
+}
+
+void cursor_input_callback(GLFWwindow* window, double posX, double posY){
+    // camera rotation
+    static float lastX = (float)SCR_WIDTH / 2.0;
+    static float lastY = (float)SCR_HEIGHT / 2.0;
+    static bool firstMouse = true;
+
+    if (firstMouse)
+    {
+        lastX = posX;
+        lastY = posY;
+        firstMouse = false;
+    }
+
+    float xoffset = posX - lastX;
+    float yoffset = lastY - posY; // reversed since y-coordinates go from bottom to top
+
+    lastX = posX;
+    lastY = posY;
+
+    // we use the handy camera class from LearnOpenGL to handle our camera
+    camera.ProcessMouseMovement(xoffset, yoffset);
+}
+
+void button_input_callback(GLFWwindow* window, int button, int action, int mods){
+    static bool toggleClicked = true;
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+        toggleClicked = !toggleClicked;
+        glfwSetInputMode(window, GLFW_CURSOR, toggleClicked ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
+    }
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
