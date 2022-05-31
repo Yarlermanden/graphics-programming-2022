@@ -5,7 +5,6 @@ uniform mat4 _rt_InvProj;
 uniform mat4 _rt_Proj;
 uniform mat4 _rt_InvView;
 uniform mat4 _rt_View;
-uniform vec3 Pos;
 uniform mat3 rotation;
 
 out vec3 _rt_viewPos;
