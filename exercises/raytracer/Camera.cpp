@@ -50,8 +50,8 @@ void Camera::ProcessKeyboard(Camera_Movement direction, float deltaTime)
 void Camera::ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch)
 {
     https://learnopengl.com/Getting-Started/Camera
-    xoffset *= -MouseSensitivity;
-    yoffset *= -MouseSensitivity;
+    xoffset *= MouseSensitivity;
+    yoffset *= MouseSensitivity;
 
     Yaw   += xoffset;
     Pitch += yoffset;

@@ -40,7 +40,7 @@ void RayTracer::Render(int shadingMode, Camera camera) const
     m_Shader.SetUniform("_rt_InvProj", &invProjMatrix);
     m_Shader.SetUniform("shadingMode", &shadingMode);
     m_Shader.SetUniform("Pos", &(camera.m_Position));
-    glm::vec3 dir = normalize(camera.m_LookAt - camera.m_Position);
+    glm::vec3 dir = camera.m_LookAt;
     m_Shader.SetUniform("Dir", &dir);
 
     m_Shader.LoadScene(scene);
