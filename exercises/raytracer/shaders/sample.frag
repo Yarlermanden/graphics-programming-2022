@@ -43,7 +43,10 @@ vec3 PhongLighting(Ray ray, Output o){
         vec3 H = normalize(L+V); //halfway vector between light direction and view direction
         vec3 R_specular = lights[i].color * o.material.Ks * pow(max(dot(o.normal, H), 0.0f), o.material.exp); //I_light * Ks * (N•H)^exp
 
-        col += o.invAmountOfShadow[i] * (R_diffuse + R_specular);
+        float distance = length(lights[i].point - o.point);
+        float attenuation = 1/pow(distance,2);
+
+        col += o.invAmountOfShadow[i] * attenuation * (R_diffuse + R_specular);
     }
     return col;
 }

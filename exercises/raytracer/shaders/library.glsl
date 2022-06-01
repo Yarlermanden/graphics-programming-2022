@@ -15,9 +15,9 @@ uniform int shadingMode;
 const float PI = 3.14159265359;
 const uint _rm_MaxRays = 10u;
 const float infinity = 1.0f/0.0f;
-const int sphereCount = 16;
+const int sphereCount = 17;
 const int boxCount = 10;
-const int lightCount = 1;
+const int lightCount = 2;
 
 //--------------------------- Structs -----------------------------------
 struct Ray
@@ -104,7 +104,7 @@ bool castRay(Ray ray, inout float distance)
 }
 
 void CheckForShadow(inout Output o){
-    for(int i = 0; i < 1; i++) {
+    for(int i = 0; i < lightCount; i++) {
         Ray rayTowardsLight;
         rayTowardsLight.direction = normalize(lights[i].point - o.point); //direction to light
         rayTowardsLight.point = o.point + (0.1f*rayTowardsLight.direction);

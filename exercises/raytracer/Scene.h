@@ -3,9 +3,9 @@
 //
 
 #include <Structs.h>
-static const int sphereCount = 16;
+static const int sphereCount = 17;
 static const int boxCount = 10;
-static const int lightCount = 1;
+static const int lightCount = 2;
 
 struct Scene {
 public:
@@ -71,7 +71,7 @@ public:
         rectangles[3].bounds[0] = glm::vec4(69, -11, -100, 0);
         rectangles[3].bounds[1] = glm::vec4(70, 60, 50, 0);
         rectangles[3].material = MaterialHelper::getNormalMaterial();
-        rectangles[3].material.color = glm::vec3(0.4, 0, 0);
+        rectangles[3].material.color = glm::vec3(1, 0.2, 0.2);
 
         //Back wall
         rectangles[4].bounds[0] = glm::vec4(-70, -11, -101, 0);
@@ -105,8 +105,15 @@ public:
         rectangles[8].material = MaterialHelper::getNormalMaterial();
 
         //Lights --------
-        lights[0].point = glm::vec3(400, 10.9f, 1000);
-        lights[0].color = glm::vec3(1);
+        spheres[16].center = glm::vec3(0,155, 1100);
+        spheres[16].radius = 50;
+        spheres[16].material = MaterialHelper::getNormalMaterial();
+        spheres[16].material.color = glm::vec3(1,1,0);
+        lights[0].point = glm::vec3(0, 150, 1000);
+        lights[0].color = glm::vec3(400000);
+
+        lights[1].point = glm::vec3(65, 55, -95);
+        lights[1].color = glm::vec3(150, 150, 120);
     }
 
     //Method for updating scene
