@@ -67,11 +67,14 @@ struct Sphere
 
 struct Rectangle
 {
+    /*
     vec3 point; //upper left
     float width;
     float height;
     float depth;
     vec3 rotation;
+    */
+    vec3 bounds[2];
     ObjectMaterial material;
 };
 
@@ -125,9 +128,9 @@ ObjectMaterial getNormalMaterial() {
 ObjectMaterial getGlassMaterial() {
     ObjectMaterial material;
     material.color = vec3(1.f); //reflectionColor
-    material.indexOfRefraction = 1.4f;
-    material.transparency = 0.7f; //transmissionGlobal
-    material.reflectionGlobal = vec3(0.3f);
+    material.indexOfRefraction = 1.0f;
+    material.transparency = 0.9f; //transmissionGlobal
+    material.reflectionGlobal = vec3(0.1f);
 
     material.I_aK_a = 0.05f;
     material.diffuse = 0.1f;
@@ -171,19 +174,17 @@ vec3 ProcessOutput(Ray ray, Output o, out bool inShadow);
 // Function to enable recursive rays
 bool PushRay(vec3 point, vec3 direction, vec3 colorFilter);
 
-void Refraction(Ray ray, inout Output o, Sphere sphere){
+void Refraction(Ray ray, inout Output o){
     vec3 v = -ray.direction;
     vec3 n = o.normal;
     float index = o.material.indexOfRefraction == ray.indexOfRefraction ? 1/o.material.indexOfRefraction : o.material.indexOfRefraction;
 
     vec3 t_lat = (dot(v, n)*n - v)/index;
     float sinSq = pow(length(t_lat), 2);
-    /*
     if(sinSq > 1) {
         o.totalInternalReflection = true;
         return;
     }
-    */
     vec3 t = t_lat - sqrt(1 - sinSq*n);
     o.refractionDirection = t;
 }
@@ -212,7 +213,7 @@ bool raySphereIntersection(Ray ray, Sphere sphere, inout float distance, inout O
                 o.material = sphere.material;
                 //o.reflectionDirection = normalize(2*dot(-ray.direction, -o.normal) * -o.normal + ray.direction);
                 o.reflectionDirection = normalize(2*dot(-ray.direction, o.normal) * o.normal + ray.direction);
-                Refraction(ray, o, sphere);
+                Refraction(ray, o);
                 hit = true;
                 //return true; //if d is less than small, the ray.point is inside the object
             }
@@ -227,9 +228,9 @@ bool raySphereIntersection(Ray ray, Sphere sphere, inout float distance, inout O
                 o.reflectionDirection = normalize(2*dot(-ray.direction, o.normal)*o.normal + ray.direction);
 
                 if (o.material.transparency != 0.f) {
-                    Refraction(ray, o, sphere);
+                    Refraction(ray, o);
                     //o.refractPoint = ray.point + max(-b + sqrt(discr) + 0.1f, 0.f) * o.refractionDirection;
-                    //o.refractPoint = o.point + (max(-b + sqrt(discr) + 0.1f, 0.f) - d) * o.refractionDirection; //need to make the distance a bit smaller depending on the angle
+                    //o.refractPoint = o.point + (rectangle.bounds[1].-b + sqrt(discr) + 0.1f, 0.f) - d) * o.refractionDirection; //need to make the distance a bit smaller depending on the angle
                 }
 
                 hit = true;
@@ -311,30 +312,77 @@ bool rayWallIntersection(Ray ray, Wall wall, inout float distance, inout Output 
     return hit;
 }
 
+void conditionalSwap(inout float min, inout float max) {
+    if(min > max) {
+        float temp = min;
+        min = max;
+        max = temp;
+    }
+}
+
 bool rayRectangleIntersection(Ray ray, Rectangle rectangle, inout float distance, inout Output o)
 {
+    //Inspired from:
+    //https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-box-intersection
     bool hit = false;
-    Wall wall;
 
-    /*
-    //front surface
-    wall.point = rectangle.point;
-    wall.width = rectangle.width;
-    wall.height = rectangle.height;
-    wall.rotation = rectangle.rotation;
-    wall.material = rectangle.material;
-    hit = rayWallIntersection(ray, wall, distance, o) || hit;
+    float tmin = (rectangle.bounds[0].x - ray.point.x) / ray.direction.x;
+    float tmax = (rectangle.bounds[1].x - ray.point.x) / ray.direction.x;
+    conditionalSwap(tmin, tmax);
 
-    //left surface
-    wall.point = rectangle.point;
-    wall.width = rectangle.depth;
-    wall.height = rectangle.height;
-    wall.rotation = normalize(rectangle.rotation + vec3(0.f, 270.f, 0.f));
-    wall.rotation = vec3(70.f, 0.f, 0.f);
-    wall.material = rectangle.material;
-    hit = rayWallIntersection(ray, wall, distance, o) || hit;
-    */
+    float tymin = (rectangle.bounds[0].y - ray.point.y) / ray.direction.y;
+    float tymax = (rectangle.bounds[1].y - ray.point.y) / ray.direction.y;
+    conditionalSwap(tymin, tymax);
 
+    if ((tmin > tymax) || (tymin > tmax)) return false;
+    if (tymin > tmin) tmin = tymin;
+    if (tymax < tmax) tmax = tymax;
 
-    return hit;
+    float tzmin = (rectangle.bounds[0].z - ray.point.z) / ray.direction.z;
+    float tzmax = (rectangle.bounds[1].z - ray.point.z) / ray.direction.z;
+    conditionalSwap(tzmin, tzmax);
+
+    if ((tmin > tzmax) || (tzmin > tmax)) return false;
+    if (tzmin > tmin) tmin = tzmin;
+    if (tzmax < tmax) tmax = tzmax;
+
+    float d = tmin;
+    if(d < 0) {
+        d = tmax;
+        if (d < 0) return false;
+        //would this mean we are inside?
+    }
+    if(d > distance) return false;
+    //------- It has hit --------
+    distance = d;
+
+    if(o.lowestTransparency > rectangle.material.transparency) o.lowestTransparency = rectangle.material.transparency;
+    o.totalInternalReflection = false;
+    o.point = ray.point + distance * ray.direction;
+
+    if(o.point.x - rectangle.bounds[0].x < 0.01) {
+        //We know we hit the smallest of the x boundings.
+        //Now the question is whether this is from inside or outside
+        if(ray.direction.x > 0) o.normal = vec3(-1, 0, 0); //outside
+        else o.normal = vec3(1, 0, 0); //inside
+    }
+    else if(o.point.x - rectangle.bounds[1].x < 0.01) {
+        if(ray.direction.x > 0) o.normal = vec3(-1, 0, 0); //inside
+        else o.normal = vec3(1, 0, 0); //outside
+    }
+    else if(o.point.y - rectangle.bounds[0].y < 0.01 || o.point.y - rectangle.bounds[1].y < 0.01) {
+        if(ray.direction.y > 0) o.normal = vec3(0, -1, 0);
+        else o.normal = vec3(0, 1, 0);
+    }
+    else if(o.point.z - rectangle.bounds[0].z < 0.01 || o.point.z - rectangle.bounds[1].z < 0.01) {
+        if(ray.direction.z > 0) o.normal = vec3(0, 0, -1);
+        else o.normal = vec3(0, 0, 1);
+    }
+    o.material = rectangle.material;
+    o.reflectionDirection = normalize(2*dot(-ray.direction, o.normal)*o.normal + ray.direction);
+
+    if (o.material.transparency != 0.f) {
+        Refraction(ray, o); //todo find refraction from rectangle
+    }
+    return true;
 }

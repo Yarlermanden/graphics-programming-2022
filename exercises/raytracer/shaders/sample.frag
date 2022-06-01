@@ -45,6 +45,15 @@ bool castRay(Ray ray, inout float distance, out Output o)
     hit = rayRectangleIntersection(ray, rectangle, distance, o) || hit;
     */
 
+
+    Rectangle rectangle;
+    vec3 vmin = vec3(30, 20, -50);
+    vec3 vmax = vec3(31, 10, -30);
+    rectangle.bounds[0] = vmin;
+    rectangle.bounds[1] = vmax;
+    rectangle.material = getGlassMaterial();
+    hit = hit || rayRectangleIntersection(ray, rectangle, distance, o);
+
     return hit;
 }
 
