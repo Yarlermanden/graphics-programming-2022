@@ -15,8 +15,9 @@ uniform int shadingMode;
 const float PI = 3.14159265359;
 const uint _rm_MaxRays = 10u;
 const float infinity = 1.0f/0.0f;
-const int sphereCount = 15;
+const int sphereCount = 16;
 const int boxCount = 10;
+const int lightCount = 1;
 
 //--------------------------- Structs -----------------------------------
 struct Ray
@@ -38,15 +39,19 @@ struct ObjectMaterial
 
     //PhongLighting
     float I_aK_a; //I_a * K_a
-    float diffuse; //I_light *I Kdf
+    float diffuse; //I Kdf
+    float Ks; //specular reflectance
+    float exp; //specular exponent
 
     //PBR
     float metalness;
     float roughness;
+    float padding1;
+    float padding2;
     vec3 ambientLightColor;
     float diffuseReflectance;
     vec3 albedo;
-    float PADDING;
+    float padding3;
 };
 
 struct Output
@@ -74,13 +79,12 @@ struct Rectangle
     ObjectMaterial material;
 };
 
-struct Wall
+struct Light
 {
     vec3 point;
-    float width;
-    float height;
-    vec3 rotation;
-    ObjectMaterial material;
+    float PADDING1;
+    vec3 color; //intensity and color
+    float PADDING2;
 };
 
 //-------------------------------------- Methods -------------------------------------------------
@@ -105,7 +109,7 @@ bool CheckForShadow(vec3 light_pos, inout Output o){
     return inShadow;
 }
 
-vec3 PhongLighting(Ray ray, Output o, vec3 light_pos, bool inShadow);
+vec3 PhongLighting(Ray ray, Output o, bool inShadow);
 vec3 PBRLighting(Ray ray, Output o, vec3 light_pos, bool inShadow);
 // Fill in this function to process the output once the ray has found a hit
 vec3 ProcessOutput(Ray ray, Output o, out bool inShadow);

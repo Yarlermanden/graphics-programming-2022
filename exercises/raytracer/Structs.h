@@ -12,15 +12,19 @@ struct ObjectMaterial {
 
     //PhongLighting
     float I_aK_a; //I_a * K_a
-    float diffuse; //I_light *I Kdf //todo should some of this be determined by the light source?
+    float diffuse; //I Kdf //
+    float Ks; //specular reflectance
+    float exp; //specular exponent
 
     //PBR
     float metalness;
     float roughness;
+    float padding1;
+    float padding2;
     glm::vec3 ambientLightColor;
     float diffuseReflectance;
     glm::vec3 albedo;
-    float PADDING;
+    float padding3;
 };
 
 struct Sphere {
@@ -33,6 +37,14 @@ struct Rectangle
 {
     glm::vec4 bounds[2];
     ObjectMaterial material;
+};
+
+struct Light
+{
+    glm::vec3 point;
+    float PADDING1;
+    glm::vec3 color; //intensity and color
+    float PADDING2;
 };
 
 class MaterialHelper {

@@ -3,6 +3,7 @@
 layout (std140) uniform Scene1 {
     Sphere spheres[sphereCount];
     Rectangle rectangles[boxCount];
+    Light lights[lightCount];
 };
 
 // --------------------------- Setup Scene ---------------------------------
@@ -25,12 +26,11 @@ bool castRay(Ray ray, inout float distance, out Output o)
 // ------------------------------ Process color/shading ------------------------------------------------
 vec3 ProcessOutput(Ray ray, Output o, out bool inShadow)
 {
-    vec3 light_pos = vec3(400, 10.9f, 1000); //light position in model space //todo move this to scene
-
+    vec3 light_pos = lights[0].point;
     inShadow = CheckForShadow(light_pos, o); //Shadow feeler - shadow rays
 
     if(shadingMode == 1){
-        return PhongLighting(ray, o, light_pos, inShadow);
+        return PhongLighting(ray, o, inShadow);
     }
     else if(shadingMode == 2){
         //todo handle transparent objects in shadowcheck
@@ -39,30 +39,20 @@ vec3 ProcessOutput(Ray ray, Output o, out bool inShadow)
     return o.material.color;
 }
 
-vec3 PhongLighting(Ray ray, Output o, vec3 light_pos, bool inShadow){
-    float I_aK_a = o.material.I_aK_a;
-    vec3 R_ambient = I_aK_a * o.material.color; //Ia * Ka * color
-
-    float diffuse = o.material.diffuse;
-    vec3 L = normalize(light_pos - o.point); //light direction
-
-    vec3 R_diffuse = diffuse * max(dot(o.normal, L), 0.0f) * o.material.color; //I_light * Kd * (N•L) * Color
-
-    float I_light = 1.f; //Intensity of light
-    float Ks = 0.6f; //specular reflectance
-    float exp = 40.f; //specular exponent of material - shininess
-    vec3 V = normalize(-ray.direction); //view direction
-    //vec3 V = normalize(-_rt_viewDir); //view direction
-    vec3 H = normalize(L+V); //halfway vector between light direction and view direction
-    float R_specular = I_light * Ks * pow(max(dot(o.normal, H), 0.0f), exp); //I_light * Ks * (N•H)^exp
-
+vec3 PhongLighting(Ray ray, Output o, bool inShadow){
+    vec3 R_ambient = o.material.I_aK_a * o.material.color; //Ia * Ka * color
     vec3 col = R_ambient;
-    inShadow = true;
-    if(inShadow) {
-        col += (o.lowestTransparency) * (R_diffuse + R_specular);
-    }
-    else {
-        col += R_diffuse + R_specular;
+
+    for(int i = 0; i < lightCount; i++) {
+        vec3 L = normalize(lights[i].point - o.point); //light direction
+        vec3 R_diffuse = lights[i].color * o.material.diffuse * max(dot(o.normal, L), 0.0f) * o.material.color; //I_light * Kd * (N•L) * Color
+
+        vec3 V = -ray.direction; //view direction
+        vec3 H = normalize(L+V); //halfway vector between light direction and view direction
+        vec3 R_specular = lights[0].color * o.material.Ks * pow(max(dot(o.normal, H), 0.0f), o.material.exp); //I_light * Ks * (N•H)^exp
+
+        if(inShadow) col += (o.lowestTransparency) * (R_diffuse + R_specular);
+        else col += R_diffuse + R_specular;
     }
     return col;
 }
@@ -101,6 +91,7 @@ vec3 GetEnvironmentLighting(vec3 N, vec3 V){
 */
 
 vec3 GetLambertianDiffuseLighting(vec3 N, vec3 L, vec3 albedo, Output o){
+    //todo This should probably be updated with the lights
     vec3 diffuse = o.material.diffuseReflectance * albedo;
     diffuse /= PI;
     return diffuse;
@@ -138,6 +129,7 @@ vec3 GetCookTorranceSpecularLighting(vec3 L, vec3 V, Output o)
     float cosO = max(dot(o.normal, V), 0.0);
 
     // Important! Notice that Fresnel term (F) is not here because we apply it later when mixing with diffuse
+    //todo so the comment above tells we don't add according to light intensity yet? but where?
     float specular = (D * G) / (4.0f * cosO * cosI + 0.0001f);
 
     return vec3(specular);

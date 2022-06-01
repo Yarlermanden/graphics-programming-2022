@@ -3,13 +3,15 @@
 //
 
 #include <Structs.h>
-static const int sphereCount = 15;
+static const int sphereCount = 16;
 static const int boxCount = 10;
+static const int lightCount = 1;
 
 struct Scene {
 public:
     Sphere spheres[sphereCount];
     Rectangle rectangles[boxCount];
+    Light lights[lightCount];
     Scene() {
         //Setup scene with the objects
         spheres[0].center = glm::vec3(10.f, 10.f, -50.f);
@@ -101,6 +103,10 @@ public:
         rectangles[8].bounds[0] = glm::vec4(30, 0, 0, 0);
         rectangles[8].bounds[1] = glm::vec4(40, 10, 10, 0);
         rectangles[8].material = MaterialHelper::getNormalMaterial();
+
+        //Lights --------
+        lights[0].point = glm::vec3(400, 10.9f, 1000);
+        lights[0].color = glm::vec3(1);
     }
 
     //Method for updating scene
