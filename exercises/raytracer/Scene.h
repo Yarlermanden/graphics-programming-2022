@@ -105,12 +105,12 @@ public:
         rectangles[8].material = MaterialHelper::getNormalMaterial();
 
         //Lights --------
-        spheres[16].center = glm::vec3(0,155, 1100);
+        spheres[16].center = glm::vec3(0,105, 700);
         spheres[16].radius = 50;
         spheres[16].material = MaterialHelper::getNormalMaterial();
         spheres[16].material.color = glm::vec3(1,1,0);
-        lights[0].point = glm::vec3(0, 150, 1000);
-        lights[0].color = glm::vec3(400000);
+        lights[0].point = glm::vec3(0, 100, 500);
+        lights[0].color = glm::vec3(100000);
 
         lights[1].point = glm::vec3(65, 55, -95);
         lights[1].color = glm::vec3(150, 150, 120);
