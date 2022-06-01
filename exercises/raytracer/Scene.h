@@ -56,8 +56,8 @@ public:
         rectangles[0].material = MaterialHelper::getNormalMaterial();
 
         //Floor
-        rectangles[1].bounds[0] = glm::vec4(-50, -1, -100, 0);
-        rectangles[1].bounds[1] = glm::vec4(50, 0, 100, 0);
+        rectangles[1].bounds[0] = glm::vec4(-70, -11, -100, 0);
+        rectangles[1].bounds[1] = glm::vec4(70, -10, 50, 0);
         rectangles[1].material = MaterialHelper::getNormalMaterial();
     }
 

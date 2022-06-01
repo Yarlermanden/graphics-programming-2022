@@ -10,22 +10,10 @@ bool castRay(Ray ray, inout float distance, out Output o)
 {
     bool hit = false;
     o.lowestTransparency = 1.f;
+
     for (int i = 0; i < sphereCount; i++){
         hit = hit || raySphereIntersection(ray, spheres[i], distance, o);
     }
-
-    //todo move to scene in model, when it works
-    //Wall - floor
-    Wall wall;
-    wall.point = vec3(-10, -10, -80);
-    wall.width = 80;
-    wall.height = 80;
-
-    wall.material = getMetalMaterial();
-    wall.material.color = vec3(0.1f);
-    wall.material.reflectionGlobal = vec3(0.3f);
-    wall.rotation = vec3(90, 0.f, 0.f);
-    hit = hit || rayWallIntersection(ray, wall, distance, o);
 
     for (int i = 0; i < boxCount; i++) {
         hit = hit || rayRectangleIntersection(ray, rectangles[i], distance, o);
@@ -64,10 +52,12 @@ vec3 PhongLighting(Ray ray, Output o, vec3 light_pos, bool inShadow){
     float Ks = 0.6f; //specular reflectance
     float exp = 40.f; //specular exponent of material - shininess
     vec3 V = normalize(-ray.direction); //view direction
+    //vec3 V = normalize(-_rt_viewDir); //view direction
     vec3 H = normalize(L+V); //halfway vector between light direction and view direction
     float R_specular = I_light * Ks * pow(max(dot(o.normal, H), 0.0f), exp); //I_light * Ks * (N•H)^exp
 
     vec3 col = R_ambient;
+    inShadow = true;
     if(inShadow) {
         col += (o.lowestTransparency) * (R_diffuse + R_specular);
     }

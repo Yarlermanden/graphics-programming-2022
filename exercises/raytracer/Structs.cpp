@@ -26,8 +26,8 @@ ObjectMaterial MaterialHelper::getNormalMaterial() {
     ObjectMaterial material;
     material.color = glm::vec3(1.f); //reflectionColor
     material.indexOfRefraction = 1.0f;
-    material.transparency = 0.f;
-    material.reflectionGlobal = glm::vec3(0.01f);
+    material.transparency = 0.0f;
+    material.reflectionGlobal = glm::vec3(0.1f);
 
     material.I_aK_a = 0.05f;
     material.diffuse = 0.7f;

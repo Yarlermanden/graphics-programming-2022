@@ -9,8 +9,7 @@
 
 #include "RayTracer.h"
 
-GLuint uboScene1;
-GLuint uboScene2;
+GLuint uboScene;
 
 Shader::Shader(const char* vertexPath, const char* fragmentPath, Scene scene)
     : m_Program(0)
@@ -20,12 +19,12 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath, Scene scene)
     Reload();
 
     // Uniform buffer object for spheres
-    GLuint objectIndex1 = glGetUniformBlockIndex(m_Program, "Scene1");
-    glUniformBlockBinding(m_Program, objectIndex1, 0);
-    glGenBuffers(1, &uboScene1);
-    glBindBuffer(GL_UNIFORM_BUFFER, uboScene1);
+    GLuint objectIndex = glGetUniformBlockIndex(m_Program, "Scene1");
+    glUniformBlockBinding(m_Program, objectIndex, 0);
+    glGenBuffers(1, &uboScene);
+    glBindBuffer(GL_UNIFORM_BUFFER, uboScene);
     glBufferData(GL_UNIFORM_BUFFER, sizeof(scene), NULL, GL_DYNAMIC_DRAW);
-    glBindBufferBase(GL_UNIFORM_BUFFER, objectIndex1, uboScene1);
+    glBindBufferBase(GL_UNIFORM_BUFFER, objectIndex, uboScene);
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
     if (m_Program)
@@ -218,7 +217,7 @@ unsigned int Shader::GetUniformSize(unsigned int index) const
 }
 
 void Shader::LoadScene(Scene scene) const {
-    glBindBuffer(GL_UNIFORM_BUFFER, uboScene1);
+    glBindBuffer(GL_UNIFORM_BUFFER, uboScene);
     glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(scene), &scene);
     //float f = 1.f;
     //glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(float), &f);
