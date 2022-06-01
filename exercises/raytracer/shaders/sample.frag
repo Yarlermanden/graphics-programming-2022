@@ -1,11 +1,4 @@
 //This describes the scene
-
-layout (std140) uniform Scene1 {
-    Sphere spheres[sphereCount];
-    Rectangle rectangles[boxCount];
-    Light lights[lightCount];
-};
-
 // --------------------------- Setup Scene ---------------------------------
 bool castRay(Ray ray, inout float distance, out Output o)
 {
@@ -15,31 +8,30 @@ bool castRay(Ray ray, inout float distance, out Output o)
     for (int i = 0; i < sphereCount; i++){
         hit = hit || raySphereIntersection(ray, spheres[i], distance, o);
     }
-
     for (int i = 0; i < boxCount; i++) {
         hit = hit || rayRectangleIntersection(ray, rectangles[i], distance, o);
     }
-
     return hit;
 }
 
 // ------------------------------ Process color/shading ------------------------------------------------
 vec3 ProcessOutput(Ray ray, Output o, out bool inShadow)
 {
-    vec3 light_pos = lights[0].point;
-    inShadow = CheckForShadow(light_pos, o); //Shadow feeler - shadow rays
+    CheckForShadow(o); //Shadow feeler - shadow rays
 
     if(shadingMode == 1){
-        return PhongLighting(ray, o, inShadow);
+        return PhongLighting(ray, o);
     }
     else if(shadingMode == 2){
         //todo handle transparent objects in shadowcheck
-        return PBRLighting(ray, o, light_pos, inShadow);
+        //todo handle multiple lights
+        //return PBRLighting(ray, o, lights[0].point, length(o.invAmountOfShadow[0]) < 1);
+        return PBRLighting(ray, o, lights[0].point);
     }
     return o.material.color;
 }
 
-vec3 PhongLighting(Ray ray, Output o, bool inShadow){
+vec3 PhongLighting(Ray ray, Output o){
     vec3 R_ambient = o.material.I_aK_a * o.material.color; //Ia * Ka * color
     vec3 col = R_ambient;
 
@@ -49,10 +41,9 @@ vec3 PhongLighting(Ray ray, Output o, bool inShadow){
 
         vec3 V = -ray.direction; //view direction
         vec3 H = normalize(L+V); //halfway vector between light direction and view direction
-        vec3 R_specular = lights[0].color * o.material.Ks * pow(max(dot(o.normal, H), 0.0f), o.material.exp); //I_light * Ks * (N•H)^exp
+        vec3 R_specular = lights[i].color * o.material.Ks * pow(max(dot(o.normal, H), 0.0f), o.material.exp); //I_light * Ks * (N•H)^exp
 
-        if(inShadow) col += (o.lowestTransparency) * (R_diffuse + R_specular);
-        else col += R_diffuse + R_specular;
+        col += o.invAmountOfShadow[i] * (R_diffuse + R_specular);
     }
     return col;
 }
@@ -140,7 +131,7 @@ vec3 FresnelSchlick(vec3 F0, float cosTheta)
     return F0 + (1-F0)*(pow(1-cosTheta, 5));
 }
 
-vec3 PBRLighting(Ray ray, Output o, vec3 light_pos, bool inShadow){
+vec3 PBRLighting(Ray ray, Output o, vec3 light_pos){
     vec3 albedo = o.material.albedo;
     albedo *= o.material.color;
 
@@ -183,6 +174,6 @@ vec3 PBRLighting(Ray ray, Output o, vec3 light_pos, bool inShadow){
     //directLight *= lightRadiance;
 
     vec3 lighting = indirectLight;
-    if(!inShadow) lighting += directLight;
+    lighting += o.invAmountOfShadow[0] * directLight;
     return lighting;
 }

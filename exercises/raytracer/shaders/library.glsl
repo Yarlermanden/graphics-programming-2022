@@ -63,6 +63,7 @@ struct Output
     vec3 refractionDirection;
     ObjectMaterial material;
     float lowestTransparency; //used for shadow check
+    float invAmountOfShadow[lightCount]; //keeps track of amount of shadow for each light - used for shadow check
     bool totalInternalReflection;
 };
 
@@ -87,6 +88,12 @@ struct Light
     float PADDING2;
 };
 
+layout (std140) uniform Scene1 {
+    Sphere spheres[sphereCount];
+    Rectangle rectangles[boxCount];
+    Light lights[lightCount];
+};
+
 //-------------------------------------- Methods -------------------------------------------------
 // Fill in this function to define your scene
 bool castRay(Ray ray, inout float distance, out Output o);
@@ -96,21 +103,20 @@ bool castRay(Ray ray, inout float distance)
     return castRay(ray, distance, o);
 }
 
-bool CheckForShadow(vec3 light_pos, inout Output o){
-    Ray rayTowardsLight;
-    rayTowardsLight.direction = normalize(light_pos - o.point); //direction to light
-    rayTowardsLight.point = o.point + (0.001f*rayTowardsLight.direction);
-    float distanceToLight = length(light_pos - o.point);
-    Output shadowOutput;
-    bool inShadow = castRay(rayTowardsLight, distanceToLight, shadowOutput); //todo do this for each light
-    //bool pushed = PushRay(rayTowardsLight.point, rayTowardsLight.direction, vec3(0.f));
-    //bool inShadow = false;
-    o.lowestTransparency = shadowOutput.lowestTransparency;
-    return inShadow;
+void CheckForShadow(inout Output o){
+    for(int i = 0; i < 1; i++) {
+        Ray rayTowardsLight;
+        rayTowardsLight.direction = normalize(lights[i].point - o.point); //direction to light
+        rayTowardsLight.point = o.point + (0.1f*rayTowardsLight.direction);
+        float distanceToLight = length(lights[i].point - o.point);
+        Output shadowOutput;
+        bool inShadow = castRay(rayTowardsLight, distanceToLight, shadowOutput);
+        o.invAmountOfShadow[i] = shadowOutput.lowestTransparency;
+    }
 }
 
-vec3 PhongLighting(Ray ray, Output o, bool inShadow);
-vec3 PBRLighting(Ray ray, Output o, vec3 light_pos, bool inShadow);
+vec3 PhongLighting(Ray ray, Output o);
+vec3 PBRLighting(Ray ray, Output o, vec3 light_pos);
 // Fill in this function to process the output once the ray has found a hit
 vec3 ProcessOutput(Ray ray, Output o, out bool inShadow);
 
@@ -145,10 +151,11 @@ bool raySphereIntersection(Ray ray, Sphere sphere, inout float distance, inout O
         float discr = b * b - c;
         if (discr >= 0.0f)
         {
-            if(o.lowestTransparency > sphere.material.transparency) o.lowestTransparency = sphere.material.transparency;
+            //if(o.lowestTransparency > sphere.material.transparency) o.lowestTransparency = sphere.material.transparency;
             float d = -b - sqrt(discr);
             if(d >= distance) return false; //Another object is closer
             else {
+                if(o.lowestTransparency > sphere.material.transparency) o.lowestTransparency = sphere.material.transparency;
                 o.material = sphere.material;
                 distance = d;
                 if(d < 0.f) { //inside object
@@ -237,11 +244,12 @@ bool rayRectangleIntersection(Ray ray, Rectangle rectangle, inout float distance
         inside = true;
         //would this mean we are inside?
     }
-    if(d >= distance) return false;
+    //if(o.lowestTransparency > rectangle.material.transparency) o.lowestTransparency = rectangle.material.transparency;
+    if(d >= distance) return false; //Another object is closer
     //------- It has hit --------
+    if(o.lowestTransparency > rectangle.material.transparency) o.lowestTransparency = rectangle.material.transparency;
     distance = d;
 
-    if(o.lowestTransparency > rectangle.material.transparency) o.lowestTransparency = rectangle.material.transparency;
     o.totalInternalReflection = false;
     o.point = ray.point + distance * ray.direction;
 
