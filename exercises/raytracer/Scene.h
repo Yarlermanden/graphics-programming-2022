@@ -4,7 +4,7 @@
 
 #include <Structs.h>
 static const int sphereCount = 15;
-static const int boxCount = 4;
+static const int boxCount = 10;
 
 struct Scene {
 public:
@@ -51,14 +51,41 @@ public:
 
 
         //Rectangles:
-        rectangles[0].bounds[0] = glm::vec4(30, 20, -50, 0);
-        rectangles[0].bounds[1] = glm::vec4(31, 10, -30, 0);
-        rectangles[0].material = MaterialHelper::getNormalMaterial();
+        rectangles[0].bounds[0] = glm::vec4(-10, 10, 0, 0);
+        rectangles[0].bounds[1] = glm::vec4(10, 20, 1, 0);
+        rectangles[0].material = MaterialHelper::getGlassMaterial();
 
         //Floor
         rectangles[1].bounds[0] = glm::vec4(-70, -11, -100, 0);
         rectangles[1].bounds[1] = glm::vec4(70, -10, 50, 0);
-        rectangles[1].material = MaterialHelper::getNormalMaterial();
+        rectangles[1].material = MaterialHelper::getMetalMaterial();
+
+        //Left wall
+        rectangles[2].bounds[0] = glm::vec4(-70, -11, -100, 0);
+        rectangles[2].bounds[1] = glm::vec4(-69, 40, 50, 0);
+        rectangles[2].material = MaterialHelper::getNormalMaterial();
+        rectangles[2].material.color = glm::vec3(0.2, 0, 0);
+
+        //Right wall
+        rectangles[3].bounds[0] = glm::vec4(69, -11, -100, 0);
+        rectangles[3].bounds[1] = glm::vec4(70, 40, 50, 0);
+        rectangles[3].material = MaterialHelper::getNormalMaterial();
+        rectangles[3].material.color = glm::vec3(0.4, 0, 0);
+
+        //Back wall
+        rectangles[4].bounds[0] = glm::vec4(-70, -11, 50, 0);
+        rectangles[4].bounds[1] = glm::vec4(70, -5, 51, 0);
+        rectangles[4].material = MaterialHelper::getNormalMaterial();
+
+        //Ceiling mirror
+        rectangles[5].bounds[0] = glm::vec4(-70, 80, -100, 0);
+        rectangles[5].bounds[1] = glm::vec4(70, 81, 50, 0);
+        rectangles[5].material = MaterialHelper::getMetalMaterial();
+
+        //Square box
+        rectangles[6].bounds[0] = glm::vec4(20, 20, -40, 0);
+        rectangles[6].bounds[1] = glm::vec4(30, 30, -30, 0);
+        rectangles[6].material = MaterialHelper::getGlassMaterial();
     }
 
     //Method for updating scene

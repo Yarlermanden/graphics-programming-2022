@@ -13,10 +13,10 @@ uniform float _rt_Time;
 uniform int shadingMode;
 
 const float PI = 3.14159265359;
-const uint _rm_MaxRays = 100u;
+const uint _rm_MaxRays = 20u;
 const float infinity = 1.0f/0.0f;
 const int sphereCount = 15;
-const int boxCount = 4;
+const int boxCount = 7;
 
 //--------------------------- Structs -----------------------------------
 struct Ray
@@ -81,64 +81,7 @@ struct Wall
     ObjectMaterial material;
 };
 
-// ------------------------------------ const material -------------------------------------------
-//todo remove these material methods
-ObjectMaterial getMetalMaterial() {
-    ObjectMaterial material;
-    material.color = vec3(0.2f); //reflectionColor
-    material.indexOfRefraction = 1.0f;
-    material.transparency = 0.f;
-    material.reflectionGlobal = vec3(0.7f);
-
-    material.I_aK_a = 0.05f;
-    material.diffuse = 0.4f;
-
-    material.ambientLightColor = vec3(0.2f);
-    material.metalness = 0.9f;
-    material.roughness = 0.1f;
-    material.diffuseReflectance = 20.f;
-    material.albedo = vec3(.3f);
-    return material;
-}
-
-ObjectMaterial getNormalMaterial() {
-    ObjectMaterial material;
-    material.color = vec3(1.f); //reflectionColor
-    material.indexOfRefraction = 1.0f;
-    material.transparency = 0.f;
-    material.reflectionGlobal = vec3(0.01f);
-
-    material.I_aK_a = 0.05f;
-    material.diffuse = 0.7f;
-
-    material.ambientLightColor = vec3(0.1f);
-    material.metalness = 0.2f;
-    material.roughness = 0.3f;
-    material.diffuseReflectance = 20.f;
-    material.albedo = vec3(0.3f);
-    return material;
-}
-
-ObjectMaterial getGlassMaterial() {
-    ObjectMaterial material;
-    material.color = vec3(1.f); //reflectionColor
-    material.indexOfRefraction = 1.0f;
-    material.transparency = 0.9f; //transmissionGlobal
-    material.reflectionGlobal = vec3(0.1f);
-
-    material.I_aK_a = 0.05f;
-    material.diffuse = 0.1f;
-
-    material.metalness = 0.3f;
-    material.roughness = 0.1f;
-    material.diffuseReflectance = 10.f;
-    material.ambientLightColor = vec3(0.1f);
-    material.albedo = vec3(0.1f);
-    return material;
-}
-
 //-------------------------------------- Methods -------------------------------------------------
-
 // Fill in this function to define your scene
 bool castRay(Ray ray, inout float distance, out Output o);
 bool castRay(Ray ray, inout float distance)
@@ -290,6 +233,7 @@ bool rayRectangleIntersection(Ray ray, Rectangle rectangle, inout float distance
     o.reflectionDirection = normalize(2*dot(-ray.direction, o.normal)*o.normal + ray.direction);
 
     if (o.material.transparency != 0.f) {
+        //if(inside) o.normal = -o.normal; //todo anything we need to do regarding refraction for rectangles when inside?
         Refraction(ray, o); //todo find refraction from rectangle
     }
     return true;
