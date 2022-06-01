@@ -13,7 +13,7 @@ uniform float _rt_Time;
 uniform int shadingMode;
 
 const float PI = 3.14159265359;
-const uint _rm_MaxRays = 30u;
+const uint _rm_MaxRays = 10u;
 const float infinity = 1.0f/0.0f;
 const int sphereCount = 15;
 const int boxCount = 10;
@@ -116,13 +116,13 @@ void Refraction(Ray ray, inout Output o){
     vec3 n = o.normal;
     float index = o.material.indexOfRefraction == ray.indexOfRefraction ? 1/o.material.indexOfRefraction : o.material.indexOfRefraction;
 
-    vec3 t_lat = (dot(v, n)*n - v)/index;
+    vec3 t_lat = (dot(v, n)*n - v)/index; //angle between transmission direction and inverted normal
     float sinSq = pow(length(t_lat), 2);
     if(sinSq > 1) {
         o.totalInternalReflection = true;
         return;
     }
-    vec3 t = t_lat - sqrt(1 - sinSq*n);
+    vec3 t = t_lat - sqrt(1 - sinSq)*n;
     o.refractionDirection = t;
 }
 
@@ -131,7 +131,6 @@ bool raySphereIntersection(Ray ray, Sphere sphere, inout float distance, inout O
     bool hit = false;
 
     vec3 m = ray.point - sphere.center;
-
     float b = dot(m, ray.direction);
     float c = dot(m, m) - sphere.radius * sphere.radius;
 
@@ -219,15 +218,15 @@ bool rayRectangleIntersection(Ray ray, Rectangle rectangle, inout float distance
     o.totalInternalReflection = false;
     o.point = ray.point + distance * ray.direction;
 
-    if(abs(o.point.x - rectangle.bounds[0].x) < 0.01 || abs(o.point.x - rectangle.bounds[1].x) < 0.01) {
+    if(abs(o.point.x - rectangle.bounds[0].x) < 0.001 || abs(o.point.x - rectangle.bounds[1].x) < 0.01) {
         if(ray.direction.x > 0) o.normal = vec3(-1, 0, 0);
         else o.normal = vec3(1, 0, 0);
     }
-    else if(abs(o.point.y - rectangle.bounds[0].y) < 0.01 || abs(o.point.y - rectangle.bounds[1].y) < 0.01) {
+    else if(abs(o.point.y - rectangle.bounds[0].y) < 0.001 || abs(o.point.y - rectangle.bounds[1].y) < 0.01) {
         if(ray.direction.y > 0) o.normal = vec3(0, -1, 0);
         else o.normal = vec3(0, 1, 0);
     }
-    else if(abs(o.point.z - rectangle.bounds[0].z) < 0.01 || abs(o.point.z - rectangle.bounds[1].z) < 0.01) {
+    else if(abs(o.point.z - rectangle.bounds[0].z) < 0.001 || abs(o.point.z - rectangle.bounds[1].z) < 0.01) {
         if(ray.direction.z > 0) o.normal = vec3(0, 0, -1);
         else o.normal = vec3(0, 0, 1);
     }
@@ -235,8 +234,6 @@ bool rayRectangleIntersection(Ray ray, Rectangle rectangle, inout float distance
     o.reflectionDirection = normalize(2*dot(-ray.direction, o.normal)*o.normal + ray.direction);
 
     if (o.material.transparency > 0.f) {
-        //if(inside) o.material.color = vec3(0, 1, 0);
-        //if(inside) o.normal = -o.normal; //todo anything we need to do regarding refraction for rectangles when inside?
         Refraction(ray, o);
     }
     return true;

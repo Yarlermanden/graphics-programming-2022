@@ -88,18 +88,18 @@ public:
         rectangles[9].material = MaterialHelper::getMetalMaterial();
 
         //Square glass box
-        rectangles[6].bounds[0] = glm::vec4(40, 0, -40, 0);
-        rectangles[6].bounds[1] = glm::vec4(50, 10, -30, 0);
+        rectangles[6].bounds[0] = glm::vec4(30, 0, -40, 0);
+        rectangles[6].bounds[1] = glm::vec4(40, 10, -30, 0);
         rectangles[6].material = MaterialHelper::getGlassMaterial();
 
         //Square metal box
-        rectangles[7].bounds[0] = glm::vec4(40, 0, -20, 0);
-        rectangles[7].bounds[1] = glm::vec4(50, 10, -10, 0);
+        rectangles[7].bounds[0] = glm::vec4(30, 0, -20, 0);
+        rectangles[7].bounds[1] = glm::vec4(40, 10, -10, 0);
         rectangles[7].material = MaterialHelper::getMetalMaterial();
 
         //Square normal box
-        rectangles[8].bounds[0] = glm::vec4(40, 0, 0, 0);
-        rectangles[8].bounds[1] = glm::vec4(50, 10, 10, 0);
+        rectangles[8].bounds[0] = glm::vec4(30, 0, 0, 0);
+        rectangles[8].bounds[1] = glm::vec4(40, 10, 10, 0);
         rectangles[8].material = MaterialHelper::getNormalMaterial();
     }
 

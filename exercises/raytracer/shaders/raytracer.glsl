@@ -13,7 +13,7 @@ bool PushRay(vec3 point, vec3 direction, vec3 colorFilter, float indexOfRefracti
     if (_rt_rayCount < _rm_MaxRays)
     {
         Ray ray;
-        ray.point = point + 0.01f * direction;
+        ray.point = point + 0.1f * direction;
         ray.direction = direction;
         ray.colorFilter = colorFilter;
         ray.indexOfRefraction = indexOfRefraction;
@@ -41,7 +41,7 @@ void main()
             if(o.totalInternalReflection) continue;
             color += ray.colorFilter * ProcessOutput(ray, o, inShadow); //only apply color according to filter
 
-            if(length(ray.colorFilter) < 0.0001) continue; //For performance - to stop insignificant rays
+            if(length(ray.colorFilter) < 0.001) continue; //For performance - to stop insignificant rays
             PushRay(o.point, o.reflectionDirection, ray.colorFilter*o.material.reflectionGlobal, ray.indexOfRefraction); //Reflection ray
             if(o.material.transparency > 0.f) {
                 float newIndex = o.material.indexOfRefraction == ray.indexOfRefraction ? 1.f : o.material.indexOfRefraction; //todo maybe this should be o.indexOfIncidence and then be handled when calculating angle
