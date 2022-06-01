@@ -49,9 +49,9 @@ public:
         spheres[14].material.color = glm::vec3(1.f);
 
 
-        //Rectangles:
-        rectangles[0].bounds[0] = glm::vec4(-10, 10, 0, 0);
-        rectangles[0].bounds[1] = glm::vec4(10, 20, 1, 0);
+        //Rectangles: ----------------
+        rectangles[0].bounds[0] = glm::vec4(-20, 0, 0, 0);
+        rectangles[0].bounds[1] = glm::vec4(-5, 10, 5, 0);
         rectangles[0].material = MaterialHelper::getGlassMaterial();
 
         //Floor

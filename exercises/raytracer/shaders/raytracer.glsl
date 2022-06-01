@@ -17,6 +17,12 @@ bool PushRay(vec3 point, vec3 direction, vec3 colorFilter, float indexOfRefracti
         ray.direction = direction;
         ray.colorFilter = colorFilter;
         ray.indexOfRefraction = indexOfRefraction;
+        /*
+        ray.invDir = 1/ray.direction;
+        ray.sign[0] = (ray.invDir.x < 0) ? 1 : 0;
+        ray.sign[1] = (ray.invDir.y < 0) ? 1 : 0;
+        ray.sign[2] = (ray.invDir.z < 0) ? 1 : 0;
+        */
         _rt_pendingRays[_rt_rayCount++] = ray;
         pushed = true;
     }

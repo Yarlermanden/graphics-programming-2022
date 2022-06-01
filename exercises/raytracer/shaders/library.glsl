@@ -25,6 +25,8 @@ struct Ray
     vec3 direction;
     vec3 colorFilter;
     float indexOfRefraction;
+    //vec3 invDir;
+    //int sign[3];
 };
 
 struct ObjectMaterial
@@ -155,7 +157,8 @@ bool raySphereIntersection(Ray ray, Sphere sphere, inout float distance, inout O
                     o.point = ray.point + d * ray.direction;
                     o.normal = normalize(o.point - sphere.center);
                 }
-                o.reflectionDirection = normalize(2*dot(-ray.direction, o.normal)*o.normal + ray.direction);
+                //o.reflectionDirection = normalize(2*dot(-ray.direction, o.normal)*o.normal + ray.direction);
+                o.reflectionDirection = normalize(ray.direction - 2*dot(ray.direction, o.normal)*o.normal);
                 if (o.material.transparency != 0.f) {
                     Refraction(ray, o);
                 }
@@ -199,6 +202,26 @@ bool rayRectangleIntersection(Ray ray, Rectangle rectangle, inout float distance
     if ((tmin > tzmax) || (tzmin > tmax)) return false;
     if (tzmin > tmin) tmin = tzmin;
     if (tzmax < tmax) tmax = tzmax;
+
+    /* -- Possible optimization
+    float tmin, tmax, tymin, tymax, tzmin, tzmax;
+
+    tmin = (rectangle.bounds[ray.sign[0]].x - ray.point.x) * ray.invDir.x;
+    tmax = (rectangle.bounds[1-ray.sign[0]].x - ray.point.x) * ray.invDir.x;
+    tymin = (rectangle.bounds[ray.sign[1]].y - ray.point.y) * ray.invDir.y;
+    tymax = (rectangle.bounds[1-ray.sign[1]].y - ray.point.y) * ray.invDir.y;
+
+    if ((tmin > tymax) || (tymin > tmax)) return false; //misses y completely
+    if (tymin > tmin) tmin = tymin;
+    if (tymax < tmax) tmax = tymax;
+
+    tzmin = (rectangle.bounds[ray.sign[2]].z - ray.point.z) * ray.invDir.z;
+    tzmax = (rectangle.bounds[1-ray.sign[2]].z - ray.point.z) * ray.invDir.z;
+
+    if ((tmin > tzmax) || (tzmin > tmax)) return false; //misses z completely
+    if (tzmin > tmin) tmin = tzmin;
+    if (tzmax < tmax) tmax = tzmax;
+    */
 
     float d = tmin;
     bool inside = false;
