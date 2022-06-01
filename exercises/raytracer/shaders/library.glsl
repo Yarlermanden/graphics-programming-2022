@@ -16,7 +16,7 @@ const float PI = 3.14159265359;
 const uint _rm_MaxRays = 20u;
 const float infinity = 1.0f/0.0f;
 const int sphereCount = 15;
-const int boxCount = 7;
+const int boxCount = 10;
 
 //--------------------------- Structs -----------------------------------
 struct Ray

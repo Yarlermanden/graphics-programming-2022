@@ -47,7 +47,7 @@ void main()
             //float reflectionStrength = (1-o.material.roughness)*o.material.metalness*2 * pow((1-o.material.transparency),2);
             //float reflectionStrength = (1-o.material.roughness)*o.material.metalness*2 * o.material.reflectionGlobal;
 
-            //PushRay(o.point, o.reflectionDirection, vec3(reflectionStrength), ray.indexOfRefraction);
+            if(length(ray.colorFilter) < 0.001) continue; //For performance - to stop insignificant rays
             PushRay(o.point, o.reflectionDirection, ray.colorFilter*o.material.reflectionGlobal, ray.indexOfRefraction); //Reflection ray
             if(o.material.transparency != 0.f) {
                 float newIndex = o.material.indexOfRefraction == ray.indexOfRefraction ? 1.f : o.material.indexOfRefraction; //todo maybe this should be o.indexOfIncidence and then be handled when calculating angle

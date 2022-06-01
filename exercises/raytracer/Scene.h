@@ -18,12 +18,13 @@ public:
         spheres[0].radius = 3.f;
         spheres[0].material = MaterialHelper::getMetalMaterial();
 
-        spheres[1].center = glm::vec3(0, 0, -200);
-        spheres[1].radius = 100.f;
+        //spheres[1].center = glm::vec3(-50, 40, -80);
+        spheres[1].center = glm::vec3(-65, 55, -95);
+        spheres[1].radius = 20.f;
         spheres[1].material = MaterialHelper::getMetalMaterial();
 
         //steady ball
-        spheres[2].center = glm::vec3(0,10,-25);
+        spheres[2].center = glm::vec3(-20,10,-25);
         spheres[2].radius = 2.0f;
         spheres[2].material = MaterialHelper::getNormalMaterial();
         spheres[2].material.color = glm::vec3(0, 0, 1);
@@ -44,7 +45,7 @@ public:
         }
 
         //spheres[14].center = glm::vec3(20,20,-40);
-        spheres[14].center = glm::vec3(0,10,-30);
+        spheres[14].center = glm::vec3(10,15,-30);
         spheres[14].radius = 2.0f;
         spheres[14].material = MaterialHelper::getGlassMaterial();
         spheres[14].material.color = glm::vec3(1.f);
@@ -58,34 +59,50 @@ public:
         //Floor
         rectangles[1].bounds[0] = glm::vec4(-70, -11, -100, 0);
         rectangles[1].bounds[1] = glm::vec4(70, -10, 50, 0);
-        rectangles[1].material = MaterialHelper::getMetalMaterial();
+        rectangles[1].material = MaterialHelper::getNormalMaterial();
 
         //Left wall
         rectangles[2].bounds[0] = glm::vec4(-70, -11, -100, 0);
-        rectangles[2].bounds[1] = glm::vec4(-69, 40, 50, 0);
+        rectangles[2].bounds[1] = glm::vec4(-69, 60, 50, 0);
         rectangles[2].material = MaterialHelper::getNormalMaterial();
         rectangles[2].material.color = glm::vec3(0.2, 0, 0);
 
         //Right wall
         rectangles[3].bounds[0] = glm::vec4(69, -11, -100, 0);
-        rectangles[3].bounds[1] = glm::vec4(70, 40, 50, 0);
+        rectangles[3].bounds[1] = glm::vec4(70, 60, 50, 0);
         rectangles[3].material = MaterialHelper::getNormalMaterial();
         rectangles[3].material.color = glm::vec3(0.4, 0, 0);
 
         //Back wall
-        rectangles[4].bounds[0] = glm::vec4(-70, -11, 50, 0);
-        rectangles[4].bounds[1] = glm::vec4(70, -5, 51, 0);
+        rectangles[4].bounds[0] = glm::vec4(-70, -11, -101, 0);
+        rectangles[4].bounds[1] = glm::vec4(70, 61, -100, 0);
         rectangles[4].material = MaterialHelper::getNormalMaterial();
+        rectangles[4].material.color = glm::vec3(0.2, 0.2, 0.6);
 
-        //Ceiling mirror
-        rectangles[5].bounds[0] = glm::vec4(-70, 80, -100, 0);
-        rectangles[5].bounds[1] = glm::vec4(70, 81, 50, 0);
+        //Ceiling wall - mirror
+        rectangles[5].bounds[0] = glm::vec4(-70, 60, -100, 0);
+        rectangles[5].bounds[1] = glm::vec4(70, 61, 50, 0);
         rectangles[5].material = MaterialHelper::getMetalMaterial();
 
-        //Square box
-        rectangles[6].bounds[0] = glm::vec4(20, 20, -40, 0);
-        rectangles[6].bounds[1] = glm::vec4(30, 30, -30, 0);
+        //Floor mirror
+        rectangles[9].bounds[0] = glm::vec4(0, -10, -40, 0);
+        rectangles[9].bounds[1] = glm::vec4(20, -9.5, -20, 0);
+        rectangles[9].material = MaterialHelper::getMetalMaterial();
+
+        //Square glass box
+        rectangles[6].bounds[0] = glm::vec4(40, 0, -40, 0);
+        rectangles[6].bounds[1] = glm::vec4(50, 10, -30, 0);
         rectangles[6].material = MaterialHelper::getGlassMaterial();
+
+        //Square metal box
+        rectangles[7].bounds[0] = glm::vec4(40, 0, -20, 0);
+        rectangles[7].bounds[1] = glm::vec4(50, 10, -10, 0);
+        rectangles[7].material = MaterialHelper::getMetalMaterial();
+
+        //Square normal box
+        rectangles[8].bounds[0] = glm::vec4(40, 0, 0, 0);
+        rectangles[8].bounds[1] = glm::vec4(50, 10, 10, 0);
+        rectangles[8].material = MaterialHelper::getNormalMaterial();
     }
 
     //Method for updating scene
