@@ -96,7 +96,7 @@ bool CheckForShadow(vec3 light_pos, inout Output o){
     rayTowardsLight.point = o.point + (0.001f*rayTowardsLight.direction);
     float distanceToLight = length(light_pos - o.point);
     Output shadowOutput;
-    bool inShadow = castRay(rayTowardsLight, distanceToLight, shadowOutput);
+    bool inShadow = castRay(rayTowardsLight, distanceToLight, shadowOutput); //todo do this for each light
     //bool pushed = PushRay(rayTowardsLight.point, rayTowardsLight.direction, vec3(0.f));
     //bool inShadow = false;
     o.lowestTransparency = shadowOutput.lowestTransparency;
@@ -205,7 +205,9 @@ bool rayRectangleIntersection(Ray ray, Rectangle rectangle, inout float distance
     bool inside = false;
     if(d < 0) {
         d = tmax;
-        if (d < 0) return false;
+        if (d < 0) {
+            return false;
+        }
         inside = true;
         //would this mean we are inside?
     }
@@ -233,8 +235,9 @@ bool rayRectangleIntersection(Ray ray, Rectangle rectangle, inout float distance
     o.reflectionDirection = normalize(2*dot(-ray.direction, o.normal)*o.normal + ray.direction);
 
     if (o.material.transparency != 0.f) {
+        if(inside) o.material.color = vec3(0, 1, 0);
         //if(inside) o.normal = -o.normal; //todo anything we need to do regarding refraction for rectangles when inside?
-        Refraction(ray, o); //todo find refraction from rectangle
+        Refraction(ray, o);
     }
     return true;
 }

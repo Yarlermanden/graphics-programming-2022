@@ -26,11 +26,7 @@ bool PushRay(vec3 point, vec3 direction, vec3 colorFilter, float indexOfRefracti
 void main()
 {
     _rt_rayCount = 0u;
-    //PushRay(_rt_viewPos, normalize(_rt_viewPos), vec3(1.0f), 1.f);
-    //PushRay(_rt_viewPos, normalize(vec3(0,0,-10)), vec3(1.0f), 1.f);
-
-    PushRay(_rt_viewPos, normalize(_rt_viewDir), vec3(1.0f), 1.f);
-
+    PushRay(_rt_viewPos, normalize(_rt_viewDir), vec3(1.0f), 1.f); //Original ray
     vec3 color = vec3(0);
 
     for (uint i = 0u; i < _rt_rayCount; ++i)
@@ -52,10 +48,10 @@ void main()
             //float reflectionStrength = (1-o.material.roughness)*o.material.metalness*2 * o.material.reflectionGlobal;
 
             //PushRay(o.point, o.reflectionDirection, vec3(reflectionStrength), ray.indexOfRefraction);
-            PushRay(o.point, o.reflectionDirection, o.material.reflectionGlobal, ray.indexOfRefraction);
+            PushRay(o.point, o.reflectionDirection, ray.colorFilter*o.material.reflectionGlobal, ray.indexOfRefraction); //Reflection ray
             if(o.material.transparency != 0.f) {
                 float newIndex = o.material.indexOfRefraction == ray.indexOfRefraction ? 1.f : o.material.indexOfRefraction; //todo maybe this should be o.indexOfIncidence and then be handled when calculating angle
-                PushRay(o.point, o.refractionDirection, vec3(o.material.transparency), newIndex); //refraction
+                PushRay(o.point, o.refractionDirection, ray.colorFilter*vec3(o.material.transparency), newIndex); //refraction
             }
         }
     }
