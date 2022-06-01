@@ -10,8 +10,6 @@ struct Scene {
 public:
     Sphere spheres[sphereCount];
     Rectangle rectangles[boxCount];
-    //Array of walls
-
     Scene() {
         //Setup scene with the objects
         spheres[0].center = glm::vec3(10.f, 10.f, -50.f);

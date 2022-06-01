@@ -27,7 +27,7 @@ vec3 ProcessOutput(Ray ray, Output o, out bool inShadow)
 {
     vec3 light_pos = vec3(400, 10.9f, 1000); //light position in model space //todo move this to scene
 
-    inShadow = CheckForShadow(light_pos, o);
+    inShadow = CheckForShadow(light_pos, o); //Shadow feeler - shadow rays
 
     if(shadingMode == 1){
         return PhongLighting(ray, o, light_pos, inShadow);

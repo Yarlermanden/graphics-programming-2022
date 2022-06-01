@@ -5,14 +5,14 @@
 #include <glm/glm.hpp>
 
 struct ObjectMaterial {
-    glm::vec3 color; //reflectionColor
-    float transparency;
-    glm::vec3 reflectionGlobal;
+    glm::vec3 color; //object color
+    float transparency; //amount of refraction - transmissionGlobal
+    glm::vec3 reflectionGlobal; //amount of reflection
     float indexOfRefraction;
 
     //PhongLighting
     float I_aK_a; //I_a * K_a
-    float diffuse; //I_light *I Kdf
+    float diffuse; //I_light *I Kdf //todo should some of this be determined by the light source?
 
     //PBR
     float metalness;

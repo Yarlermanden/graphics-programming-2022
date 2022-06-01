@@ -13,7 +13,7 @@ uniform float _rt_Time;
 uniform int shadingMode;
 
 const float PI = 3.14159265359;
-const uint _rm_MaxRays = 20u;
+const uint _rm_MaxRays = 30u;
 const float infinity = 1.0f/0.0f;
 const int sphereCount = 15;
 const int boxCount = 10;
@@ -211,7 +211,7 @@ bool rayRectangleIntersection(Ray ray, Rectangle rectangle, inout float distance
         inside = true;
         //would this mean we are inside?
     }
-    if(d > distance) return false;
+    if(d >= distance) return false;
     //------- It has hit --------
     distance = d;
 
@@ -234,8 +234,8 @@ bool rayRectangleIntersection(Ray ray, Rectangle rectangle, inout float distance
     o.material = rectangle.material;
     o.reflectionDirection = normalize(2*dot(-ray.direction, o.normal)*o.normal + ray.direction);
 
-    if (o.material.transparency != 0.f) {
-        if(inside) o.material.color = vec3(0, 1, 0);
+    if (o.material.transparency > 0.f) {
+        //if(inside) o.material.color = vec3(0, 1, 0);
         //if(inside) o.normal = -o.normal; //todo anything we need to do regarding refraction for rectangles when inside?
         Refraction(ray, o);
     }

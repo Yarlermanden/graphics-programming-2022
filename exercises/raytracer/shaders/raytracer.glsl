@@ -32,29 +32,22 @@ void main()
     for (uint i = 0u; i < _rt_rayCount; ++i)
     {
         Ray ray = _rt_pendingRays[i];
-
         Output o;
         float distance = infinity;
-        if (castRay(ray, distance, o))
+
+        if (castRay(ray, distance, o)) //Checks for collision
         {
             bool inShadow;
             if(o.totalInternalReflection) continue;
-            //todo Use correct formulas for amount of light distributed on local light, reflection light and transmission light for this ray. Each should take into account the rays current colorfilter
-            //color += (1-o.material.transparency) * ray.colorFilter * ProcessOutput(ray, o, inShadow);
-            color += ray.colorFilter * ProcessOutput(ray, o, inShadow);
+            color += ray.colorFilter * ProcessOutput(ray, o, inShadow); //only apply color according to filter
 
-            //todo reflection should be multiple rays as surface isn't perfectly flat - BRDF to weight result
-            //float reflectionStrength = (1-o.material.roughness)*o.material.metalness*2 * pow((1-o.material.transparency),2);
-            //float reflectionStrength = (1-o.material.roughness)*o.material.metalness*2 * o.material.reflectionGlobal;
-
-            if(length(ray.colorFilter) < 0.001) continue; //For performance - to stop insignificant rays
+            if(length(ray.colorFilter) < 0.0001) continue; //For performance - to stop insignificant rays
             PushRay(o.point, o.reflectionDirection, ray.colorFilter*o.material.reflectionGlobal, ray.indexOfRefraction); //Reflection ray
-            if(o.material.transparency != 0.f) {
+            if(o.material.transparency > 0.f) {
                 float newIndex = o.material.indexOfRefraction == ray.indexOfRefraction ? 1.f : o.material.indexOfRefraction; //todo maybe this should be o.indexOfIncidence and then be handled when calculating angle
-                PushRay(o.point, o.refractionDirection, ray.colorFilter*vec3(o.material.transparency), newIndex); //refraction
+                PushRay(o.point, o.refractionDirection, ray.colorFilter*vec3(o.material.transparency), newIndex); //refraction ray
             }
         }
     }
-
     FragColor = vec4(color, 1);
 }
