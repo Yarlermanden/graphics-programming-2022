@@ -9,7 +9,8 @@
 
 #include "RayTracer.h"
 
-GLuint uboScene;
+GLuint uboScene1;
+GLuint uboScene2;
 
 Shader::Shader(const char* vertexPath, const char* fragmentPath, Scene scene)
     : m_Program(0)
@@ -18,22 +19,14 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath, Scene scene)
 {
     Reload();
 
-    GLuint objectIndex = glGetUniformBlockIndex(m_Program, "Scene");
-    glUniformBlockBinding(m_Program, objectIndex, 0);
-
-    // Uniform buffer object for lights
-    glGenBuffers(1, &uboScene);
-    glBindBuffer(GL_UNIFORM_BUFFER, uboScene);
-    glBufferData(GL_UNIFORM_BUFFER, sizeof(Sphere)*scene.sphereCount, NULL, GL_DYNAMIC_DRAW);
-    //glBufferData(GL_UNIFORM_BUFFER, sizeof(float), NULL, GL_DYNAMIC_DRAW);
-    glBindBufferBase(GL_UNIFORM_BUFFER, objectIndex, uboScene);
+    // Uniform buffer object for spheres
+    GLuint objectIndex1 = glGetUniformBlockIndex(m_Program, "Scene1");
+    glUniformBlockBinding(m_Program, objectIndex1, 0);
+    glGenBuffers(1, &uboScene1);
+    glBindBuffer(GL_UNIFORM_BUFFER, uboScene1);
+    glBufferData(GL_UNIFORM_BUFFER, sizeof(scene), NULL, GL_DYNAMIC_DRAW);
+    glBindBufferBase(GL_UNIFORM_BUFFER, objectIndex1, uboScene1);
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
-    /*
-    glBindBuffer(GL_UNIFORM_BUFFER, m_Program);
-    glBufferData(GL_UNIFORM_BUFFER, sizeof(Sphere) * 1, NULL, GL_DYNAMIC_DRAW);
-    glBindBuffer(GL_UNIFORM_BUFFER, 0);
-    glBindBufferBase(GL_UNIFORM_BUFFER, 1, m_Program);
-     */
 
     if (m_Program)
     {
@@ -225,8 +218,8 @@ unsigned int Shader::GetUniformSize(unsigned int index) const
 }
 
 void Shader::LoadScene(Scene scene) const {
-    glBindBuffer(GL_UNIFORM_BUFFER, uboScene);
-    glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(scene.spheres), &scene.spheres);
+    glBindBuffer(GL_UNIFORM_BUFFER, uboScene1);
+    glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(scene), &scene);
     //float f = 1.f;
     //glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(float), &f);
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
@@ -250,7 +243,7 @@ void Shader::LoadActiveUniforms()
         Uniform& uniform = uniforms[i];
         GLint count;
         glGetActiveUniform(m_Program, i, maxNameLength, nullptr, &count, &uniform.type, nameBuffer);
-        assert(count == 1);
+        //assert(count == 1);
 
         uniform.location = glGetUniformLocation(m_Program, nameBuffer);
 

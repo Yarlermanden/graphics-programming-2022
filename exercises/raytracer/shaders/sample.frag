@@ -1,7 +1,8 @@
 //This describes the scene
 
-layout (std140) uniform Scene {
+layout (std140) uniform Scene1 {
     Sphere spheres[sphereCount];
+    Rectangle rectangles[boxCount];
 };
 
 // --------------------------- Setup Scene ---------------------------------
@@ -26,33 +27,9 @@ bool castRay(Ray ray, inout float distance, out Output o)
     wall.rotation = vec3(90, 0.f, 0.f);
     hit = hit || rayWallIntersection(ray, wall, distance, o);
 
-    /*
-    //Rectangle - small
-    Rectangle rectangle;
-    rectangle.point = vec3(10, 10, -40);
-    rectangle.width = 4;
-    rectangle.height = 4;
-    rectangle.depth = 4;
-    rectangle.rotation = vec3(0.45f, 45.f, 0.f);
-
-    rectangle.material.color = vec3(0.01f);
-    rectangle.material.diffuseReflectance = 8;
-    rectangle.material.metalness = 0.4f;
-    rectangle.material.roughness = 0.3f;
-    rectangle.material.ambientLightColor = vec3(0.4f);
-    rectangle.material.albedo = vec3(0.3f);
-    rectangle.material.transparency = 0.f;
-    hit = rayRectangleIntersection(ray, rectangle, distance, o) || hit;
-    */
-
-
-    Rectangle rectangle;
-    vec3 vmin = vec3(30, 20, -50);
-    vec3 vmax = vec3(31, 10, -30);
-    rectangle.bounds[0] = vmin;
-    rectangle.bounds[1] = vmax;
-    rectangle.material = getGlassMaterial();
-    hit = hit || rayRectangleIntersection(ray, rectangle, distance, o);
+    for (int i = 0; i < boxCount; i++) {
+        hit = hit || rayRectangleIntersection(ray, rectangles[i], distance, o);
+    }
 
     return hit;
 }

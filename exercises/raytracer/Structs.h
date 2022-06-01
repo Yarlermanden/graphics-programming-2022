@@ -29,12 +29,9 @@ struct Sphere {
     ObjectMaterial material;
 };
 
-struct Rectangle {
-    glm::vec3 point;
-    float width;
-    float height;
-    float depth;
-    glm::vec3 rotation;
+struct Rectangle
+{
+    glm::vec4 bounds[2];
     ObjectMaterial material;
 };
 

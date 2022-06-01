@@ -2,7 +2,7 @@
 file(GLOB target_src "*.h" "*.cpp") # look for source files
 file(GLOB target_shaders "shaders/*.vert" "shaders/*.frag" "shaders/*.glsl") # look for shaders
 
-add_executable(${subdir} ${target_src} ${target_shaders} Scene.cpp Structs.h Scene.h Structs.cpp)
+add_executable(${subdir} ${target_src} ${target_shaders} Structs.h Scene.h Structs.cpp)
 
 # list of libraries
 set(libraries glad glfw imgui assimp)

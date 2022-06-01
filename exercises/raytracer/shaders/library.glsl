@@ -16,6 +16,7 @@ const float PI = 3.14159265359;
 const uint _rm_MaxRays = 100u;
 const float infinity = 1.0f/0.0f;
 const int sphereCount = 15;
+const int boxCount = 1;
 
 //--------------------------- Structs -----------------------------------
 struct Ray
@@ -67,14 +68,7 @@ struct Sphere
 
 struct Rectangle
 {
-    /*
-    vec3 point; //upper left
-    float width;
-    float height;
-    float depth;
-    vec3 rotation;
-    */
-    vec3 bounds[2];
+    vec4 bounds[2];
     ObjectMaterial material;
 };
 

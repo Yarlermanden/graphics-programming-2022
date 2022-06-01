@@ -3,11 +3,13 @@
 //
 
 #include <Structs.h>
+static const int sphereCount = 15;
+static const int boxCount = 4;
 
-class Scene {
+struct Scene {
 public:
-    static const int sphereCount = 15;
     Sphere spheres[sphereCount];
+    Rectangle rectangles[boxCount];
     //Array of walls
 
     Scene() {
@@ -46,6 +48,17 @@ public:
         spheres[14].radius = 2.0f;
         spheres[14].material = MaterialHelper::getGlassMaterial();
         spheres[14].material.color = glm::vec3(1.f);
+
+
+        //Rectangles:
+        rectangles[0].bounds[0] = glm::vec4(30, 20, -50, 0);
+        rectangles[0].bounds[1] = glm::vec4(31, 10, -30, 0);
+        rectangles[0].material = MaterialHelper::getNormalMaterial();
+
+        //Floor
+        rectangles[1].bounds[0] = glm::vec4(-50, -1, -100, 0);
+        rectangles[1].bounds[1] = glm::vec4(50, 0, 100, 0);
+        rectangles[1].material = MaterialHelper::getNormalMaterial();
     }
 
     //Method for updating scene
