@@ -223,14 +223,11 @@ bool rayRectangleIntersection(Ray ray, Rectangle rectangle, inout float distance
     */
 
     float d = tmin;
-    bool inside = false;
     if(d < 0) {
         d = tmax;
         if (d < 0) {
             return false;
         }
-        inside = true;
-        //would this mean we are inside?
     }
     if(o.lowestTransparency > rectangle.material.transparency) o.lowestTransparency = rectangle.material.transparency;
     if(d >= distance) return false; //Another object is closer
