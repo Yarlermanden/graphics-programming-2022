@@ -97,11 +97,11 @@ layout (std140) uniform Scene1 {
 
 //-------------------------------------- Methods -------------------------------------------------
 // Fill in this function to define your scene
-bool castRay(Ray ray, inout float distance, out Output o);
+bool castRay(Ray ray, inout float distance, out Output o, bool shadowCheck);
 bool castRay(Ray ray, inout float distance)
 {
     Output o;
-    return castRay(ray, distance, o);
+    return castRay(ray, distance, o, false);
 }
 
 void CheckForShadow(inout Output o){
@@ -111,7 +111,7 @@ void CheckForShadow(inout Output o){
         rayTowardsLight.point = o.point + (0.1f*rayTowardsLight.direction);
         float distanceToLight = length(lights[i].point - o.point);
         Output shadowOutput;
-        bool inShadow = castRay(rayTowardsLight, distanceToLight, shadowOutput);
+        bool inShadow = castRay(rayTowardsLight, distanceToLight, shadowOutput, true);
         o.invAmountOfShadow[i] = shadowOutput.lowestTransparency;
     }
 }
@@ -152,11 +152,11 @@ bool raySphereIntersection(Ray ray, Sphere sphere, inout float distance, inout O
         float discr = b * b - c;
         if (discr >= 0.0f)
         {
-            //if(o.lowestTransparency > sphere.material.transparency) o.lowestTransparency = sphere.material.transparency;
+            if(o.lowestTransparency > sphere.material.transparency) o.lowestTransparency = sphere.material.transparency;
             float d = -b - sqrt(discr);
             if(d >= distance) return false; //Another object is closer
             else {
-                if(o.lowestTransparency > sphere.material.transparency) o.lowestTransparency = sphere.material.transparency;
+                //if(o.lowestTransparency > sphere.material.transparency) o.lowestTransparency = sphere.material.transparency;
                 distance = d;
                 if(d < 0.f) { //inside object
                     distance = (-b + sqrt(discr) + 0.1f);
@@ -232,9 +232,9 @@ bool rayRectangleIntersection(Ray ray, Rectangle rectangle, inout float distance
         inside = true;
         //would this mean we are inside?
     }
+    if(o.lowestTransparency > rectangle.material.transparency) o.lowestTransparency = rectangle.material.transparency;
     if(d >= distance) return false; //Another object is closer
     //------- It has hit --------
-    if(o.lowestTransparency > rectangle.material.transparency) o.lowestTransparency = rectangle.material.transparency;
     distance = d;
     return true;
 }

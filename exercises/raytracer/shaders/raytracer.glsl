@@ -41,7 +41,7 @@ void main()
         Output o;
         float distance = infinity;
 
-        if (castRay(ray, distance, o)) //Checks for collision
+        if (castRay(ray, distance, o, false)) //Checks for collision
         {
             bool inShadow;
             if(o.totalInternalReflection) continue;

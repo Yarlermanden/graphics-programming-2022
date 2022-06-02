@@ -1,22 +1,24 @@
 //This describes the scene
 // --------------------------- Setup Scene ---------------------------------
-bool castRay(Ray ray, inout float distance, out Output o)
+bool castRay(Ray ray, inout float distance, out Output o, bool shadowCheck)
 {
     bool hit = false;
     bool tempHit = false;
     o.lowestTransparency = 1.f;
 
     for (int i = 0; i < sphereCount; i++){
+        if(shadowCheck && distance < length(ray.point-spheres[i].center)) continue; //for shadows
         tempHit = raySphereIntersection(ray, spheres[i], distance, o);
         if(tempHit) o.indexOfObjectHit = i;
         hit = hit || tempHit;
     }
     for (int i = 0; i < boxCount; i++) {
+        if(shadowCheck && distance < length(ray.point-rectangles[i].bounds[0].xyz) && distance < length(ray.point-rectangles[i].bounds[1].xyz)) continue;
         tempHit = rayRectangleIntersection(ray, rectangles[i], distance, o);
         if(tempHit) o.indexOfObjectHit = i+sphereCount;
         hit = hit || tempHit;
     }
-    calculateOutputFromIntersection(ray, o, distance);
+    if(!shadowCheck) calculateOutputFromIntersection(ray, o, distance);
     return hit;
 }
 
