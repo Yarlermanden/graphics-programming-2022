@@ -65,6 +65,7 @@ struct Output
     float lowestTransparency; //used for shadow check
     float invAmountOfShadow[lightCount]; //keeps track of amount of shadow for each light - used for shadow check
     bool totalInternalReflection;
+    int indexOfObjectHit;
 };
 
 struct Sphere
@@ -156,23 +157,9 @@ bool raySphereIntersection(Ray ray, Sphere sphere, inout float distance, inout O
             if(d >= distance) return false; //Another object is closer
             else {
                 if(o.lowestTransparency > sphere.material.transparency) o.lowestTransparency = sphere.material.transparency;
-                o.material = sphere.material;
                 distance = d;
                 if(d < 0.f) { //inside object
-                    o.totalInternalReflection = false;
-                    o.point = ray.point + (-b + sqrt(discr) + 0.1f) * ray.direction;
-                    o.normal = normalize(sphere.center - o.point);
-                }
-                else //outside
-                {
-                    o.totalInternalReflection = false;
-                    o.point = ray.point + d * ray.direction;
-                    o.normal = normalize(o.point - sphere.center);
-                }
-                //o.reflectionDirection = normalize(2*dot(-ray.direction, o.normal)*o.normal + ray.direction);
-                o.reflectionDirection = normalize(ray.direction - 2*dot(ray.direction, o.normal)*o.normal);
-                if (o.material.transparency != 0.f) {
-                    Refraction(ray, o);
+                    distance = (-b + sqrt(discr) + 0.1f);
                 }
                 hit = true;
             }
@@ -245,32 +232,50 @@ bool rayRectangleIntersection(Ray ray, Rectangle rectangle, inout float distance
         inside = true;
         //would this mean we are inside?
     }
-    //if(o.lowestTransparency > rectangle.material.transparency) o.lowestTransparency = rectangle.material.transparency;
     if(d >= distance) return false; //Another object is closer
     //------- It has hit --------
     if(o.lowestTransparency > rectangle.material.transparency) o.lowestTransparency = rectangle.material.transparency;
     distance = d;
+    return true;
+}
 
+void calculateOutputFromIntersection(Ray ray, inout Output o, float distance)
+{
     o.totalInternalReflection = false;
     o.point = ray.point + distance * ray.direction;
+    if(o.indexOfObjectHit < sphereCount) //hit sphere
+    {
+        Sphere sphere = spheres[o.indexOfObjectHit];
+        o.material = sphere.material;
 
-    if(abs(o.point.x - rectangle.bounds[0].x) < 0.001 || abs(o.point.x - rectangle.bounds[1].x) < 0.01) {
-        if(ray.direction.x > 0) o.normal = vec3(-1, 0, 0);
-        else o.normal = vec3(1, 0, 0);
+        if(length(ray.point-o.point) > length(ray.point-sphere.center)) //inside
+        {
+            o.normal = normalize(sphere.center - o.point);
+        }
+        else //outside
+        {
+            o.normal = normalize(o.point - sphere.center);
+        }
+
+    } else //hit rectangle
+    {
+        Rectangle rectangle = rectangles[o.indexOfObjectHit-sphereCount];
+        o.material = rectangle.material;
+        if(abs(o.point.x - rectangle.bounds[0].x) < 0.001 || abs(o.point.x - rectangle.bounds[1].x) < 0.01) {
+            if(ray.direction.x > 0) o.normal = vec3(-1, 0, 0);
+            else o.normal = vec3(1, 0, 0);
+        }
+        else if(abs(o.point.y - rectangle.bounds[0].y) < 0.001 || abs(o.point.y - rectangle.bounds[1].y) < 0.01) {
+            if(ray.direction.y > 0) o.normal = vec3(0, -1, 0);
+            else o.normal = vec3(0, 1, 0);
+        }
+        else if(abs(o.point.z - rectangle.bounds[0].z) < 0.001 || abs(o.point.z - rectangle.bounds[1].z) < 0.01) {
+            if(ray.direction.z > 0) o.normal = vec3(0, 0, -1);
+            else o.normal = vec3(0, 0, 1);
+        }
     }
-    else if(abs(o.point.y - rectangle.bounds[0].y) < 0.001 || abs(o.point.y - rectangle.bounds[1].y) < 0.01) {
-        if(ray.direction.y > 0) o.normal = vec3(0, -1, 0);
-        else o.normal = vec3(0, 1, 0);
-    }
-    else if(abs(o.point.z - rectangle.bounds[0].z) < 0.001 || abs(o.point.z - rectangle.bounds[1].z) < 0.01) {
-        if(ray.direction.z > 0) o.normal = vec3(0, 0, -1);
-        else o.normal = vec3(0, 0, 1);
-    }
-    o.material = rectangle.material;
     o.reflectionDirection = normalize(2*dot(-ray.direction, o.normal)*o.normal + ray.direction);
-
     if (o.material.transparency > 0.f) {
         Refraction(ray, o);
     }
-    return true;
 }
