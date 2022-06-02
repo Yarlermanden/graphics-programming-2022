@@ -46,7 +46,7 @@ ObjectMaterial MaterialHelper::getNormalMaterial() {
 
 ObjectMaterial MaterialHelper::getGlassMaterial() {
     ObjectMaterial material;
-    material.color = glm::vec3(0.1f); //reflectionColor
+    material.color = glm::vec3(0.01f); //reflectionColor
     material.indexOfRefraction = 1.5f; //todo 1.3 or 1.5?
     material.transparency = 0.90f; //transmissionGlobal
     material.reflectionGlobal = glm::vec3(0.1f);

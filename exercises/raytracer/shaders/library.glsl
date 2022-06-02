@@ -160,7 +160,7 @@ bool raySphereIntersection(Ray ray, Sphere sphere, inout float distance, inout O
                 distance = d;
                 if(d < 0.f) { //inside object
                     o.totalInternalReflection = false;
-                    o.point = ray.point + (-b + sqrt(discr) + 0.2f) * ray.direction;
+                    o.point = ray.point + (-b + sqrt(discr) + 0.1f) * ray.direction;
                     o.normal = normalize(sphere.center - o.point);
                 }
                 else //outside

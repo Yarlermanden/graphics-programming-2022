@@ -13,7 +13,7 @@ bool PushRay(vec3 point, vec3 direction, vec3 colorFilter, float indexOfRefracti
     if (_rt_rayCount < _rm_MaxRays)
     {
         Ray ray;
-        ray.point = point + 0.1f * direction;
+        ray.point = point + 0.01f * direction;
         ray.direction = direction;
         ray.colorFilter = colorFilter;
         ray.indexOfRefraction = indexOfRefraction;
