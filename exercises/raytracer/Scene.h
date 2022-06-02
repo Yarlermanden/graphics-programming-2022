@@ -113,7 +113,7 @@ public:
         lights[0].color = glm::vec3(100000);
 
         lights[1].point = glm::vec3(65, 55, -95);
-        lights[1].color = glm::vec3(150, 150, 120);
+        lights[1].color = glm::vec3(250, 250, 220);
     }
 
     //Method for updating scene

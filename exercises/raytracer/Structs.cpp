@@ -32,7 +32,7 @@ ObjectMaterial MaterialHelper::getNormalMaterial() {
     material.reflectionGlobal = glm::vec3(0.01f);
 
     material.I_aK_a = 0.05f;
-    material.diffuse = 0.9f;
+    material.diffuse = 2.f;
     material.Ks = 0.01f;
     material.exp = 0.001;
 
