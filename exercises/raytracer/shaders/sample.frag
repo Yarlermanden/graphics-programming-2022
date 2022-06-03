@@ -18,7 +18,7 @@ bool castRay(Ray ray, inout float distance, out Output o, bool shadowCheck)
         if(tempHit) o.indexOfObjectHit = i+sphereCount;
         hit = hit || tempHit;
     }
-    if(!shadowCheck) calculateOutputFromIntersection(ray, o, distance);
+    if(!shadowCheck && hit) calculateOutputFromIntersection(ray, o, distance);
     return hit;
 }
 
