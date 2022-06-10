@@ -12,7 +12,8 @@ out vec3 _rt_viewDir;
 
 void main()
 {
-    vec4 viewPos = _rt_InvView * vec4(1.0f); //We only need position position of the camera (not pixels) in model space
+    //vec4 viewPos = _rt_InvProj * _rt_InvView * vec4(1.0f); //We only need position position of the camera (not pixels) in model space
+    vec4 viewPos = _rt_InvView * _rt_InvProj * vec4(vertex, 1.f); //We only need position position of the camera (not pixels) in model space
 
     //I didn't find a way to compute direction using view matrix/inverse view matrix
     //Instead we compute direction of each pixel in camera and then rotate it according to the rotation matching LookAt
