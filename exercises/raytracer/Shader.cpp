@@ -19,7 +19,7 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath, Scene scene)
     Reload();
 
     // Uniform buffer object for spheres
-    GLuint objectIndex = glGetUniformBlockIndex(m_Program, "Scene1");
+    GLuint objectIndex = glGetUniformBlockIndex(m_Program, "Scene");
     glUniformBlockBinding(m_Program, objectIndex, 0);
     glGenBuffers(1, &uboScene);
     glBindBuffer(GL_UNIFORM_BUFFER, uboScene);

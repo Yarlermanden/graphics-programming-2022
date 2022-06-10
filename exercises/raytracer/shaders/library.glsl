@@ -89,7 +89,7 @@ struct Light
     float PADDING2;
 };
 
-layout (std140) uniform Scene1 {
+layout (std140) uniform Scene {
     Sphere spheres[sphereCount];
     Rectangle rectangles[boxCount];
     Light lights[lightCount];
