@@ -40,13 +40,6 @@ void RayTracer::Render(int shadingMode, Camera camera) const
     m_Shader.SetUniform("_rt_InvProj", &invProjMatrix);
     m_Shader.SetUniform("shadingMode", &shadingMode);
 
-    //Compute rotation matrix matching Lookat - https://stackoverflow.com/questions/20923232/how-to-rotate-a-vector-by-a-given-direction
-    glm::vec3 newZ = -camera.m_LookAt;
-    glm::vec3 newX = normalize(cross(newZ, glm::vec3(0, -1, 0)));
-    glm::vec3 newY = normalize(cross(newZ, newX));
-    glm::mat3 rotation = glm::mat3(newX, newY, newZ);
-    m_Shader.SetUniform("rotation", &rotation);
-
     //Pass scene information
     m_Shader.LoadScene(scene);
 
